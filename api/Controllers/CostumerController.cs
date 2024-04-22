@@ -25,7 +25,7 @@ namespace WeApi.Controllers
         {
             var costumer = await _service.CreateAsync(command);
             if (costumer.Valid)
-                return Ok( costumer);
+                return Ok(new CommandResult(true, costumer));
             else
                 return BadRequest(costumer.Log);
         }
@@ -41,22 +41,22 @@ namespace WeApi.Controllers
         }
         
         [HttpGet("all")]
-        public async Task<IActionResult> ReadAll() {
+        public async Task<IActionResult> ReadAllAsync() {
             var costumers = await _repository.GetAllAsync();
 
             if (costumers is not null)
                 return Ok(new CommandResult(true, _mapper.Map<IEnumerable<CostumerDto>>(costumers)));
             else
-                return BadRequest();
+                return BadRequest(new CommandResult(false, null));
         }      
        
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] CostumerCommand command) {
             var costumer = await _service.UpdateAsync(command);
             if (costumer.Valid)
-                return Ok(costumer);
+                return Ok(new CommandResult(true, _mapper.Map<CostumerDto>(costumer)));
             else
-                return BadRequest(costumer.Log);
+                return BadRequest(new CommandResult(false, costumer.Log));
         }
 
         [HttpDelete]
@@ -64,9 +64,9 @@ namespace WeApi.Controllers
         {
             var result = await _service.DeleteAsync(id);
             if (result.Valid)
-                return Ok();
+                return Ok(new CommandResult(true, null));
             else
-                return BadRequest(result.Log);
+                return BadRequest(new CommandResult(false, result.Log));
            
         }
     }
