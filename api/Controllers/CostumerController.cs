@@ -14,7 +14,8 @@ namespace WeApi.Controllers
         private readonly ICostumerRepository _repository;
         private readonly IMapper _mapper;
 
-        public CostumerController(ICostumerService service, ICostumerRepository repository, IMapper mapper) {          
+        public CostumerController(ICostumerService service, ICostumerRepository repository, 
+            IMapper mapper) {          
             _service = service;
             _mapper = mapper;
             _repository = repository; 
