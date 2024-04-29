@@ -14,6 +14,9 @@
   <ItemGroup>
     <ProjectReference Include="..\supply.domain\uff.domain.csproj" />
     <ProjectReference Include="..\supply.service\uff.service.csproj" />
+    <ProjectReference Include="..\uff.domain\uff.domain.csproj" />
+    <ProjectReference Include="..\uff.repository\uff.repository.csproj" />
+    <ProjectReference Include="..\uff.service\uff.service.csproj" />
   </ItemGroup>
 
 
