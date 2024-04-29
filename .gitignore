@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/uff.repository/Migrations/SupplyContextModelSnapshot.cs
+/uff.repository/Migrations/20240422054934_v1.Designer.cs
+/uff.repository/Migrations/20240422054934_v1.cs
