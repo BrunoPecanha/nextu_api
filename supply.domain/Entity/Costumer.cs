@@ -1,6 +1,6 @@
-﻿using Supply.Domain.Commands;
+﻿using uff.Domain.Commands;
 
-namespace Supply.Domain.Entity
+namespace uff.Domain.Entity
 {
     public class Costumer : To {
         private Costumer()

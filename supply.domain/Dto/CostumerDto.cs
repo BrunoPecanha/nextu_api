@@ -1,4 +1,4 @@
-﻿namespace Supply.Domain.Dto
+﻿namespace uff.Domain.Dto
 {
     public class CostumerDto {
         public int? Id { get; set; }

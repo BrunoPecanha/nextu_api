@@ -1,18 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Supply.Domain;
-using Supply.Domain.Entity;
-using Supply.Repository.Context;
+using uff.Domain;
+using uff.Domain.Entity;
+using uff.Repository.Context;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Supply.Repository
+namespace uff.Repository
 {
     public class CostumerRepository : RepositoryBase<Costumer>, ICostumerRepository
     {
-        private readonly ISupplyContext _dbContext;
+        private readonly IUffContext _dbContext;
 
-        public CostumerRepository(ISupplyContext dbContext)
+        public CostumerRepository(IUffContext dbContext)
         {
             _dbContext = dbContext;
         }

@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Supply.Domain.Entity;
+using uff.Domain.Entity;
 using System;
 using System.Linq;
 
-namespace Supply.Repository.Context
+namespace uff.Repository.Context
 {
-    public class SupplyContext : DbContext, ISupplyContext {
+    public class UffContext : DbContext, IUffContext {
         private static string connectionString;        
-        public SupplyContext(DbContextOptions<SupplyContext> options, IConfiguration configuration)
+        public UffContext(DbContextOptions<UffContext> options, IConfiguration configuration)
                 : base(options) {            
             if (connectionString is null) {
                 connectionString = configuration.GetSection("ConnectionStrings:sqlLiteConnection").Value;
@@ -19,7 +19,7 @@ namespace Supply.Repository.Context
         public DbSet<Costumer> Costumer { get; set; }     
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SupplyContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(UffContext).Assembly);
             base.OnModelCreating(modelBuilder);
         }
 

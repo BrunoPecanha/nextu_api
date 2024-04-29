@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Supply.Domain;
-using Supply.Repository.Context;
+using uff.Domain;
+using uff.Repository.Context;
 
-namespace Supply.Repository {
+namespace uff.Repository {
 
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class {
-        protected SupplyContext Db = new SupplyContext(new DbContextOptions<SupplyContext>(), null);
+        protected UffContext Db = new UffContext(new DbContextOptions<UffContext>(), null);
 
         public void Add(T obj) {
             Db.Set<T>().Add(obj);

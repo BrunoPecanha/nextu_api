@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Supply.Domain;
-using Supply.Repository;
-using Supply.Repository.Context;
+using uff.Domain;
+using uff.Repository;
+using uff.Repository.Context;
 
-namespace Supply.Service.Extensions {
+namespace uff.Service.Extensions {
     public static class ServiceExtensions {
         public static IServiceCollection RegisterServices(this IServiceCollection services, string connectionString) {
 
-            services.AddDbContext<SupplyContext>(o => o.UseSqlite(connectionString));
-            services.AddTransient<ISupplyContext, SupplyContext>();
+            services.AddDbContext<UffContext>(o => o.UseSqlite(connectionString));
+            services.AddTransient<IUffContext, UffContext>();
 
             //Entidadades
             services.AddTransient<ICostumerService, CostumerService>();

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace supply.repository.Migrations
+namespace uff.repository.Migrations
 {
     public partial class v1 : Migration
     {

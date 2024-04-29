@@ -1,5 +1,3 @@
-using WeApi.Config;
-using WeApi.Options;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,11 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Supply.Repository.Context;
-using Supply.Service.Extensions;
-using System;
+using uff.Repository.Context;
+using uff.Service.Extensions;
+using WeApi.Config;
+using WeApi.Options;
 
-namespace WeApi {
+namespace WeApi
+{
     public class Startup {
         public Startup(IConfiguration configuration) {
             Configuration = configuration;
@@ -22,7 +22,7 @@ namespace WeApi {
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
             var dbConnectionString = Configuration.GetConnectionString("sqlLiteConnection");
-            services.AddDbContext<SupplyContext>(options => options.UseSqlite(dbConnectionString));
+            services.AddDbContext<UffContext>(options => options.UseSqlite(dbConnectionString));
             services.RegisterServices(Configuration.GetConnectionString(dbConnectionString));
             services.AddControllers();
             services.AddSwaggerGen();

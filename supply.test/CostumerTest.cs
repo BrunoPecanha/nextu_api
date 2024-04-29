@@ -1,8 +1,8 @@
-using Supply.Domain.Commands;
-using Supply.Domain.Entity;
+using uff.Domain.Commands;
+using uff.Domain.Entity;
 using Xunit;
 
-namespace Supply.Test
+namespace uff.Test
 {
     public class CostumerTest
     {

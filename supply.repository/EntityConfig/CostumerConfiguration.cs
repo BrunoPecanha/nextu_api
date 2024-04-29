@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Supply.Domain.Entity;
+using uff.Domain.Entity;
 
-namespace Supply.Repository.EntityConfig
+namespace uff.Repository.EntityConfig
 {
     public class CostumerConfiguration : IEntityTypeConfiguration<Costumer>
     {

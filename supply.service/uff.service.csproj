@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\supply.domain\supply.domain.csproj" />
-    <ProjectReference Include="..\supply.repository\supply.repository.csproj" />
+    <ProjectReference Include="..\supply.domain\uff.domain.csproj" />
+    <ProjectReference Include="..\supply.repository\uff.repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Supply.Domain.Dto;
-using Supply.Domain.Entity;
+using uff.Domain.Dto;
+using uff.Domain.Entity;
 
 namespace WeApi.Config
 {

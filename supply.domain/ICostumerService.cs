@@ -1,8 +1,8 @@
-﻿using Supply.Domain.Commands;
-using Supply.Domain.Entity;
+﻿using uff.Domain.Commands;
+using uff.Domain.Entity;
 using System.Threading.Tasks;
 
-namespace Supply.Domain
+namespace uff.Domain
 {
     public interface ICostumerService :  IServiceBase<Costumer> {
         public Task<CommandResult> CreateAsync(CostumerCommand command);
