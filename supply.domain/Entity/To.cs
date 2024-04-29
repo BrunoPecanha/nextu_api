@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Supply.Domain.Entity {
+namespace uff.Domain.Entity {
     public class To {
         /// <summary>
         /// Id do registro

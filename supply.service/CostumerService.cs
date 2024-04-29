@@ -1,20 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using supply.service.Properties;
-using Supply.Domain;
-using Supply.Domain.Commands;
-using Supply.Domain.Entity;
-using Supply.Repository.Context;
 using System;
 using System.Threading.Tasks;
+using uff.Domain;
+using uff.Domain.Commands;
+using uff.Domain.Entity;
+using uff.Repository.Context;
+using uff.service.Properties;
 
-namespace Supply.Service
+namespace uff.Service
 {
     public class CostumerService : ServiceBase<Costumer>, ICostumerService
     {
-        private readonly ISupplyContext _context;
+        private readonly IUffContext _context;
         private readonly ICostumerRepository _costumerRepository;
 
-        public CostumerService(ICostumerRepository repository, ISupplyContext context)
+        public CostumerService(ICostumerRepository repository, IUffContext context)
             : base(repository)
         {
             _context = context;

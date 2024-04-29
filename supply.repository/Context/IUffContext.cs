@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Supply.Domain.Entity;
+using uff.Domain.Entity;
 
-namespace Supply.Repository.Context
+namespace uff.Repository.Context
 {
-    public interface ISupplyContext {
+    public interface IUffContext {
         DbSet<Costumer> Costumer { get; }
         int SaveChanges();
     }

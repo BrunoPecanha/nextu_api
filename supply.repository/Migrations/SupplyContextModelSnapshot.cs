@@ -3,11 +3,11 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Supply.Repository.Context;
+using uff.Repository.Context;
 
-namespace supply.repository.Migrations
+namespace uff.repository.Migrations
 {
-    [DbContext(typeof(SupplyContext))]
+    [DbContext(typeof(UffContext))]
     partial class SupplyContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -16,7 +16,7 @@ namespace supply.repository.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.8");
 
-            modelBuilder.Entity("Supply.Domain.Entity.Costumer", b =>
+            modelBuilder.Entity("uff.Domain.Entity.Costumer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

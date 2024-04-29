@@ -1,7 +1,7 @@
-﻿using Supply.Domain;
+﻿using uff.Domain;
 using System;
 
-namespace Supply.Service {
+namespace uff.Service {
     public class ServiceBase<T> : IDisposable, IServiceBase<T> where T : class {
 
         private readonly IRepositoryBase<T> _repository;

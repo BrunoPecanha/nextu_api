@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Supply.Domain.Enum {
+namespace uff.Domain.Enum {
     public enum StatusEnum {
         [Description("Enabled")]
         Enabled,

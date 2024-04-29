@@ -1,4 +1,4 @@
-﻿namespace Supply.Domain.Commands
+﻿namespace uff.Domain.Commands
 {
     public class CostumerCommand {
         public int? Id { get; set; }

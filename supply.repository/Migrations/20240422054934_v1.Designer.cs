@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Supply.Repository.Context;
+using uff.Repository.Context;
 
-namespace supply.repository.Migrations
+namespace uff.repository.Migrations
 {
-    [DbContext(typeof(SupplyContext))]
+    [DbContext(typeof(UffContext))]
     [Migration("20240422054934_v1")]
     partial class v1
     {
@@ -18,7 +18,7 @@ namespace supply.repository.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.8");
 
-            modelBuilder.Entity("Supply.Domain.Entity.Costumer", b =>
+            modelBuilder.Entity("uff.Domain.Entity.Costumer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
