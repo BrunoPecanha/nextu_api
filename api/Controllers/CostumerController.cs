@@ -5,6 +5,8 @@ using uff.Domain.Commands;
 using uff.Domain.Dto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections;
+using System.Linq;
 
 namespace WeApi.Controllers
 {
@@ -43,12 +45,14 @@ namespace WeApi.Controllers
         
         [HttpGet("all")]
         public async Task<IActionResult> ReadAllAsync() {
-            var costumers = await _repository.GetAllAsync();
+            var costumers = await _repository.GetAllAsync();           
 
             if (costumers is not null)
                 return Ok(new CommandResult(true, _mapper.Map<IEnumerable<CostumerDto>>(costumers)));
             else
                 return BadRequest(new CommandResult(false, null));
+
+                
         }      
        
         [HttpPut]
