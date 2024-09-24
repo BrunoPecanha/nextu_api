@@ -9,7 +9,7 @@ namespace uff.Test
         [Fact]
         public void Should_Create_New_Costumer()
         {
-            var command = new CostumerCommand()
+            var command = new CostumerCreateCommand()
             {
                 Name = "Bruno",
                 LastName = "Peçanha",
@@ -27,7 +27,7 @@ namespace uff.Test
         [Fact]
         public void Should_Not_Create_New_Costumer_Missing_Phone()
         {
-            var command = new CostumerCommand()
+            var command = new CostumerCreateCommand()
             {
                 Name = "Bruno",
                 LastName = "Peçanha",
@@ -44,7 +44,7 @@ namespace uff.Test
         [Fact]
         public void Should_Not_Create_New_Costumer_Missing_Street()
         {
-            var command = new CostumerCommand()
+            var command = new CostumerCreateCommand()
             {
                 Name = "Bruno",
                 LastName = "Peçanha",
@@ -61,7 +61,7 @@ namespace uff.Test
         [Fact]
         public void Should_Not_Create_New_Costumer_Missing_Number()
         {
-            var command = new CostumerCommand()
+            var command = new CostumerCreateCommand()
             {
                 Name = "Bruno",
                 LastName = "Peçanha",
@@ -77,7 +77,7 @@ namespace uff.Test
         [Fact]
         public void Should_Not_Create_New_Costumer_Missing_City()
         {
-            var command = new CostumerCommand()
+            var command = new CostumerCreateCommand()
             {
                 Name = "Bruno",
                 LastName = "Peçanha",
