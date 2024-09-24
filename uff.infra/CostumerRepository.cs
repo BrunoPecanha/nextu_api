@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using uff.Domain;
 using uff.Domain.Entity;
-using uff.Repository.Context;
+using uff.Infra.Context;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace uff.Repository
+namespace uff.Infra
 {
     public class CostumerRepository : RepositoryBase<Costumer>, ICostumerRepository
     {

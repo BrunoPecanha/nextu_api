@@ -5,7 +5,7 @@ using uff.Domain.Entity;
 using System;
 using System.Linq;
 
-namespace uff.Repository.Context
+namespace uff.Infra.Context
 {
     public class UffContext : DbContext, IUffContext {
         private static string connectionString;        
