@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\uff.domain\uff.domain.csproj" />
-    <ProjectReference Include="..\uff.repository\uff.repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>
