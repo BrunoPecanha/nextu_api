@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using uff.Domain.Entity;
 
-namespace uff.Repository.EntityConfig
+namespace uff.Infra.EntityConfig
 {
     public class CostumerConfiguration : IEntityTypeConfiguration<Costumer>
     {

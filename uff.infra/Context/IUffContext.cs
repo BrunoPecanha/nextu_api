@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using uff.Domain.Entity;
 
-namespace uff.Repository.Context
+namespace uff.Infra.Context
 {
     public interface IUffContext {
         DbSet<Costumer> Costumer { get; }

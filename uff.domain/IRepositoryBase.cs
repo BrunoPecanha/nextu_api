@@ -1,7 +1,11 @@
-﻿namespace uff.Domain {
+﻿using System.Threading.Tasks;
+
+namespace uff.Domain {
     public interface IRepositoryBase<T> where T : class {
-        void Add(T obj);    
+        Task AddAsync(T obj);    
         void Update(T obj);
-        void Dispose();
+        void Remove(T obj);
+        Task DisposeAsync();
+        Task SaveChangesAsync();        
     }
 }
