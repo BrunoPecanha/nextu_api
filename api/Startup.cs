@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using uff.Repository.Context;
-using uff.Service.Extensions;
+using uff.infra.dependecyInjection;
+using uff.Infra.Context;
 using WeApi.Config;
 using WeApi.Options;
 
@@ -23,7 +23,7 @@ namespace WeApi
         public void ConfigureServices(IServiceCollection services) {
             var dbConnectionString = Configuration.GetConnectionString("sqlLiteConnection");
             services.AddDbContext<UffContext>(options => options.UseSqlite(dbConnectionString));
-            services.RegisterServices(Configuration.GetConnectionString(dbConnectionString));
+            services.RegisterServices(dbConnectionString);
             services.AddControllers();
             services.AddSwaggerGen();
 

@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using uff.Domain;
 using uff.Domain.Commands;
 using uff.Domain.Dto;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Collections;
-using System.Linq;
 
 namespace WeApi.Controllers
 {

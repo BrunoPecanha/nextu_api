@@ -1,28 +1,36 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using uff.Domain;
-using uff.Repository.Context;
+using uff.Infra.Context;
 
-namespace uff.Repository {
-
-    public class RepositoryBase<T> : IRepositoryBase<T> where T : class {
+namespace uff.Infra
+{
+    public class RepositoryBase<T> : IRepositoryBase<T> where T : class
+    {
         protected UffContext Db = new UffContext(new DbContextOptions<UffContext>(), null);
 
-        public void Add(T obj) {
-            Db.Set<T>().Add(obj);
-            Db.SaveChanges();
+        public async Task AddAsync(T obj)
+        {
+            await Db.Set<T>().AddAsync(obj);
         }
 
-        public void Dispose() {
-            Db.Dispose();
+        public async Task DisposeAsync()
+        {
+            await Db.DisposeAsync();
         }
-        public void Remove(T obj) {
+        public void Remove(T obj)
+        {
             Db.Set<T>().Remove(obj);
-            Db.SaveChanges();
         }
 
-        public void Update(T obj) {
+        public void Update(T obj)
+        {
             Db.Entry(obj).State = EntityState.Modified;
-            Db.SaveChanges();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await Db.SaveChangesAsync();
         }
     }
 }
