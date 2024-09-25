@@ -1,4 +1,5 @@
-﻿using uff.Domain.Commands;
+﻿using System;
+using uff.Domain.Commands;
 
 namespace uff.Domain.Entity
 {
@@ -15,7 +16,7 @@ namespace uff.Domain.Entity
         public string City { get; set; }
         public bool Active { get; set; }
 
-        public Costumer(CostumerCommand costumer)
+        public Costumer(CostumerCreateCommand costumer) : base()
         {
             Name = costumer.Name;
             LastName = costumer.LastName;
@@ -24,9 +25,12 @@ namespace uff.Domain.Entity
             Number = costumer.Number;
             City= costumer.City;
             Active = true;
+            RegisteringDate = DateTime.Now;
+            LastUpdate = DateTime.Now;
+            
         }
 
-        public void UpdateAllInfo(CostumerCommand costumer)
+        public void UpdateAllInfo(CostumerEditCommand costumer)
         {
             Name = costumer.Name;
             LastName = costumer.LastName;
@@ -35,6 +39,7 @@ namespace uff.Domain.Entity
             Number = costumer.Number;
             City = costumer.City;
             Active = costumer.Active;
+            LastUpdate = DateTime.Now;
         }
 
         public bool IsValid()

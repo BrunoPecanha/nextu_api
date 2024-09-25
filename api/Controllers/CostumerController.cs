@@ -1,65 +1,63 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using uff.Domain;
 using uff.Domain.Commands;
-using uff.Domain.Dto;
 
 namespace WeApi.Controllers
 {
     [Route("costumer")]
-    public class CostumerController : Controller {
+    public class CostumerController : Controller
+    {
         private readonly ICostumerService _service;
-        private readonly ICostumerRepository _repository;
-        private readonly IMapper _mapper;
+        
 
-        public CostumerController(ICostumerService service, ICostumerRepository repository, 
-            IMapper mapper) {          
-            _service = service;
-            _mapper = mapper;
-            _repository = repository; 
+        public CostumerController(ICostumerService service)
+        {
+            _service = service;          
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] CostumerCommand command)
+        public async Task<IActionResult> CreateAsync([FromBody] CostumerCreateCommand command)
         {
-            var costumer = await _service.CreateAsync(command);
-            if (costumer.Valid)
-                return Ok(new CommandResult(true, costumer));
-            else
-                return BadRequest(costumer.Log);
+            var response = await _service.CreateAsync(command);
+
+            if (response.Valid)
+                return Ok(response);
+
+            return BadRequest(response.Log);
         }
 
         [HttpGet("id")]
-        public async Task<IActionResult> ReadAsync(int id) {
-            var costumer = await _repository.GetByIdAsync(id);
+        public async Task<IActionResult> GetByIdAsync(int id)
+        {
+            var costumer = await _service.GetByIdAsync(id);
 
-            if (costumer is not null)
-                return Ok(new CommandResult(true, _mapper.Map<CostumerDto>(costumer)));
-            else
-                return BadRequest();
+            if (costumer is null)
+                BadRequest(costumer);
+
+            return Ok(costumer);
         }
-        
+
         [HttpGet("all")]
-        public async Task<IActionResult> ReadAllAsync() {
-            var costumers = await _repository.GetAllAsync();           
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var costumers = await _service.GetAllAsync();
 
-            if (costumers is not null)
-                return Ok(new CommandResult(true, _mapper.Map<IEnumerable<CostumerDto>>(costumers)));
-            else
-                return BadRequest(new CommandResult(false, null));
+            if (!costumers.Valid)
+                BadRequest(costumers.Log);
 
-                
-        }      
-       
+            return Ok(costumers);
+        }
+
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] CostumerCommand command) {
+        public async Task<IActionResult> UpdateAsync([FromBody] CostumerEditCommand command)
+        {
             var costumer = await _service.UpdateAsync(command);
-            if (costumer.Valid)
-                return Ok(new CommandResult(true, _mapper.Map<CostumerDto>(costumer)));
-            else
-                return BadRequest(new CommandResult(false, costumer.Log));
+
+            if (!costumer.Valid)
+                return BadRequest(costumer.Log);
+
+            return Ok(costumer);
         }
 
         [HttpDelete]
@@ -70,7 +68,7 @@ namespace WeApi.Controllers
                 return Ok(new CommandResult(true, null));
             else
                 return BadRequest(new CommandResult(false, result.Log));
-           
+
         }
     }
 }
