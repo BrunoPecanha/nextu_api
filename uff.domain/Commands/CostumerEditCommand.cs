@@ -1,7 +1,7 @@
 ﻿namespace uff.Domain.Commands
 {
-    public class CostumerCommand {
-        public int? Id { get; set; }
+    public class CostumerEditCommand {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
         public string Phone { get; set; }

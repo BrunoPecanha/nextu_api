@@ -9,10 +9,10 @@ namespace uff.Domain.Entity {
         /// <summary>
         /// Data de cadastro do registro.
         /// </summary>
-        public DateTime RegisteringDate { get; private set; }
+        public DateTime RegisteringDate { get; protected set; }
         /// <summary>
         /// Data da última alteração no registro da cena
         /// </summary>
-        public DateTime LastUpdate { get; private set; }
+        public DateTime LastUpdate { get; protected set; }
     }
 }
