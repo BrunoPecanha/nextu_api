@@ -2,10 +2,10 @@
 using uff.domain.Commands.User;
 using uff.Domain.Enum;
 
-
 namespace uff.Domain.Entity
 {
-    public class User : To {
+    public class User : To
+    {
         private User()
         {
         }
@@ -19,33 +19,36 @@ namespace uff.Domain.Entity
         public StatusEnum Status { get; private set; }
         public string Email { get; private set; }
         public string Password { get; private set; }
+        public bool Active { get; private set; }
         public ProfileEnum Profile { get; private set; }
 
-        public User(UserCreateCommand user) 
+        public User(UserCreateCommand user)
         {
             Name = user.Name;
             Email = user.Email;
             Password = user.PasswordHashed;
             LastName = user.LastName;
             Phone = user.Phone;
-            Street= user.Street;
+            Street = user.Street;
             Number = user.Number;
-            City= user.City;
+            City = user.City;
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
             Profile = ProfileEnum.User;
+            Active = true;
         }
 
         public void UpdateAllInfo(UserEditCommand user)
         {
             Name = user.Name;
             LastName = user.LastName;
-            Password = Password = user.Password; 
+            Password = Password = user.Password;
             Phone = user.Phone;
             Street = user.Street;
             Number = user.Number;
             City = user.City;
             Status = user.Status;
+            Active = user.Active;
             LastUpdate = DateTime.UtcNow;
             Profile = user.Profile == ProfileEnum.Admin ? ProfileEnum.User : user.Profile;
         }
