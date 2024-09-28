@@ -16,7 +16,7 @@ namespace uff.Infra.Context
             }           
         }
 
-        public DbSet<Costumer> Costumer { get; set; }     
+        public DbSet<User> User { get; set; }     
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(UffContext).Assembly);

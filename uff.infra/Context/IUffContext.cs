@@ -4,7 +4,7 @@ using uff.Domain.Entity;
 namespace uff.Infra.Context
 {
     public interface IUffContext {
-        DbSet<Costumer> Costumer { get; }
+        DbSet<User> User { get; }
         int SaveChanges();
     }
 }

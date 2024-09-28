@@ -8,8 +8,8 @@ namespace WeApi.Config
     {
         public MapperConfigProfile()
         {
-            CreateMap<CostumerDto, Costumer>();
-            CreateMap<Costumer, CostumerDto>();
+            CreateMap<CostumerDto, User>();
+            CreateMap<User, CostumerDto>();
         }
     }
 }
