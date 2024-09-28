@@ -4,12 +4,12 @@ using uff.Domain.Entity;
 
 namespace uff.Infra.EntityConfig
 {
-    public class CostumerConfiguration : IEntityTypeConfiguration<Costumer>
+    public class UserConfiguration : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<Costumer> builder)
+        public void Configure(EntityTypeBuilder<User> builder)
         {
             builder
-             .ToTable("Costumer")
+             .ToTable("User")
              .HasKey(x => x.Id);
 
             builder
@@ -47,10 +47,16 @@ namespace uff.Infra.EntityConfig
             .HasColumnName("City");
 
             builder
-            .Property(c => c.Active)
-            .HasColumnName("Active");
+            .Property(c => c.Status)
+            .HasColumnName("Status");
 
+            builder
+            .Property(c => c.Email)
+            .HasColumnName("Email");
 
+            builder
+            .Property(c => c.Password)
+            .HasColumnName("Password");
         }
     }
 }

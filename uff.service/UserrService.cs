@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using uff.domain.Commands.User;
 using uff.Domain;
 using uff.Domain.Commands;
 using uff.Domain.Dto;
@@ -10,15 +12,17 @@ using uff.service.Properties;
 
 namespace uff.Service
 {
-    public class CostumerService : ICostumerService
+    public class UserService : IUserService
     {
-        private readonly ICostumerRepository _costumerRepository;
+        private readonly IUserRepository _costumerRepository;
         private readonly IMapper _mapper;
+        private readonly PasswordHasher _passwordHasher;
 
-        public CostumerService(ICostumerRepository repository, IMapper mapper)
+        public UserService(IUserRepository repository, IMapper mapper)
         {
             _costumerRepository = repository;
             _mapper = mapper;
+            _passwordHasher = new PasswordHasher();
         }
 
         public async Task<CommandResult> GetAllAsync()
@@ -35,17 +39,18 @@ namespace uff.Service
         {
             var costumer = await _costumerRepository.GetByIdAsync(id);
 
-            if (costumer is null )
+            if (costumer is null)
                 return new CommandResult(false, costumer);
 
             return new CommandResult(true, costumer);
         }
 
-        public async Task<CommandResult> CreateAsync(CostumerCreateCommand command)
+        public async Task<CommandResult> CreateAsync(UserCreateCommand command)
         {
             try
             {
-                var costumer = new Costumer(command);
+                command.PasswordHashed = _passwordHasher.HashPassword(command.Password);
+                var costumer = new User(command);
 
                 if (!costumer.IsValid())
                     return new CommandResult(false, Resources.MissingInfo);
@@ -61,7 +66,7 @@ namespace uff.Service
             }
         }
 
-        public async Task<CommandResult> UpdateAsync(CostumerEditCommand command)
+        public async Task<CommandResult> UpdateAsync(UserEditCommand command)
         {
             try
             {
@@ -99,6 +104,6 @@ namespace uff.Service
             }
 
             return new CommandResult(true, null);
-        }
+        }        
     }
 }
