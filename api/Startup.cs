@@ -21,8 +21,8 @@ namespace WeApi
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            var dbConnectionString = Configuration.GetConnectionString("sqlLiteConnection");
-            services.AddDbContext<UffContext>(options => options.UseSqlite(dbConnectionString));
+            var dbConnectionString = Configuration.GetConnectionString("postgresConnection");
+            services.AddDbContext<UffContext>(options => options.UseNpgsql(dbConnectionString));
             services.RegisterServices(dbConnectionString);
             services.AddControllers();
             services.AddSwaggerGen();
