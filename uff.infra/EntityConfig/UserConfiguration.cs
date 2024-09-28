@@ -39,6 +39,10 @@ namespace uff.Infra.EntityConfig
             .HasColumnName("Street");
 
             builder
+            .Property(c => c.Active)
+            .HasColumnName("Active");
+
+            builder
             .Property(c => c.Number)
             .HasColumnName("Number");
 

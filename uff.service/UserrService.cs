@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNet.Identity;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using uff.domain.Commands.User;
@@ -32,7 +33,7 @@ namespace uff.Service
             if (costumers is null || costumers.Count() == 0)
                 return new CommandResult(false, costumers);
 
-            return new CommandResult(true, costumers);
+            return new CommandResult(true, _mapper.Map<List<UserDto>>(costumers));
         }
 
         public async Task<CommandResult> GetByIdAsync(int id)
@@ -42,7 +43,7 @@ namespace uff.Service
             if (costumer is null)
                 return new CommandResult(false, costumer);
 
-            return new CommandResult(true, costumer);
+            return new CommandResult(true, _mapper.Map<UserDto>(costumer));
         }
 
         public async Task<CommandResult> CreateAsync(UserCreateCommand command)
@@ -79,7 +80,7 @@ namespace uff.Service
                 _costumerRepository.Update(costumer);
                 await _costumerRepository.SaveChangesAsync();
 
-                return new CommandResult(true, _mapper.Map<CostumerDto>(costumer));
+                return new CommandResult(true, _mapper.Map<UserDto>(costumer));
             }
             catch (Exception ex)
             {
