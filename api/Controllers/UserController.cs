@@ -1,33 +1,37 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using uff.domain.Commands.User;
 using uff.Domain;
 using uff.Domain.Commands;
 
 namespace WeApi.Controllers
-{
-    [Route("costumer")]
-    public class CostumerController : Controller
+{  
+    [ApiController]
+    [Route("api/user")]
+    public class UserController : Controller
     {
-        private readonly ICostumerService _service;
-        
+        private readonly IUserService _service;
 
-        public CostumerController(ICostumerService service)
+
+        public UserController(IUserService service)
         {
-            _service = service;          
+            _service = service;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] CostumerCreateCommand command)
+        public async Task<IActionResult> CreateAsync([FromBody] UserCreateCommand command)
         {
             var response = await _service.CreateAsync(command);
 
-            if (response.Valid)
-                return Ok(response);
+            if (!response.Valid)
+                return BadRequest(response.Log);
 
-            return BadRequest(response.Log);
+            return Ok(response);
         }
 
         [HttpGet("id")]
+        [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var costumer = await _service.GetByIdAsync(id);
@@ -39,6 +43,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("all")]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var costumers = await _service.GetAllAsync();
@@ -50,7 +55,8 @@ namespace WeApi.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] CostumerEditCommand command)
+        [Authorize]
+        public async Task<IActionResult> UpdateAsync([FromBody] UserEditCommand command)
         {
             var costumer = await _service.UpdateAsync(command);
 
@@ -61,14 +67,14 @@ namespace WeApi.Controllers
         }
 
         [HttpDelete]
+        [Authorize]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var result = await _service.DeleteAsync(id);
-            if (result.Valid)
-                return Ok(new CommandResult(true, null));
-            else
+            if (!result.Valid)
                 return BadRequest(new CommandResult(false, result.Log));
 
+            return Ok(new CommandResult(true, string.Empty));
         }
     }
 }
