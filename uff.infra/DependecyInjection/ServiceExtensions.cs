@@ -11,7 +11,7 @@ namespace uff.infra.dependecyInjection
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<UffContext>(o => o.UseSqlite(connectionString));
+            services.AddDbContext<UffContext>(o => o.UseNpgsql(connectionString));
             services.AddTransient<IUffContext, UffContext>();
 
             //Entidadades
