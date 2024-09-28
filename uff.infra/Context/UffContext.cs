@@ -12,7 +12,7 @@ namespace uff.Infra.Context
         public UffContext(DbContextOptions<UffContext> options, IConfiguration configuration)
                 : base(options) {            
             if (connectionString is null) {
-                connectionString = configuration.GetSection("ConnectionStrings:sqlLiteConnection").Value;
+                connectionString = configuration.GetSection("ConnectionStrings:postgresConnection").Value;
             }           
         }
 
@@ -25,10 +25,10 @@ namespace uff.Infra.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {           
             if (!optionsBuilder.IsConfigured) {
-                optionsBuilder.UseSqlite(connectionString);
+                optionsBuilder.UseNpgsql(connectionString);
             }
 
-            optionsBuilder.UseSqlite(connectionString);
+            optionsBuilder.UseNpgsql(connectionString);
             optionsBuilder.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
         }
 
