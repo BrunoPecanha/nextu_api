@@ -8,24 +8,29 @@ using System.Threading.Tasks;
 
 namespace uff.Infra
 {
-    public class CostumerRepository : RepositoryBase<Costumer>, ICostumerRepository
+    public class UserRepository : RepositoryBase<User>, IUserRepository
     {
         private readonly IUffContext _dbContext;
 
-        public CostumerRepository(IUffContext dbContext)
+        public UserRepository(IUffContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Costumer>> GetAllAsync()
-            => await _dbContext.Costumer
+        public async Task<IEnumerable<User>> GetAllAsync()
+            => await _dbContext.User
                              .OrderByDescending(x => x.RegisteringDate)
                              .AsNoTracking()
                              .ToArrayAsync();
 
-        public async Task<Costumer> GetByIdAsync(int id)
-            => await _dbContext.Costumer
+        public async Task<User> GetByIdAsync(int id)
+            => await _dbContext.User
                                .AsNoTracking()
                                .FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<User> GetUserByLogin(string userName)
+           => await _dbContext.User
+               .AsNoTracking()
+               .FirstOrDefaultAsync(u => u.Email == userName);
     }
 }

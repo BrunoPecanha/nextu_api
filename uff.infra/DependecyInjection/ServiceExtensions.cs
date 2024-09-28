@@ -15,8 +15,9 @@ namespace uff.infra.dependecyInjection
             services.AddTransient<IUffContext, UffContext>();
 
             //Entidadades
-            services.AddTransient<ICostumerService, CostumerService>();
-            services.AddTransient<ICostumerRepository, CostumerRepository>();
+            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUserRepository, UserRepository>();
 
             return services;
         }
