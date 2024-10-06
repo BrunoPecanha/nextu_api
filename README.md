@@ -25,3 +25,27 @@ O **App Suas Vez** é um aplicativo inovador que visa otimizar a gestão de fila
 1. Clone o repositório:
    ```bash
    git clone https://github.com/seu_usuario/app-suas-vez.git
+
+📅 Roadmap
+ Lançamento da versão beta
+ Implementação de novas funcionalidades
+ Feedback dos usuários
+ Lançamento da versão estável
+📫 Contribuições
+Contribuições são bem-vindas! Sinta-se à vontade para abrir um issue ou enviar um pull request.
+
+Como Contribuir
+Fork o projeto
+Crie uma branch para sua feature (git checkout -b feature/MinhaFeature)
+Faça commit das suas alterações (git commit -m 'Adicionando uma nova feature')
+Push para a branch (git push origin feature/MinhaFeature)
+Abra um Pull Request
+📄 Licença
+Este projeto está licenciado sob a MIT License.
+
+🌐 Links Úteis
+Documentação do Ionic
+Documentação do .NET
+PostgreSQL
+🎉 Agradecimentos
+Agradecimentos especiais a todos que contribuíram para o desenvolvimento do App Suas Vez, incluindo a comunidade de código aberto e nossos usuários.
