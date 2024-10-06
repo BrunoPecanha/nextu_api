@@ -43,12 +43,12 @@ Push para a branch (git push origin feature/MinhaFeature)
 Abra um Pull Request
 
 ## 📄 Licença
-Este projeto está licenciado sob a MIT License.
+- Este projeto está licenciado sob a MIT License.
 
 🌐 Links Úteis
-Documentação do Ionic
-Documentação do .NET
-PostgreSQL
+- Documentação do Ionic
+- Documentação do .NET
+- PostgreSQL
 
-🎉 Agradecimentos
-Agradecimentos especiais a todos que contribuíram para o desenvolvimento do App Suas Vez, incluindo a comunidade de código aberto e nossos usuários.
+## 🎉 Agradecimentos
+- Agradecimentos especiais a todos que contribuíram para o desenvolvimento do App Suas Vez, incluindo a comunidade de código aberto e nossos usuários.
