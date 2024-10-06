@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using uff.Domain.Enum;
 
 namespace uff.domain.Commands.User
 {

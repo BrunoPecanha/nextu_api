@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using uff.Domain;
+using uff.Domain.Entity;
 
 namespace uff.Service
 {
@@ -14,12 +15,13 @@ namespace uff.Service
     {
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-
-        public AuthService(IConfiguration configuration, IUserRepository userRepository)
+        public AuthService(IConfiguration configuration, IUserRepository userRepository, IPasswordHasher<User> passwordHasher)
         {
             _configuration = configuration;
             _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<string> AuthSync(string userName, string password)
@@ -29,7 +31,7 @@ namespace uff.Service
             if (user is null)
                 return string.Empty;
 
-            var logged = PasswordMatch(password, user.Password);
+            var logged = VerifyPassword(user, password);
 
             if (!logged)
                 return string.Empty;
@@ -55,10 +57,13 @@ namespace uff.Service
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private bool PasswordMatch(string password, string passwordHash)
+        public string HashPassword(User user, string password)
+           => _passwordHasher.HashPassword(user, password);
+
+        public bool VerifyPassword(User user, string providedPassword)
         {
-            var passwordVerificationResult = new PasswordHasher().VerifyHashedPassword(passwordHash,  password);
-            return passwordVerificationResult == PasswordVerificationResult.Success;
+            var result = _passwordHasher.VerifyHashedPassword(user, user.Password, providedPassword);
+            return result == PasswordVerificationResult.Success;
         }
     }
 }

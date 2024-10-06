@@ -31,7 +31,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("id")]
-     //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var costumer = await _service.GetByIdAsync(id);
@@ -43,7 +43,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("all")]
-      //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var costumers = await _service.GetAllAsync();
