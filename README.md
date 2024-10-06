@@ -20,12 +20,6 @@ O **App Suas Vez** é um aplicativo inovador que visa otimizar a gestão de fila
 - **Banco de Dados:** PostgreSQL
 - **Testes:** XUnit para .NET e bibliotecas nativas de teste do Ionic
 
-## 🛠️ Como Usar
-
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/seu_usuario/app-suas-vez.git
-
 ## 📅 Roadmap
  - Lançamento da versão beta
  - Implementação de novas funcionalidades
