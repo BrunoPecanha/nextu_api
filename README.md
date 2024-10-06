@@ -27,10 +27,10 @@ O **App Suas Vez** é um aplicativo inovador que visa otimizar a gestão de fila
    git clone https://github.com/seu_usuario/app-suas-vez.git
 
 ## 📅 Roadmap
- Lançamento da versão beta
- Implementação de novas funcionalidades
- Feedback dos usuários
- Lançamento da versão estável
+ - Lançamento da versão beta
+ - Implementação de novas funcionalidades
+ - Feedback dos usuários
+ - Lançamento da versão estável
 
 ## 📫 Contribuições
 Contribuições são bem-vindas! Sinta-se à vontade para abrir um issue ou enviar um pull request.
