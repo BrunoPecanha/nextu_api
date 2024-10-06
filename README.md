@@ -33,14 +33,14 @@ O **App Suas Vez** é um aplicativo inovador que visa otimizar a gestão de fila
  - Lançamento da versão estável
 
 ## 📫 Contribuições
-Contribuições são bem-vindas! Sinta-se à vontade para abrir um issue ou enviar um pull request.
+- Contribuições são bem-vindas! Sinta-se à vontade para abrir um issue ou enviar um pull request.
 
-Como Contribuir
-Fork o projeto
-Crie uma branch para sua feature (git checkout -b feature/MinhaFeature)
-Faça commit das suas alterações (git commit -m 'Adicionando uma nova feature')
-Push para a branch (git push origin feature/MinhaFeature)
-Abra um Pull Request
+*  Como Contribuir
+- Fork o projeto
+- Crie uma branch para sua feature (git checkout -b feature/MinhaFeature)
+- Faça commit das suas alterações (git commit -m 'Adicionando uma nova feature')
+- Push para a branch (git push origin feature/MinhaFeature)
+- Abra um Pull Request
 
 ## 📄 Licença
 - Este projeto está licenciado sob a MIT License.
