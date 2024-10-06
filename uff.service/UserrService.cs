@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +15,14 @@ namespace uff.Service
     public class UserService : IUserService
     {
         private readonly IUserRepository _costumerRepository;
+        private readonly IAuthService _authService;
         private readonly IMapper _mapper;
-        private readonly PasswordHasher _passwordHasher;
 
-        public UserService(IUserRepository repository, IMapper mapper)
+        public UserService(IUserRepository repository, IMapper mapper, IAuthService authService)
         {
             _costumerRepository = repository;
             _mapper = mapper;
-            _passwordHasher = new PasswordHasher();
+            _authService = authService; 
         }
 
         public async Task<CommandResult> GetAllAsync()
@@ -49,9 +48,10 @@ namespace uff.Service
         public async Task<CommandResult> CreateAsync(UserCreateCommand command)
         {
             try
-            {
-                command.PasswordHashed = _passwordHasher.HashPassword(command.Password);
+            {             
                 var costumer = new User(command);
+                var hashedPassword = _authService.HashPassword(costumer, command.Password);
+                costumer.UpdatePassWord(hashedPassword);
 
                 if (!costumer.IsValid())
                     return new CommandResult(false, Resources.MissingInfo);
@@ -77,6 +77,10 @@ namespace uff.Service
                     return new CommandResult(false, Resources.NotFound);
 
                 costumer.UpdateAllInfo(command);
+
+                var hashedPassword = _authService.HashPassword(costumer, command.Password);
+                costumer.UpdatePassWord(hashedPassword);
+
                 _costumerRepository.Update(costumer);
                 await _costumerRepository.SaveChangesAsync();
 
@@ -105,6 +109,6 @@ namespace uff.Service
             }
 
             return new CommandResult(true, null);
-        }        
+        }
     }
 }
