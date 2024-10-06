@@ -19,39 +19,39 @@ namespace uff.Domain.Entity
         public StatusEnum Status { get; private set; }
         public string Email { get; private set; }
         public string Password { get; private set; }
-        public bool Active { get; private set; }
         public ProfileEnum Profile { get; private set; }
 
         public User(UserCreateCommand user)
         {
             Name = user.Name;
             Email = user.Email;
-            Password = user.PasswordHashed;
             LastName = user.LastName;
             Phone = user.Phone;
             Street = user.Street;
+            Password = user.Password;
             Number = user.Number;
             City = user.City;
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
             Profile = ProfileEnum.User;
-            Active = true;
         }
 
         public void UpdateAllInfo(UserEditCommand user)
         {
-            Name = user.Name;
-            LastName = user.LastName;
-            Password = Password = user.Password;
-            Phone = user.Phone;
-            Street = user.Street;
-            Number = user.Number;
-            City = user.City;
+            Name = !string.IsNullOrWhiteSpace(user.Name) ? user.Name : this.Name;
+            LastName = !string.IsNullOrWhiteSpace(user.LastName) ? user.LastName : this.LastName;            
+            Phone = !string.IsNullOrWhiteSpace(user.Phone) ? user.Phone : this.Phone;
+            Street = !string.IsNullOrWhiteSpace(user.Street) ? user.Street : this.Street;
+            Number = !string.IsNullOrWhiteSpace(user.Number) ? user.Number : this.Number;
+            City = !string.IsNullOrWhiteSpace(user.City) ? user.City : this.City;
             Status = user.Status;
-            Active = user.Active;
-            LastUpdate = DateTime.UtcNow;
-            Profile = user.Profile == ProfileEnum.Admin ? ProfileEnum.User : user.Profile;
+            LastUpdate = DateTime.UtcNow; 
+            
+            CheckProfileChange(user.Profile);
         }
+
+        public void UpdatePassWord(string passWord)
+            => Password = passWord;
 
         public bool IsValid()
         {
@@ -59,6 +59,12 @@ namespace uff.Domain.Entity
                 || string.IsNullOrEmpty(Phone) || string.IsNullOrEmpty(Street)
                 || string.IsNullOrEmpty(Password)
                 || string.IsNullOrEmpty(Number) || string.IsNullOrEmpty(City));
+        }
+
+        private void CheckProfileChange(ProfileEnum newProfile)
+        {
+            if (newProfile != ProfileEnum.Admin)
+                this.Profile = newProfile;
         }
     }
 }
