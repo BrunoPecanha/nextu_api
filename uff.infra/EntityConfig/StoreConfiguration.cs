@@ -51,10 +51,11 @@ namespace uff.Infra.EntityConfig
             .HasColumnName("Cnpj");
 
             builder
-            .HasOne(s => s.Owner) // Usar a propriedade Owner
-            .WithMany(u => u.Stores) // Um usuário pode ter várias lojas
-            .HasForeignKey(s => s.OwnerId) // Relacionamento via OwnerId
-            .OnDelete(DeleteBehavior.Cascade); // Deletar a loja ao deletar o User
+            .HasOne(s => s.Owner) 
+            .WithMany(u => u.Stores)
+            .IsRequired()
+            .HasForeignKey(s => s.OwnerId) 
+            .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

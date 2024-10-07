@@ -42,6 +42,7 @@ namespace WeApi.Controllers
             return Ok(costumer);
         }
 
+        //TODO - Implementar paginação - User
         [HttpGet("all")]
         [Authorize]
         public async Task<IActionResult> GetAllAsync()
