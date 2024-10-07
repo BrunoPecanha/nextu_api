@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using uff.domain.Commands.User;
 using uff.Domain;
 using uff.Domain.Commands;
+using uff.Domain.Commands.User;
 using uff.Domain.Dto;
 using uff.Domain.Entity;
-using uff.service.Properties;
+using uff.Service.Properties;
 
 namespace uff.Service
 {
@@ -27,23 +27,23 @@ namespace uff.Service
 
         public async Task<CommandResult> GetAllAsync()
         {
-            var costumers = await _costumerRepository.GetAllAsync();
+            var users = await _costumerRepository.GetAllAsync();
 
-            if (costumers is null || costumers.Count() == 0)
-                return new CommandResult(false, costumers);
+            if (users is null || users.Count() == 0)
+                return new CommandResult(false, users);
 
-            return new CommandResult(true, _mapper.Map<List<UserDto>>(costumers));
+            return new CommandResult(true, _mapper.Map<List<UserDto>>(users));
         }
 
         public async Task<CommandResult> GetByIdAsync(int id)
         {
-            var costumer = await _costumerRepository.GetByIdAsync(id);
+            var user = await _costumerRepository.GetByIdAsync(id);
 
-            if (costumer is null)
-                return new CommandResult(false, costumer);
+            if (user is null)
+                return new CommandResult(false, user);            
 
-            return new CommandResult(true, _mapper.Map<UserDto>(costumer));
-        }
+            return new CommandResult(true, _mapper.Map<UserDto>(user));
+        }      
 
         public async Task<CommandResult> CreateAsync(UserCreateCommand command)
         {
@@ -76,7 +76,7 @@ namespace uff.Service
                 if (costumer is null)
                     return new CommandResult(false, Resources.NotFound);
 
-                costumer.UpdateAllInfo(command);
+                costumer.UpdateAllUserInfo(command);
 
                 var hashedPassword = _authService.HashPassword(costumer, command.Password);
                 costumer.UpdatePassWord(hashedPassword);
@@ -99,7 +99,8 @@ namespace uff.Service
                 var costumer = await _costumerRepository.GetByIdAsync(id);
                 if (costumer is not null)
                 {
-                    _costumerRepository.Remove(costumer);
+                    costumer.Disable();
+                    _costumerRepository.Update(costumer);
                     await _costumerRepository.SaveChangesAsync();
                 }
             }

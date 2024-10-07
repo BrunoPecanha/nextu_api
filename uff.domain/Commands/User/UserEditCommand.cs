@@ -1,6 +1,6 @@
 ﻿using uff.Domain.Enum;
 
-namespace uff.domain.Commands.User
+namespace uff.Domain.Commands.User
 {
     public class UserEditCommand
     {
@@ -11,6 +11,7 @@ namespace uff.domain.Commands.User
         public string Street { get; set; }
         public string Number { get; set; }
         public string City { get; set; }
+        public string Cpf { get; set; }
         public StatusEnum Status { get; set; }
         public ProfileEnum Profile { get; set; }
         public string Password { get; set; }

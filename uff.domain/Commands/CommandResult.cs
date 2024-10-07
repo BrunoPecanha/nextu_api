@@ -3,7 +3,7 @@
 
         public CommandResult(bool valid, object log) {
             this.Valid = valid;
-            this.Log = log;
+            this.Data = log;
         }
         /// Indica se a operação foi validada
         /// </summary>
@@ -12,7 +12,7 @@
         /// <summary>
         /// Log de erro
         /// </summary>
-        public object Log { get; set; }
+        public object Data { get; set; }
 
     }
 }

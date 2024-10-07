@@ -1,4 +1,4 @@
-﻿namespace uff.domain.Commands.User
+﻿namespace uff.Domain.Commands.User
 {
     public class LoginCommand
     {
