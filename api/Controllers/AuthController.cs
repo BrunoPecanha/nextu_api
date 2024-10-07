@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using uff.domain.Commands.User;
+using uff.Domain.Commands.User;
 using uff.Domain;
 
 namespace WeApi.Controllers

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace uff.service.Properties {
+namespace uff.Service.Properties {
     using System;
     
     
@@ -75,6 +75,24 @@ namespace uff.service.Properties {
         internal static string NotFound {
             get {
                 return ResourceManager.GetString("NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to O proprietário não foi identificado.
+        /// </summary>
+        internal static string OwnerNotFound {
+            get {
+                return ResourceManager.GetString("OwnerNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Estado não localizado.
+        /// </summary>
+        internal static string StateNofFound {
+            get {
+                return ResourceManager.GetString("StateNofFound", resourceCulture);
             }
         }
     }

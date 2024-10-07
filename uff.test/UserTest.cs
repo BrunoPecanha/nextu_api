@@ -1,4 +1,4 @@
-using uff.domain.Commands.User;
+using uff.Domain.Commands.User;
 using uff.Domain.Entity;
 using Xunit;
 
@@ -14,7 +14,7 @@ namespace uff.Test
                 Name = "Bruno",
                 LastName = "Peçanha",
                 Phone = "21981970792",
-                Street = "Rua Amadeu Soares",
+                Address = "Rua Amadeu Soares",
                 Number = "44",
                 City = "Nova Iguaçu"
             };
@@ -31,7 +31,7 @@ namespace uff.Test
             {
                 Name = "Bruno",
                 LastName = "Peçanha",
-                Street = "Rua Amadeu Soares",
+                Address = "Rua Amadeu Soares",
                 Number = "44",
                 City = "Nova Iguaçu"
             };

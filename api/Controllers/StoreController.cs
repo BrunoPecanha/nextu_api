@@ -3,24 +3,23 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using uff.Domain;
 using uff.Domain.Commands;
-using uff.Domain.Commands.User;
+using uff.Domain.Commands.Store;
 
 namespace WeApi.Controllers
 {
     [ApiController]
-    [Route("api/user")]
-    public class UserController : Controller
+    [Route("api/store")]
+    public class StoreController : Controller
     {
-        private readonly IUserService _service;
+        private readonly IStoreService _service;
 
-
-        public UserController(IUserService service)
+        public StoreController(IStoreService service)
         {
             _service = service;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] UserCreateCommand command)
+        public async Task<IActionResult> CreateAsync([FromBody] StoreCreateCommand command)
         {
             var response = await _service.CreateAsync(command);
 
@@ -34,36 +33,36 @@ namespace WeApi.Controllers
         [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var costumer = await _service.GetByIdAsync(id);
+            var store = await _service.GetByIdAsync(id);
 
-            if (costumer is null)
-                BadRequest(costumer);
+            if (store is null)
+                BadRequest(store);
 
-            return Ok(costumer);
+            return Ok(store);
         }
 
         [HttpGet("all")]
         [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
-            var costumers = await _service.GetAllAsync();
+            var stores = await _service.GetAllAsync();
 
-            if (!costumers.Valid)
-                BadRequest(costumers.Data);
+            if (!stores.Valid)
+                BadRequest(stores.Data);
 
-            return Ok(costumers);
+            return Ok(stores);
         }
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdateAsync([FromBody] UserEditCommand command)
+        public async Task<IActionResult> UpdateAsync([FromBody] StoreEditCommand command)
         {
-            var costumer = await _service.UpdateAsync(command);
+            var store = await _service.UpdateAsync(command);
 
-            if (!costumer.Valid)
-                return BadRequest(costumer.Data);
+            if (!store.Valid)
+                return BadRequest(store.Data);
 
-            return Ok(costumer);
+            return Ok(store);
         }
 
         [HttpDelete]
