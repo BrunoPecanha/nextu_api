@@ -20,6 +20,11 @@ namespace uff.infra.dependecyInjection
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IStoreService, StoreService>();
+            services.AddTransient<IStoreRepository, StoreRepository>();
+
+
+
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             return services;

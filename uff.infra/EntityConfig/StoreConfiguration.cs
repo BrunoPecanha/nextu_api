@@ -4,12 +4,12 @@ using uff.Domain.Entity;
 
 namespace uff.Infra.EntityConfig
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class StoreConfiguration : IEntityTypeConfiguration<Store>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<Store> builder)
         {
             builder
-             .ToTable("User")
+             .ToTable("Store")
              .HasKey(x => x.Id);
 
             builder
@@ -23,16 +23,8 @@ namespace uff.Infra.EntityConfig
              .IsRequired();
 
             builder
-            .Property(c => c.Name)
-            .HasColumnName("Name");
-
-            builder
-            .Property(c => c.LastName)
-            .HasColumnName("LastName");
-
-            builder
-          .Property(c => c.StateId)
-          .HasColumnName("StateId");
+            .Property(c => c.Description)
+            .HasColumnName("Description");          
 
             builder
             .Property(c => c.Phone)
@@ -52,19 +44,17 @@ namespace uff.Infra.EntityConfig
 
             builder
             .Property(c => c.Status)
-            .HasColumnName("Status");
+            .HasColumnName("Status");         
 
             builder
-            .Property(c => c.Email)
-            .HasColumnName("Email");
+            .Property(c => c.Cnpj)
+            .HasColumnName("Cnpj");
 
             builder
-            .Property(c => c.Password)
-            .HasColumnName("Password");
-
-            builder
-            .Property(c => c.Cpf)
-            .HasColumnName("Cpf");
+            .HasOne(s => s.Owner) // Usar a propriedade Owner
+            .WithMany(u => u.Stores) // Um usuário pode ter várias lojas
+            .HasForeignKey(s => s.OwnerId) // Relacionamento via OwnerId
+            .OnDelete(DeleteBehavior.Cascade); // Deletar a loja ao deletar o User
         }
     }
 }

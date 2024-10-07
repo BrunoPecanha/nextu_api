@@ -3,8 +3,8 @@
 namespace uff.Domain.Enum {
     public enum StatusEnum {
         [Description("Disabled")]
-        Enabled,
+        Disabled,
         [Description("Enabled")]
-        Disabled
+        Enabled
     }
 }

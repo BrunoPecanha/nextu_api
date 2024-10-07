@@ -11,7 +11,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using uff.infra.dependecyInjection;
 using uff.Infra.Context;
-using WeApi.Config;
+using WeApi.AutoMapper;
 using WeApi.Options;
 
 namespace WeApi
@@ -44,7 +44,7 @@ namespace WeApi
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
+                    In = ParameterLocation.Header,                    
                     Description = "Insira o token JWT no formato: Bearer {token}"
                 });
 

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using uff.Infra.Context;
@@ -11,9 +12,11 @@ using uff.Infra.Context;
 namespace uff.infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20241007011439_adiciona_prop_ausentes_usuario")]
+    partial class adiciona_prop_ausentes_usuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,9 +57,6 @@ namespace uff.infra.Migrations
                         .HasColumnType("text")
                         .HasColumnName("Number");
 
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Phone")
                         .HasColumnType("text")
                         .HasColumnName("Phone");
@@ -72,9 +72,13 @@ namespace uff.infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("Status");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Store", (string)null);
                 });
@@ -152,18 +156,18 @@ namespace uff.infra.Migrations
 
             modelBuilder.Entity("uff.Domain.Entity.Store", b =>
                 {
-                    b.HasOne("uff.Domain.Entity.User", "Owner")
-                        .WithMany("Stores")
-                        .HasForeignKey("OwnerId")
+                    b.HasOne("uff.Domain.Entity.User", "User")
+                        .WithOne("Store")
+                        .HasForeignKey("uff.Domain.Entity.Store", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Owner");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("uff.Domain.Entity.User", b =>
                 {
-                    b.Navigation("Stores");
+                    b.Navigation("Store");
                 });
 #pragma warning restore 612, 618
         }
