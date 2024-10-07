@@ -123,4 +123,10 @@
   <data name="NotFound" xml:space="preserve">
     <value>Cliente não encontrado</value>
   </data>
+  <data name="OwnerNotFound" xml:space="preserve">
+    <value>O proprietário não foi identificado</value>
+  </data>
+  <data name="StateNofFound" xml:space="preserve">
+    <value>Estado não localizado</value>
+  </data>
 </root>
