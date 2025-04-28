@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\uff.domain\uff.domain.csproj" />
-    <ProjectReference Include="..\uff.service\uff.service.csproj" />
+    <ProjectReference Include="..\UFF.Domain\UFF.Domain.csproj" />
+    <ProjectReference Include="..\UFF.Service\UFF.Service.csproj" />
   </ItemGroup>
 
 </Project>

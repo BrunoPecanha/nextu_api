@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using uff.Domain.Entity;
+using UFF.Domain.Entity;
 
-namespace uff.Infra.Context
+namespace UFF.Infra.Context
 {
     public interface IUffContext {
         DbSet<User> User { get; }

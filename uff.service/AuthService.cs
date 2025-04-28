@@ -6,12 +6,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using uff.domain.Repository;
-using uff.domain.Services;
-using uff.Domain.Commands;
-using uff.Domain.Entity;
+using UFF.Domain.Repository;
+using UFF.Domain.Services;
+using UFF.Domain.Commands;
+using UFF.Domain.Entity;
 
-namespace uff.Service
+namespace UFF.Service
 {
     public class AuthService : IAuthService
     {

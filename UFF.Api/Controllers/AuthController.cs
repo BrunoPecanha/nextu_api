@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using uff.Domain.Commands.User;
-using uff.domain.Repository;
+using UFF.Domain.Commands.User;
+using UFF.Domain.Repository;
 
 namespace WeApi.Controllers
 {

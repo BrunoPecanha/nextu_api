@@ -1,6 +1,6 @@
-﻿using uff.Domain.Enum;
+﻿using UFF.Domain.Enum;
 
-namespace uff.Domain.Commands.User
+namespace UFF.Domain.Commands.User
 {
     public class UserEditCommand
     {

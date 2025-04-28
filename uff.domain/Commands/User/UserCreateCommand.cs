@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace uff.Domain.Commands.User
+namespace UFF.Domain.Commands.User
 {
     public class UserCreateCommand
     {

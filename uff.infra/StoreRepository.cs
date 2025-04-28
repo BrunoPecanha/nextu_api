@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using uff.Domain.Entity;
-using uff.Infra.Context;
+using UFF.Domain.Entity;
+using UFF.Infra.Context;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using uff.domain.Repository;
+using UFF.Domain.Repository;
 
-namespace uff.Infra
+namespace UFF.Infra
 {
     public class CategoryRepository : RepositoryBase<Category>, ICategoryRepository
     {

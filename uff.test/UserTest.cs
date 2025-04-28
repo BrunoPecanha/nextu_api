@@ -1,8 +1,8 @@
-using uff.Domain.Commands.User;
-using uff.Domain.Entity;
+using UFF.Domain.Commands.User;
+using UFF.Domain.Entity;
 using Xunit;
 
-namespace uff.Test
+namespace UFF.Test
 {
     public class UserTest
     {

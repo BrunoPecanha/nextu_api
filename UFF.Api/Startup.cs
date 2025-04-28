@@ -9,8 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using uff.infra.dependecyInjection;
-using uff.Infra.Context;
+using UFF.Infra.dependecyInjection;
+using UFF.Infra.Context;
 using WeApi.AutoMapper;
 using WeApi.Options;
 

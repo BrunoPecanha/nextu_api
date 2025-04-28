@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using uff.domain.Repository;
-using uff.Infra.Context;
+using UFF.Domain.Repository;
+using UFF.Infra.Context;
 
-namespace uff.Infra
+namespace UFF.Infra
 {
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {

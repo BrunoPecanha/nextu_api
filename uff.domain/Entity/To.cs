@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace uff.Domain.Entity
+namespace UFF.Domain.Entity
 {
     public class To {
         /// <summary>

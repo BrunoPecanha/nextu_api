@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using uff.domain.Services;
+using UFF.Domain.Services;
 
 namespace WeApi.Controllers
 {
@@ -10,14 +11,13 @@ namespace WeApi.Controllers
     {
         private readonly ICategoryService _service;
 
-
         public CategoryController(ICategoryService service)
         {
             _service = service;
         }
 
         [HttpGet("all")]
-      //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var categories = await _service.GetAllAsync();
@@ -26,6 +26,6 @@ namespace WeApi.Controllers
                 BadRequest(categories.Data);
 
             return Ok(categories);
-        }       
+        }
     }
 }

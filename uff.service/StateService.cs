@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using uff.Domain.Commands;
-using uff.Domain.Entity;
-using uff.Service.Properties;
+using UFF.Domain.Commands;
+using UFF.Domain.Entity;
+using UFF.Service.Properties;
 
-namespace uff.Service
+namespace UFF.Service
 {
     public static class StateService
     {

@@ -1,8 +1,8 @@
 ﻿using System;
-using uff.Domain.Commands.Store;
-using uff.Domain.Enum;
+using UFF.Domain.Commands.Store;
+using UFF.Domain.Enum;
 
-namespace uff.Domain.Entity
+namespace UFF.Domain.Entity
 {
     public class Store : To
     {

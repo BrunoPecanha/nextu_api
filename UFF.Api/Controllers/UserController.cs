@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using uff.domain.Services;
-using uff.Domain.Commands;
-using uff.Domain.Commands.User;
+using UFF.Domain.Services;
+using UFF.Domain.Commands;
+using UFF.Domain.Commands.User;
 
 namespace WeApi.Controllers
 {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using uff.Domain.Commands.User;
-using uff.Domain.Enum;
+using UFF.Domain.Commands.User;
+using UFF.Domain.Enum;
 
-namespace uff.Domain.Entity
+namespace UFF.Domain.Entity
 {
     public class User : To
     {
