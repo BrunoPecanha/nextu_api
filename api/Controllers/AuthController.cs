@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using uff.Domain.Commands.User;
-using uff.Domain;
+using uff.domain.Repository;
 
 namespace WeApi.Controllers
 {
@@ -16,15 +16,15 @@ namespace WeApi.Controllers
             _authService = authService;
         }
 
-        [HttpPost("auth")]
+        [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginCommand request)
         {   
-            var token = await _authService.AuthSync(request.Email, request.Password);
+            var result = await _authService.AuthSync(request.Email, request.Password);
            
-            if (string.IsNullOrWhiteSpace(token))
+            if (!result.Valid)
                 return Unauthorized();
 
-            return Ok(new { Token = token });
+            return Ok(result);
         }
     }
 }

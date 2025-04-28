@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using uff.Infra.Context;
@@ -11,9 +12,11 @@ using uff.Infra.Context;
 namespace uff.infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250428174525_Adiciona_entidade_categoria")]
+    partial class Adiciona_entidade_categoria
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,35 +24,6 @@ namespace uff.infra.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("uff.Domain.Entity.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ImgPath")
-                        .HasColumnType("text")
-                        .HasColumnName("ImgPath");
-
-                    b.Property<DateTime>("LastUpdate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("LastUpdate");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("Name");
-
-                    b.Property<DateTime>("RegisteringDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("RegisteringDate");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Category", (string)null);
-                });
 
             modelBuilder.Entity("uff.Domain.Entity.Store", b =>
                 {

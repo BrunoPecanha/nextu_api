@@ -13,6 +13,9 @@ namespace WeApi.AutoMapper
 
             CreateMap<StoreDto, Store>();
             CreateMap<Store, StoreDto>();
+
+            CreateMap<CategoryDto, Category>();
+            CreateMap<Category, CategoryDto>();
         }
     }
 }

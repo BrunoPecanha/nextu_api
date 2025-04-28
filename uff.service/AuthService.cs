@@ -6,7 +6,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using uff.Domain;
+using uff.domain.Repository;
+using uff.domain.Services;
+using uff.Domain.Commands;
 using uff.Domain.Entity;
 
 namespace uff.Service
@@ -24,17 +26,17 @@ namespace uff.Service
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<string> AuthSync(string userName, string password)
+        public async Task<CommandResult> AuthSync(string userName, string password)
         {
             var user = await _userRepository.GetUserByLogin(userName);
 
             if (user is null)
-                return string.Empty;
+                return new CommandResult(false, "Usuário não encontrado");
 
             var logged = VerifyPassword(user, password);
 
             if (!logged)
-                return string.Empty;
+                return new CommandResult(false, "Senha incorreta");
 
             // Claims básicos para o token
             var claims = new[]
@@ -54,7 +56,7 @@ namespace uff.Service
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new CommandResult(true, new { Token = new JwtSecurityTokenHandler().WriteToken(token), User = user });
         }
 
         public string HashPassword(User user, string password)
