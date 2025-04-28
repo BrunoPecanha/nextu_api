@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using uff.Domain;
 using uff.Domain.Entity;
 using uff.Infra.Context;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using uff.domain.Repository;
 
 namespace uff.Infra
 {

@@ -2,9 +2,10 @@
 using uff.Domain.Commands;
 using uff.Domain.Commands.User;
 
-namespace uff.Domain
+namespace uff.domain.Services
 {
-    public interface IUserService { 
+    public interface IUserService
+    {
         public Task<CommandResult> CreateAsync(UserCreateCommand command);
         public Task<CommandResult> UpdateAsync(UserEditCommand command);
         public Task<CommandResult> GetAllAsync();
