@@ -18,6 +18,7 @@ namespace uff.Infra.Context
 
         public DbSet<User> User { get; set; }
         public DbSet<Store> Store { get; set; }
+        public DbSet<Category> Category { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(UffContext).Assembly);

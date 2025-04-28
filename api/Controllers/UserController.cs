@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using uff.Domain;
+using uff.domain.Services;
 using uff.Domain.Commands;
 using uff.Domain.Commands.User;
 
