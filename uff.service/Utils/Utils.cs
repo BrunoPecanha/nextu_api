@@ -1,4 +1,4 @@
-﻿namespace uff.service.Utils
+﻿namespace UFF.Service.Utils
 {
     public static class Utils
     {

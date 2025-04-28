@@ -1,4 +1,4 @@
-﻿namespace uff.Domain.Commands {
+﻿namespace UFF.Domain.Commands {
     public class CommandResult {
 
         public CommandResult(bool valid, object log) {

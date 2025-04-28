@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using uff.Domain.Entity;
+using UFF.Domain.Entity;
 using System;
 using System.Linq;
 
-namespace uff.Infra.Context
+namespace UFF.Infra.Context
 {
     public class UffContext : DbContext, IUffContext {
         private static string connectionString;        

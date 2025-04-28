@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using uff.Infra.Context;
-using uff.Infra;
-using uff.Service;
+using UFF.Infra.Context;
+using UFF.Infra;
+using UFF.Service;
 using Microsoft.AspNetCore.Identity;
-using uff.Domain.Entity;
-using uff.domain.Repository;
-using uff.domain.Services;
+using UFF.Domain.Entity;
+using UFF.Domain.Repository;
+using UFF.Domain.Services;
 
-namespace uff.infra.dependecyInjection
+namespace UFF.Infra.dependecyInjection
 {
     public static class ServiceExtensions
     {

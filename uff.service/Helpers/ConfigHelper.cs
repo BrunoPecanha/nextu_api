@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 
-namespace uff.Service.Helpers {
+namespace UFF.Service.Helpers {
     public class ConfigHelper {
         private static IConfigurationRoot configuracaoGeral;
         public class Config {

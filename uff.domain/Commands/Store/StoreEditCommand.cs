@@ -1,6 +1,6 @@
-﻿using uff.Domain.Enum;
+﻿using UFF.Domain.Enum;
 
-namespace uff.Domain.Commands.Store
+namespace UFF.Domain.Commands.Store
 {
     public class StoreEditCommand
     {
