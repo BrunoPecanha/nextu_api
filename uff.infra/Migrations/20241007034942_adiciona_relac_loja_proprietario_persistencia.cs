@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace uff.infra.Migrations
+namespace UFF.Infra.Migrations
 {
     /// <inheritdoc />
     public partial class adiciona_relac_loja_proprietario_persistencia : Migration

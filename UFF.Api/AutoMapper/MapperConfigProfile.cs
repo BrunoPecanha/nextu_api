@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using uff.Domain.Dto;
-using uff.Domain.Entity;
+using UFF.Domain.Dto;
+using UFF.Domain.Entity;
 
 namespace WeApi.AutoMapper
 {

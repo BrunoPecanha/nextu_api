@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using uff.Domain.Commands;
+using UFF.Domain.Commands;
 
-namespace uff.domain.Services
+namespace UFF.Domain.Services
 {
     public interface ICategoryService
     {

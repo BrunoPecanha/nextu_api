@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using uff.Domain.Entity;
+using UFF.Domain.Entity;
 
-namespace uff.Infra.EntityConfig
+namespace UFF.Infra.EntityConfig
 {
     public class StoreConfiguration : IEntityTypeConfiguration<Store>
     {

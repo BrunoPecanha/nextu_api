@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using uff.domain.Repository;
-using uff.domain.Services;
-using uff.Domain.Commands;
-using uff.Domain.Commands.Store;
+using UFF.Domain.Repository;
+using UFF.Domain.Services;
+using UFF.Domain.Commands;
+using UFF.Domain.Commands.Store;
 
 namespace WeApi.Controllers
 {

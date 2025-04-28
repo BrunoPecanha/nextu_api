@@ -1,4 +1,4 @@
-﻿namespace uff.Domain.Entity
+﻿namespace UFF.Domain.Entity
 {
     public struct State
     {

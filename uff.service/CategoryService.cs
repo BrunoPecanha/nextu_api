@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using uff.domain.Repository;
-using uff.domain.Services;
-using uff.Domain.Commands;
-using uff.Domain.Dto;
-using uff.Service.Properties;
+using UFF.Domain.Repository;
+using UFF.Domain.Services;
+using UFF.Domain.Commands;
+using UFF.Domain.Dto;
+using UFF.Service.Properties;
 
-namespace uff.Service
+namespace UFF.Service
 {
     public class CategoryService : ICategoryService
     {

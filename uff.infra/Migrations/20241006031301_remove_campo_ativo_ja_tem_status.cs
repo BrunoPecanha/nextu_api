@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace uff.infra.Migrations
+namespace UFF.Infra.Migrations
 {
     /// <inheritdoc />
     public partial class remove_campo_ativo_ja_tem_status : Migration

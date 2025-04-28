@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using uff.Service;
+using UFF.Service;
 
 namespace WeApi.Controllers
 {

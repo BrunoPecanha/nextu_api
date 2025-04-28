@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace uff.Domain.Enum {
+namespace UFF.Domain.Enum {
     public enum StatusEnum {
         [Description("Disabled")]
         Disabled,

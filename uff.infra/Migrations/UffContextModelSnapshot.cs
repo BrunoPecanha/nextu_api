@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using uff.Infra.Context;
+using UFF.Infra.Context;
 
 #nullable disable
 
-namespace uff.infra.Migrations
+namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
     partial class UffContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace uff.infra.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("uff.Domain.Entity.Category", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace uff.infra.Migrations
                     b.ToTable("Category", (string)null);
                 });
 
-            modelBuilder.Entity("uff.Domain.Entity.Store", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.Store", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,7 +108,7 @@ namespace uff.infra.Migrations
                     b.ToTable("Store", (string)null);
                 });
 
-            modelBuilder.Entity("uff.Domain.Entity.User", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -179,9 +179,9 @@ namespace uff.infra.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("uff.Domain.Entity.Store", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.Store", b =>
                 {
-                    b.HasOne("uff.Domain.Entity.User", "Owner")
+                    b.HasOne("UFF.Domain.Entity.User", "Owner")
                         .WithMany("Stores")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -190,7 +190,7 @@ namespace uff.infra.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("uff.Domain.Entity.User", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.User", b =>
                 {
                     b.Navigation("Stores");
                 });

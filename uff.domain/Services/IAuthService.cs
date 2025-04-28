@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using uff.Domain.Entity;
+using UFF.Domain.Entity;
 
-namespace uff.Domain
+namespace UFF.Domain
 {
     public interface IAuthService  {
         public Task<string> AuthSync(string userName, string password);
