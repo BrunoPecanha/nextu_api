@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using uff.Domain;
+using uff.domain.Repository;
 using uff.Infra.Context;
 
 namespace uff.Infra

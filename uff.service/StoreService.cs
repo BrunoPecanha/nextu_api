@@ -3,7 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using uff.Domain;
+using uff.domain.Repository;
+using uff.domain.Services;
 using uff.Domain.Commands;
 using uff.Domain.Commands.Store;
 using uff.Domain.Dto;
@@ -29,7 +30,7 @@ namespace uff.Service
         {
             var stores = await _storeRepository.GetAllAsync();
 
-            if (stores is null || stores.Count() == 0)
+            if (stores is null || !stores.Any())
                 return new CommandResult(false, stores);
 
             return new CommandResult(true, _mapper.Map<List<StoreDto>>(stores));

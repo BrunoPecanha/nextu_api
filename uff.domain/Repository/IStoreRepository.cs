@@ -1,8 +1,8 @@
-﻿using uff.Domain.Entity;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using uff.Domain.Entity;
 
-namespace uff.Domain
+namespace uff.domain.Repository
 {
     public interface IStoreRepository : IRepositoryBase<Store> {
         public Task<Store> GetByIdAsync(int id);

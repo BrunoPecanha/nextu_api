@@ -8,24 +8,26 @@ using uff.domain.Repository;
 
 namespace uff.Infra
 {
-    public class CategoryRepository : RepositoryBase<Category>, ICategoryRepository
+    public class StoreRepository : RepositoryBase<Store>, IStoreRepository
     {
         private readonly IUffContext _dbContext;
 
-        public CategoryRepository(IUffContext dbContext)
+        public StoreRepository(IUffContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Category>> GetAllAsync()
-            => await _dbContext.Category
+        public async Task<IEnumerable<Store>> GetAllAsync()
+            => await _dbContext.Store
                              .OrderByDescending(x => x.RegisteringDate)
                              .AsNoTracking()
+                             .Include(x => x.Owner)
                              .ToArrayAsync();
 
-        public async Task<Category> GetByIdAsync(int id)
-            => await _dbContext.Category
+        public async Task<Store> GetByIdAsync(int id)
+            => await _dbContext.Store
                                .AsNoTracking()
+                               .Include(x => x.Owner)
                                .FirstOrDefaultAsync(x => x.Id == id);      
     }
 }

@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using uff.Domain;
 using uff.Infra.Context;
 using uff.Infra;
 using uff.Service;
 using Microsoft.AspNetCore.Identity;
 using uff.Domain.Entity;
+using uff.domain.Repository;
+using uff.domain.Services;
 
 namespace uff.infra.dependecyInjection
 {
@@ -22,7 +23,8 @@ namespace uff.infra.dependecyInjection
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IStoreService, StoreService>();
             services.AddTransient<IStoreRepository, StoreRepository>();
-
+            services.AddTransient<ICategoryService, CategoryService>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
 
 
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
