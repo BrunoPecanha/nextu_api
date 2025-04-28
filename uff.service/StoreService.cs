@@ -3,15 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using uff.domain.Repository;
-using uff.domain.Services;
-using uff.Domain.Commands;
-using uff.Domain.Commands.Store;
-using uff.Domain.Dto;
-using uff.Domain.Entity;
-using uff.Service.Properties;
+using UFF.Domain.Repository;
+using UFF.Domain.Services;
+using UFF.Domain.Commands;
+using UFF.Domain.Commands.Store;
+using UFF.Domain.Dto;
+using UFF.Domain.Entity;
+using UFF.Service.Properties;
 
-namespace uff.Service
+namespace UFF.Service
 {
     public class StoreService : IStoreService
     {

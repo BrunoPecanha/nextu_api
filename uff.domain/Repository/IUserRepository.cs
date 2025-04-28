@@ -1,8 +1,8 @@
-﻿using uff.Domain.Entity;
+﻿using UFF.Domain.Entity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace uff.domain.Repository
+namespace UFF.Domain.Repository
 {
     public interface IUserRepository : IRepositoryBase<User>
     {

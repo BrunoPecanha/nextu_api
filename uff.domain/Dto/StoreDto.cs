@@ -1,6 +1,6 @@
-﻿using uff.Domain.Enum;
+﻿using UFF.Domain.Enum;
 
-namespace uff.Domain.Dto
+namespace UFF.Domain.Dto
 {
     public class CategoryDto
     {

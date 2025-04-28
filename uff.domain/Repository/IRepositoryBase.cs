@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace uff.domain.Repository
+namespace UFF.Domain.Repository
 {
     public interface IRepositoryBase<T> where T : class
     {

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using uff.Domain.Commands;
-using uff.Domain.Entity;
+using UFF.Domain.Commands;
+using UFF.Domain.Entity;
 
-namespace uff.domain.Repository
+namespace UFF.Domain.Repository
 {
     public interface IAuthService
     {

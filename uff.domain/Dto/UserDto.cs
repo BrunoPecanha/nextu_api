@@ -1,4 +1,4 @@
-﻿namespace uff.Domain.Dto
+﻿namespace UFF.Domain.Dto
 {
     public class UserDto {
         public int? Id { get; set; }

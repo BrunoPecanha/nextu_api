@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using uff.Domain.Commands;
-using uff.Domain.Commands.User;
+using UFF.Domain.Commands;
+using UFF.Domain.Commands.User;
 
-namespace uff.domain.Services
+namespace UFF.Domain.Services
 {
     public interface IUserService
     {

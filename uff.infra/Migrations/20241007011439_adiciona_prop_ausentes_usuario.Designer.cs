@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using uff.Infra.Context;
+using UFF.Infra.Context;
 
 #nullable disable
 
-namespace uff.infra.Migrations
+namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
     [Migration("20241007011439_adiciona_prop_ausentes_usuario")]
@@ -25,7 +25,7 @@ namespace uff.infra.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("uff.Domain.Entity.Store", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.Store", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -83,7 +83,7 @@ namespace uff.infra.Migrations
                     b.ToTable("Store", (string)null);
                 });
 
-            modelBuilder.Entity("uff.Domain.Entity.User", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -154,18 +154,18 @@ namespace uff.infra.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("uff.Domain.Entity.Store", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.Store", b =>
                 {
-                    b.HasOne("uff.Domain.Entity.User", "User")
+                    b.HasOne("UFF.Domain.Entity.User", "User")
                         .WithOne("Store")
-                        .HasForeignKey("uff.Domain.Entity.Store", "UserId")
+                        .HasForeignKey("UFF.Domain.Entity.Store", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("uff.Domain.Entity.User", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.User", b =>
                 {
                     b.Navigation("Store");
                 });

@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using uff.Infra.Context;
+using UFF.Infra.Context;
 
 #nullable disable
 
-namespace uff.infra.Migrations
+namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
     [Migration("20240928044908_migracaoInicial")]
@@ -25,7 +25,7 @@ namespace uff.infra.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("uff.Domain.Entity.Costumer", b =>
+            modelBuilder.Entity("UFF.Domain.Entity.Costumer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
