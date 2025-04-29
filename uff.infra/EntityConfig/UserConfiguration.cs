@@ -31,8 +31,8 @@ namespace UFF.Infra.EntityConfig
             .HasColumnName("LastName");
 
             builder
-          .Property(c => c.StateId)
-          .HasColumnName("StateId");
+              .Property(c => c.StateId)
+              .HasColumnName("StateId");
 
             builder
             .Property(c => c.Phone)

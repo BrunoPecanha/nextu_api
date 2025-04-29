@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Services;
 
@@ -17,7 +16,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("all")]
-        [Authorize]
+     //   [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var categories = await _service.GetAllAsync();

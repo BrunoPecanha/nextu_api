@@ -44,7 +44,7 @@ namespace WeApi.Controllers
 
         //TODO - Implementar paginação - Store
         [HttpGet("all")]
-        [Authorize]
+      //  [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var stores = await _service.GetAllAsync();

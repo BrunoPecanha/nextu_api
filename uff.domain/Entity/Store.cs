@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UFF.Domain.Commands.Store;
 using UFF.Domain.Enum;
 
@@ -6,71 +7,122 @@ namespace UFF.Domain.Entity
 {
     public class Store : To
     {
-        private Store()
-        {
-        }
-        public string Description { get; private set; }
-        public string Phone { get; private set; }
+        private Store() { }
+
+        public string Cnpj { get; private set; }
+        public string Name { get; private set; }
         public string Address { get; private set; }
         public string Number { get; private set; }
         public string City { get; private set; }
         public string State { get; private set; }
+        public bool OpenAutomatic { get; private set; } 
+        public string StoreSubtitle { get; private set; }    
+        public bool AcceptOtherQueues { get; private set; }
+        public bool AnswerOutOfOrder { get; private set; }
+        public bool AnswerScheduledTime { get; private set; }
+        public int? TimeRemoval { get; private set; }
+        public bool WhatsAppNotice { get; private set; }
+        public string LogoPath { get; set; }
+        public string WallPaperPath { get; set; }
+        public Category Category { get; set; }
+        public int CategoryId { get; set; }
+        public decimal Rating { get; set; }
+        public int Votes { get; set; }
+        public virtual ICollection<OpeningHours> OpeningHours { get; private set; } = new List<OpeningHours>();
+        public virtual ICollection<HighLight> HighLights { get; private set; } = new List<HighLight>();
         public int OwnerId { get; private set; }
         public User Owner { get; private set; }
-        public string Cnpj { get; set; }
         public StatusEnum Status { get; private set; }
 
-        public Store(StoreCreateCommand store)
+        public Store(StoreCreateCommand command)
         {
-            Description = store.Description;
-            Phone = store.Phone;
-            Address = store.Address;
-            Number = store.Number;
-            City = store.City;
-            Cnpj = store.Cnpj;
-            State = store.State;
+            Cnpj = command.Cnpj;
+            Name = command.Name;
+            Address = command.Address;
+            Number = command.Number;
+            City = command.City;
+            State = command.State;
             Status = StatusEnum.Enabled;
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
+            StoreSubtitle = command.StoreSubtitle;
+            OpenAutomatic = command.OpenAutomatic;
+            AcceptOtherQueues = command.AcceptOtherQueues;
+            AnswerOutOfOrder = command.AnswerOutOfOrder;
+            AnswerScheduledTime = command.AnswerScheduledTime;
+            TimeRemoval = command.TimeRemoval;
+            WhatsAppNotice = command.WhatsAppNotice;
+
+            foreach (var hour in command.OpeningHours)
+            {
+                OpeningHours.Add(new OpeningHours(hour));
+            }
+
+            foreach (var highLight in command.HighLights)
+            {
+                HighLights.Add(new HighLight(highLight));
+            }
         }
 
-        public void UpdateAllUserInfo(StoreEditCommand user)
+        public void UpdateAllUserInfo(StoreEditCommand command)
         {
-            Description = !string.IsNullOrWhiteSpace(user.Description) ? user.Description : this.Description;
-            Phone = !string.IsNullOrWhiteSpace(user.Phone) ? user.Phone : this.Phone;
-            Address = !string.IsNullOrWhiteSpace(user.Address) ? user.Address : this.Address;
-            Number = !string.IsNullOrWhiteSpace(user.Number) ? user.Number : this.Number;
-            City = !string.IsNullOrWhiteSpace(user.City) ? user.City : this.City;
-            Status = user.Status;
-            LastUpdate = DateTime.UtcNow;
+            //Description = !string.IsNullOrWhiteSpace(command.Description) ? command.Description : Description;
+            //Phone = !string.IsNullOrWhiteSpace(command.Phone) ? command.Phone : Phone;
+            //Address = !string.IsNullOrWhiteSpace(command.Address) ? command.Address : Address;
+            //Number = !string.IsNullOrWhiteSpace(command.Number) ? command.Number : Number;
+            //City = !string.IsNullOrWhiteSpace(command.City) ? command.City : City;
+            //State = !string.IsNullOrWhiteSpace(command.State) ? command.State : State;
+            //Status = command.;
+            //LastUpdate = DateTime.UtcNow;
+
+
+            //SubtituloLoja = command.SubtituloLoja ?? SubtituloLoja;
+            //AbrirAutomaticamente = command.AbrirAutomaticamente;
+            //AceitarOutrasFilas = command.AceitarOutrasFilas;
+            //AtenderForaDeOrdem = command.AtenderForaDeOrdem;
+            //AtenderHoraMarcada = command.AtenderHoraMarcada;
+            //TempoRemocao = command.TempoRemocao ?? TempoRemocao;
+            //AvisoWhatsApp = command.AvisoWhatsApp;
+
+            //UpdateHorarios(command.Horarios);
+
+            //UpdateDestaques(command.Destaques);
+
         }
 
+        private void UpdateHorarios(List<OpeningHoursCommand> horariosDto)
+        {
+            // Implementar lógica de atualização dos horários
+            // Pode ser: limpar e adicionar todos novamente, ou fazer merge
+        }
+
+        private void UpdateDestaques(List<HighLightCommand> destaquesDto)
+        {
+            // Implementar lógica de atualização dos destaques
+        }
 
         public bool IsValid()
         {
-            return !(string.IsNullOrEmpty(Description)
-                || string.IsNullOrEmpty(Phone)
-                || string.IsNullOrEmpty(Address)
-                || string.IsNullOrEmpty(Number)
-                || string.IsNullOrEmpty(City));
+            return !(string.IsNullOrEmpty(Name)
+                && !(string.IsNullOrEmpty(Address))
+                && !(string.IsNullOrEmpty(Number))
+                && !(string.IsNullOrEmpty(City))
+                && (string.IsNullOrEmpty(Cnpj) || Cnpj.Length == 14));
         }
-
 
         public void SetOwner(User owner)
         {
             OwnerId = owner.Id;
+            Owner = owner;
         }
 
-        public void Disable()
-         => Status = StatusEnum.Disabled;
+        public void Disable() => Status = StatusEnum.Disabled;
+        public void Enable() => Status = StatusEnum.Enabled;
 
-        public void Enable()
-            => Status = StatusEnum.Enabled;
-
-        private void UpdateCnpj(string cnpj)
+        public void UpdateCnpj(string cnpj)
         {
             if (!string.IsNullOrWhiteSpace(cnpj) && cnpj.Length == 14)
-                this.Cnpj = cnpj;
+                Cnpj = cnpj;
         }
     }
 }
