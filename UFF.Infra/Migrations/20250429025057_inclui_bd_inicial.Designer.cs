@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250429025057_inclui_bd_inicial")]
+    partial class inclui_bd_inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,10 +207,6 @@ namespace UFF.Infra.Migrations
                     b.Property<int>("OwnerId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Rating")
-                        .HasColumnType("numeric")
-                        .HasColumnName("Rating");
-
                     b.Property<DateTime>("RegisteringDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("RegisteringDate");
@@ -231,10 +230,6 @@ namespace UFF.Infra.Migrations
                     b.Property<int?>("TimeRemoval")
                         .HasColumnType("integer")
                         .HasColumnName("TimeRemoval");
-
-                    b.Property<int>("Votes")
-                        .HasColumnType("integer")
-                        .HasColumnName("Votes");
 
                     b.Property<string>("WallPaperPath")
                         .HasMaxLength(255)

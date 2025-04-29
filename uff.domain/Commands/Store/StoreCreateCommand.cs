@@ -1,17 +1,36 @@
-﻿using System.ComponentModel.DataAnnotations;
-using UFF.Domain.Enum;
+﻿using System.Collections.Generic;
 
 namespace UFF.Domain.Commands.Store
 {
     public class StoreCreateCommand
     {
-        public string Description { get; set; }
-        public string Phone { get; set; }
-        public string Address { get; set; }
-        public string Number { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public string Cnpj { get; set; }        
         public int OwnerId { get; set; }
+        public string Cnpj { get; private set; }
+        public string Name { get; private set; }
+        public string Address { get; private set; }
+        public string Number { get; private set; }
+        public string City { get; private set; }
+        public string State { get; private set; }
+        public bool OpenAutomatic { get; private set; }
+        public string StoreSubtitle { get; private set; }
+        public bool AcceptOtherQueues { get; private set; }
+        public bool AnswerOutOfOrder { get; private set; }
+        public bool AnswerScheduledTime { get; private set; }
+        public int? TimeRemoval { get; private set; }
+        public bool WhatsAppNotice { get; private set; }
+        public string LogoPath { get; set; }
+        public string WallPaperPath { get; set; }
+        public int CategoryId { get; set; }
+        public virtual ICollection<OpeningHoursCommand> OpeningHours { get; private set; } = new List<OpeningHoursCommand>();
+        public virtual ICollection<HighLightCommand> HighLights { get; private set; } = new List<HighLightCommand>();
+
+        public bool IsValid()
+        {
+            return !string.IsNullOrWhiteSpace(Name) &&
+                   !string.IsNullOrWhiteSpace(Address) &&
+                   !string.IsNullOrWhiteSpace(Number) &&
+                   !string.IsNullOrWhiteSpace(City) &&
+                   !string.IsNullOrWhiteSpace(State);
+        }
     }
 }

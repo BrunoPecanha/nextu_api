@@ -22,12 +22,13 @@ namespace UFF.Infra
                              .OrderByDescending(x => x.RegisteringDate)
                              .AsNoTracking()
                              .Include(x => x.Owner)
+                             .Include(x => x.Category)
                              .ToArrayAsync();
 
         public async Task<Store> GetByIdAsync(int id)
             => await _dbContext.Store
                                .AsNoTracking()
                                .Include(x => x.Owner)
-                               .FirstOrDefaultAsync(x => x.Id == id);      
+                               .FirstOrDefaultAsync(x => x.Id == id);
     }
 }
