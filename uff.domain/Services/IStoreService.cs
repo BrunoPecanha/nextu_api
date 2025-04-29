@@ -10,6 +10,7 @@ namespace UFF.Domain.Services
         public Task<CommandResult> UpdateAsync(StoreEditCommand command);
         public Task<CommandResult> GetAllAsync();
         public Task<CommandResult> GetByIdAsync(int id);
+        public Task<CommandResult> GetByCategoryIdAsync(int id);
         public Task<CommandResult> DeleteAsync(int id);
     }
 }
