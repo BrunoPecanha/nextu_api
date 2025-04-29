@@ -27,8 +27,16 @@ namespace UFF.Infra
 
         public async Task<Store> GetByIdAsync(int id)
             => await _dbContext.Store
+                               .Include(x => x.Category)
                                .AsNoTracking()
                                .Include(x => x.Owner)
                                .FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<Store[]> GetByCategoryId(int id)
+            => await _dbContext.Store
+                           .Include(x => x.Category)
+                           .Where(x => x.Category.Id == id)
+                           .AsNoTracking()
+                           .ToArrayAsync();
     }
 }

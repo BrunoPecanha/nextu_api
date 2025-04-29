@@ -43,8 +43,18 @@ namespace UFF.Service
             if (store is null)
                 return new CommandResult(false, store);            
 
-            return new CommandResult(true, _mapper.Map<Domain.Dto.StoreDto>(store));
-        }      
+            return new CommandResult(true, _mapper.Map<StoreDto>(store));
+        }
+
+        public async Task<CommandResult> GetByCategoryIdAsync(int id)
+        {
+            var store = await _storeRepository.GetByCategoryId(id);
+
+            if (store is null)
+                return new CommandResult(false, store);
+
+            return new CommandResult(true, _mapper.Map<StoreDto[]>(store));
+        }
 
         public async Task<CommandResult> CreateAsync(StoreCreateCommand command)
         {
