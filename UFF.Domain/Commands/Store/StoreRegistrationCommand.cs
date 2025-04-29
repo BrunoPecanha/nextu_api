@@ -2,9 +2,8 @@
 
 namespace UFF.Domain.Commands.Store
 {
-    public class StoreEditCommand
+    public class StoreRegistrationCommand
     {
-        public int Id { get; set; }
         public string Cnpj { get; set; }
         public string NomeEmpresa { get; set; }
         public string Endereco { get; set; }

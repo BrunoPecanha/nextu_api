@@ -12,7 +12,8 @@ namespace WeApi.AutoMapper
             CreateMap<User, UserDto>();
 
             CreateMap<StoreDto, Store>();
-            CreateMap<Store, StoreDto>();
+            CreateMap<Store, StoreDto>()
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name));
 
             CreateMap<CategoryDto, Category>();
             CreateMap<Category, CategoryDto>();
