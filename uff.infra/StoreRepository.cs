@@ -19,13 +19,13 @@ namespace UFF.Infra
 
         public async Task<IEnumerable<Category>> GetAllAsync()
             => await _dbContext.Category
-                             .OrderByDescending(x => x.RegisteringDate)
+                             .OrderBy(x => x.Id)
                              .AsNoTracking()
-                             .ToArrayAsync();
+                             .ToArrayAsync();                            
 
         public async Task<Category> GetByIdAsync(int id)
             => await _dbContext.Category
                                .AsNoTracking()
-                               .FirstOrDefaultAsync(x => x.Id == id);      
+                               .FirstOrDefaultAsync(x => x.Id == id);       
     }
 }

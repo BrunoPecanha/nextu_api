@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Services;
 
@@ -25,6 +26,18 @@ namespace WeApi.Controllers
                 BadRequest(categories.Data);
 
             return Ok(categories);
+        }
+
+        [HttpGet("{id}")]
+      //  [Authorize]
+        public async Task<IActionResult> GetByIdAsync([FromRoute]int id)
+        {
+            var store = await _service.GetByIdAsync(id);
+
+            if (store is null)
+                BadRequest(store);
+
+            return Ok(store);
         }
     }
 }
