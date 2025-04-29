@@ -13,7 +13,6 @@ namespace UFF.Domain.Commands.User
         public string City { get; set; }
         public string Cpf { get; set; }
         public StatusEnum Status { get; set; }
-        public ProfileEnum Profile { get; set; }
         public string Password { get; set; }
     }
 }

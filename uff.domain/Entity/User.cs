@@ -34,8 +34,9 @@ namespace UFF.Domain.Entity
             Phone = user.Phone;
             Address = user.Address;
             Password = user.Password;
-            StateId = user.State;
+            StateId = user.StateId;
             Number = user.Number;
+            Cpf = user.Cpf;
             Status = StatusEnum.Enabled;
             City = user.City;
             RegisteringDate = DateTime.UtcNow;
@@ -46,7 +47,7 @@ namespace UFF.Domain.Entity
         public void UpdateAllUserInfo(UserEditCommand user)
         {
             Name = !string.IsNullOrWhiteSpace(user.Name) ? user.Name : this.Name;
-            LastName = !string.IsNullOrWhiteSpace(user.LastName) ? user.LastName : this.LastName;            
+            LastName = !string.IsNullOrWhiteSpace(user.LastName) ? user.LastName : this.LastName;
             Phone = !string.IsNullOrWhiteSpace(user.Phone) ? user.Phone : this.Phone;
             Address = !string.IsNullOrWhiteSpace(user.Street) ? user.Street : this.Address;
             Number = !string.IsNullOrWhiteSpace(user.Number) ? user.Number : this.Number;
@@ -55,7 +56,6 @@ namespace UFF.Domain.Entity
             LastUpdate = DateTime.UtcNow;
 
             UpdateCpf(user.Cpf);
-            CheckProfileChange(user.Profile);
         }
 
         public void UpdatePassWord(string passWord)
@@ -64,9 +64,9 @@ namespace UFF.Domain.Entity
         public bool IsValid()
         {
             return !(string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(LastName)
-                || string.IsNullOrEmpty(Phone) || string.IsNullOrEmpty(Address)
-                || string.IsNullOrEmpty(Password) || string.IsNullOrEmpty(Number)
-                || string.IsNullOrEmpty(City));
+                || string.IsNullOrEmpty(Phone)
+                || string.IsNullOrEmpty(Password));
+             
         }
 
         public void Disable()
@@ -79,12 +79,6 @@ namespace UFF.Domain.Entity
         {
             if (!string.IsNullOrWhiteSpace(cpfcnpj) && (cpfcnpj.Length == 11))
                 this.Cpf = cpfcnpj;
-        }            
-
-        private void CheckProfileChange(ProfileEnum newProfile)
-        {
-            if (newProfile != ProfileEnum.Admin)
-                this.Profile = newProfile;
         }
     }
 }
