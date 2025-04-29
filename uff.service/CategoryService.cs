@@ -39,8 +39,8 @@ namespace UFF.Service
             if (store is null)
                 return new CommandResult(false, store);            
 
-            return new CommandResult(true, _mapper.Map<Domain.Dto.StoreDto>(store));
-        }      
+            return new CommandResult(true, _mapper.Map<CategoryDto>(store));
+        }
 
         public async Task<CommandResult> CreateAsync(object command)
         {

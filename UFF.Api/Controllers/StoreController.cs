@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using UFF.Domain.Repository;
-using UFF.Domain.Services;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Store;
+using UFF.Domain.Services;
 
 namespace WeApi.Controllers
 {
@@ -42,9 +41,23 @@ namespace WeApi.Controllers
             return Ok(store);
         }
 
+    
+        [HttpGet("{categoryId}/stores")]
+
+        public async Task<IActionResult> GetByCategoryId([FromRoute] int categoryId)
+        {
+            var stores = await _service.GetByCategoryIdAsync(categoryId);
+
+            if (!stores.Valid)
+                BadRequest(stores.Data);
+
+            return Ok(stores);
+        }
+
+
         //TODO - Implementar paginação - Store
         [HttpGet("all")]
-      //  [Authorize]
+        //  [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var stores = await _service.GetAllAsync();
