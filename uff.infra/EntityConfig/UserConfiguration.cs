@@ -7,64 +7,116 @@ namespace UFF.Infra.EntityConfig
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
-        {
-            builder
-             .ToTable("User")
-             .HasKey(x => x.Id);
+        {            
+            builder.ToTable("users")
+                   .HasKey(x => x.Id)
+                   .HasName("pk_users");
 
-            builder
-            .Property(c => c.RegisteringDate)
-            .HasColumnName("RegisteringDate")
-            .IsRequired();
+            
+            builder.Property(u => u.RegisteringDate)
+                   .HasColumnName("registering_date")
+                   .HasColumnType("timestamp with time zone")
+                   .IsRequired()
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
-            builder
-             .Property(c => c.LastUpdate)
-             .HasColumnName("LastUpdate")
-             .IsRequired();
+            builder.Property(u => u.LastUpdate)
+                   .HasColumnName("last_update")
+                   .HasColumnType("timestamp with time zone")
+                   .IsRequired()
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
+                   .ValueGeneratedOnAddOrUpdate();
 
-            builder
-            .Property(c => c.Name)
-            .HasColumnName("Name");
+            
+            builder.Property(u => u.Name)
+                   .HasColumnName("name")
+                   .HasColumnType("varchar(100)")
+                   .HasMaxLength(100)
+                   .IsRequired();
 
-            builder
-            .Property(c => c.LastName)
-            .HasColumnName("LastName");
+            builder.Property(u => u.LastName)
+                   .HasColumnName("last_name")
+                   .HasColumnType("varchar(100)")
+                   .HasMaxLength(100)
+                   .IsRequired();
 
-            builder
-              .Property(c => c.StateId)
-              .HasColumnName("StateId");
+            builder.Property(u => u.Cpf)
+                   .HasColumnName("cpf")
+                   .HasColumnType("varchar(11)")
+                   .HasMaxLength(11)
+                   .IsRequired();
 
-            builder
-            .Property(c => c.Phone)
-            .HasColumnName("Phone");
+            
+            builder.Property(u => u.Email)
+                   .HasColumnName("email")
+                   .HasColumnType("varchar(100)")
+                   .HasMaxLength(100)
+                   .IsRequired();
 
-            builder
-            .Property(c => c.Address)
-            .HasColumnName("Address");
+            builder.Property(u => u.Phone)
+                   .HasColumnName("phone")
+                   .HasColumnType("varchar(20)")
+                   .HasMaxLength(20)
+                   .IsRequired();
+            
+            builder.Property(u => u.Address)
+                   .HasColumnName("address")
+                   .HasColumnType("varchar(200)")
+                   .HasMaxLength(200);
 
-            builder
-            .Property(c => c.Number)
-            .HasColumnName("Number");
+            builder.Property(u => u.Number)
+                   .HasColumnName("number")
+                   .HasColumnType("varchar(20)")
+                   .HasMaxLength(20);
 
-            builder
-            .Property(c => c.City)
-            .HasColumnName("City");
+            builder.Property(u => u.City)
+                   .HasColumnName("city")
+                   .HasColumnType("varchar(100)")
+                   .HasMaxLength(100);
 
-            builder
-            .Property(c => c.Status)
-            .HasColumnName("Status");
+            builder.Property(u => u.StateId)
+                   .HasColumnName("state_id")
+                   .HasColumnType("char(2)")
+                   .HasMaxLength(2);
 
-            builder
-            .Property(c => c.Email)
-            .HasColumnName("Email");
+            
+            builder.Property(u => u.Password)
+                   .HasColumnName("password")
+                   .HasColumnType("varchar(255)")
+                   .HasMaxLength(255)
+                   .IsRequired();
 
-            builder
-            .Property(c => c.Password)
-            .HasColumnName("Password");
+            builder.Property(u => u.Status)
+                   .HasColumnName("status")
+                   .HasColumnType("varchar(20)") 
+                   .IsRequired();
 
-            builder
-            .Property(c => c.Cpf)
-            .HasColumnName("Cpf");
+            
+            builder.HasMany(u => u.Stores)
+                   .WithOne(s => s.Owner)
+                   .HasForeignKey(s => s.OwnerId)
+                   .HasConstraintName("fk_stores_owner")
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(u => u.CustomerInstances)
+                   .WithOne(c => c.User)
+                   .HasForeignKey(c => c.UserId)
+                   .HasConstraintName("fk_customers_user")
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            // Índices
+            builder.HasIndex(u => u.Email)
+                   .HasDatabaseName("ix_users_email")
+                   .IsUnique();
+
+            builder.HasIndex(u => u.Cpf)
+                   .HasDatabaseName("ix_users_cpf")
+                   .IsUnique();
+
+            builder.HasIndex(u => new { u.StateId, u.City })
+                   .HasDatabaseName("ix_users_location");
+
+            builder.HasIndex(u => u.Status)
+                   .HasDatabaseName("ix_users_status");
         }
     }
 }

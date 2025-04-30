@@ -7,114 +7,169 @@ namespace UFF.Infra.EntityConfig
     public class StoreConfiguration : IEntityTypeConfiguration<Store>
     {
         public void Configure(EntityTypeBuilder<Store> builder)
-        {
-            builder.ToTable("Store").HasKey(x => x.Id);
+        {            
+            builder.ToTable("stores")
+                   .HasKey(x => x.Id)
+                   .HasName("pk_stores");
             
-            builder.Property(c => c.RegisteringDate)
-                   .HasColumnName("RegisteringDate")
-                   .IsRequired();
+            builder.Property(s => s.RegisteringDate)
+                   .HasColumnName("registering_date")
+                   .HasColumnType("timestamp with time zone")
+                   .IsRequired()
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
-            builder.Property(c => c.LastUpdate)
-                   .HasColumnName("LastUpdate")
-                   .IsRequired();
+            builder.Property(s => s.LastUpdate)
+                   .HasColumnName("last_update")
+                   .HasColumnType("timestamp with time zone")
+                   .IsRequired()
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
+                   .ValueGeneratedOnAddOrUpdate();
 
-            builder.Property(c => c.Name)
-                   .HasColumnName("Name")
+            
+            builder.Property(s => s.Name)
+                   .HasColumnName("name")
+                   .HasColumnType("varchar(100)")
                    .HasMaxLength(100)
                    .IsRequired();
 
-            builder.Property(c => c.Address)
-                   .HasColumnName("Address")
-                   .HasMaxLength(200)
-                   .IsRequired();
-
-            builder.Property(c => c.Number)
-                   .HasColumnName("Number")
-                   .HasMaxLength(20)
-                   .IsRequired();
-
-            builder.Property(c => c.City)
-                   .HasColumnName("City")
-                   .HasMaxLength(100)
-                   .IsRequired();
-
-            builder.Property(c => c.State)
-                   .HasColumnName("State")
-                   .HasMaxLength(2)
-                   .IsRequired();
-
-            builder.Property(c => c.Cnpj)
-                   .HasColumnName("Cnpj")
+            builder.Property(s => s.Cnpj)
+                   .HasColumnName("cnpj")
+                   .HasColumnType("varchar(14)")
                    .HasMaxLength(14)
                    .IsRequired();
 
-            builder.Property(c => c.Votes)
-                .HasColumnName("Votes");
             
-            builder.Property(c => c.Rating)
-                .HasColumnName("Rating");
-
-            builder.Property(c => c.OpenAutomatic)
-                   .HasColumnName("OpenAutomatic")
+            builder.Property(s => s.Address)
+                   .HasColumnName("address")
+                   .HasColumnType("varchar(200)")
+                   .HasMaxLength(200)
                    .IsRequired();
 
-            builder.Property(c => c.StoreSubtitle)
-                   .HasColumnName("StoreSubtitle")
+            builder.Property(s => s.Number)
+                   .HasColumnName("number")
+                   .HasColumnType("varchar(20)")
+                   .HasMaxLength(20)
+                   .IsRequired();
+
+            builder.Property(s => s.City)
+                   .HasColumnName("city")
+                   .HasColumnType("varchar(100)")
+                   .HasMaxLength(100)
+                   .IsRequired();
+
+            builder.Property(s => s.State)
+                   .HasColumnName("state")
+                   .HasColumnType("char(2)")
+                   .HasMaxLength(2)
+                   .IsRequired();
+
+            
+            builder.Property(s => s.OpenAutomatic)
+                   .HasColumnName("open_automatic")
+                   .IsRequired()
+                   .HasDefaultValue(false);
+
+            builder.Property(s => s.StoreSubtitle)
+                   .HasColumnName("store_subtitle")
+                   .HasColumnType("varchar(100)")
                    .HasMaxLength(100);
 
-            builder.Property(c => c.AcceptOtherQueues)
-                   .HasColumnName("AcceptOtherQueues")
-                   .IsRequired();
+            builder.Property(s => s.AcceptOtherQueues)
+                   .HasColumnName("accept_other_queues")
+                   .IsRequired()
+                   .HasDefaultValue(false);
 
-            builder.Property(c => c.AnswerOutOfOrder)
-                   .HasColumnName("AnswerOutOfOrder")
-                   .IsRequired();
+            builder.Property(s => s.AnswerOutOfOrder)
+                   .HasColumnName("answer_out_of_order")
+                   .IsRequired()
+                   .HasDefaultValue(false);
 
-            builder.Property(c => c.AnswerScheduledTime)
-                   .HasColumnName("AnswerScheduledTime")
-                   .IsRequired();
+            builder.Property(s => s.AnswerScheduledTime)
+                   .HasColumnName("answer_scheduled_time")
+                   .IsRequired()
+                   .HasDefaultValue(false);
 
-            builder.Property(c => c.TimeRemoval)
-                   .HasColumnName("TimeRemoval");
+            builder.Property(s => s.TimeRemoval)
+                   .HasColumnName("time_removal")
+                   .HasColumnType("integer");
 
-            builder.Property(c => c.WhatsAppNotice)
-                   .HasColumnName("WhatsAppNotice")
-                   .IsRequired();
+            builder.Property(s => s.WhatsAppNotice)
+                   .HasColumnName("whatsapp_notice")
+                   .IsRequired()
+                   .HasDefaultValue(false);
 
-            builder.Property(c => c.LogoPath)
-                   .HasColumnName("LogoPath")
+            
+            builder.Property(s => s.LogoPath)
+                   .HasColumnName("logo_path")
+                   .HasColumnType("varchar(255)")
                    .HasMaxLength(255);
 
-            builder.Property(c => c.WallPaperPath)
-                   .HasColumnName("WallPaperPath")
+            builder.Property(s => s.WallPaperPath)
+                   .HasColumnName("wallpaper_path")
+                   .HasColumnType("varchar(255)")
                    .HasMaxLength(255);
 
-            builder.Property(c => c.Status)
-                   .HasColumnName("Status")
+            
+            builder.Property(s => s.Rating)
+                   .HasColumnName("rating")
+                   .HasColumnType("numeric(3,2)")
+                   .HasDefaultValue(0);
+
+            builder.Property(s => s.Votes)
+                   .HasColumnName("votes")
+                   .HasDefaultValue(0);
+
+            
+            builder.Property(s => s.Status)
+                   .HasColumnName("status")
+                   .HasColumnType("varchar(20)")
                    .HasConversion<string>()
                    .IsRequired();
+
             
             builder.HasOne(s => s.Owner)
                    .WithMany(u => u.Stores)
-                   .IsRequired()
                    .HasForeignKey(s => s.OwnerId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .HasConstraintName("fk_stores_owner")
+                   .OnDelete(DeleteBehavior.Restrict); 
 
             builder.HasOne(s => s.Category)
-                    .WithMany(u => u.Stores)
-                    .IsRequired()
-                    .HasForeignKey(s => s.CategoryId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                   .WithMany(c => c.Stores)
+                   .HasForeignKey(s => s.CategoryId)
+                   .HasConstraintName("fk_stores_category")
+                   .OnDelete(DeleteBehavior.Restrict); 
 
             builder.HasMany(s => s.OpeningHours)
                    .WithOne(oh => oh.Store)
-                   .HasForeignKey(oh => oh.StoreId)
+                   .HasForeignKey(oh => oh.StoreId)                  
+                   .HasConstraintName("fk_opening_hours_store")
                    .OnDelete(DeleteBehavior.Cascade);
-            
+
             builder.HasMany(s => s.HighLights)
                    .WithOne(hl => hl.Store)
                    .HasForeignKey(hl => hl.StoreId)
+                   .HasConstraintName("fk_highlights_store")
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // Índices
+            builder.HasIndex(s => s.Name)
+                   .HasDatabaseName("ix_stores_name");
+
+            builder.HasIndex(s => s.Cnpj)
+                   .HasDatabaseName("ix_stores_cnpj")
+                   .IsUnique();
+
+            builder.HasIndex(s => s.OwnerId)
+                   .HasDatabaseName("ix_stores_owner_id");
+
+            builder.HasIndex(s => s.CategoryId)
+                   .HasDatabaseName("ix_stores_category_id");
+
+            builder.HasIndex(s => s.Status)
+                   .HasDatabaseName("ix_stores_status");
+                        
+            builder.HasIndex(s => new { s.State, s.City })
+                   .HasDatabaseName("ix_stores_location");
         }
     }
 }

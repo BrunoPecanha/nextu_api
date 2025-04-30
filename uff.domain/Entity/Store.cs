@@ -23,13 +23,15 @@ namespace UFF.Domain.Entity
         public int? TimeRemoval { get; private set; }
         public bool WhatsAppNotice { get; private set; }
         public string LogoPath { get; set; }
-        public string WallPaperPath { get; set; }
-        public Category Category { get; set; }
-        public int CategoryId { get; set; }
-        public decimal Rating { get; set; }
-        public int Votes { get; set; }
+        public string WallPaperPath { get; private set; }
+        public Category Category { get; private set; }
+        public int CategoryId { get; private set; }
+        public decimal Rating { get; private set; }
+        public int Votes { get; private set; }
         public virtual ICollection<OpeningHours> OpeningHours { get; private set; } = new List<OpeningHours>();
         public virtual ICollection<HighLight> HighLights { get; private set; } = new List<HighLight>();
+        public virtual ICollection<Queue> Queues { get; private set; } = new List<Queue>();
+        public virtual ICollection<Service> Services { get; private set; } = new List<Service>();
         public int OwnerId { get; private set; }
         public User Owner { get; private set; }
         public StatusEnum Status { get; private set; }
@@ -88,18 +90,7 @@ namespace UFF.Domain.Entity
 
             //UpdateDestaques(command.Destaques);
 
-        }
-
-        private void UpdateHorarios(List<OpeningHoursCommand> horariosDto)
-        {
-            // Implementar lógica de atualização dos horários
-            // Pode ser: limpar e adicionar todos novamente, ou fazer merge
-        }
-
-        private void UpdateDestaques(List<HighLightCommand> destaquesDto)
-        {
-            // Implementar lógica de atualização dos destaques
-        }
+        }       
 
         public bool IsValid()
         {

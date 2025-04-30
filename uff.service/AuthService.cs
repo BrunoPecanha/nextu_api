@@ -6,10 +6,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using UFF.Domain.Repository;
-using UFF.Domain.Services;
 using UFF.Domain.Commands;
 using UFF.Domain.Entity;
+using UFF.Domain.Repository;
 
 namespace UFF.Service
 {

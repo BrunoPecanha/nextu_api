@@ -8,14 +8,14 @@ namespace UFF.Domain.Entity
         private OpeningHours()
         {
         }
-        public string WeekDay { get; set; }
-        public TimeSpan? Start { get; set; }
-        public TimeSpan? End { get; set; }
-        public bool Activated { get; set; }
+        public string WeekDay { get; private set; }
+        public TimeSpan? Start { get; private set; }
+        public TimeSpan? End { get; private set; }
+        public bool Activated { get; private set; }
         public int StoreId { get; private set; }
         public Store Store { get; private set; }
 
-        public OpeningHours(OpeningHoursCommand command)
+        public OpeningHours(OpeningHoursCreateCommand command)
         {
             WeekDay = command.WeekDay;
             Start = command.Start;
