@@ -2,7 +2,7 @@
 
 namespace UFF.Domain.Commands.Store
 {
-    public class OpeningHoursCommand
+    public class OpeningHoursCreateCommand
     {
         public string WeekDay { get; set; }
         public TimeSpan? Start { get; set; }

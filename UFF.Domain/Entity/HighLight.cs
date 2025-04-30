@@ -14,7 +14,7 @@ namespace UFF.Domain.Entity
         public int StoreId { get; private set; }
         public Store Store { get; private set; }
 
-        public HighLight(HighLightCommand command)
+        public HighLight(HighLightCreateCommand command)
         {
             Phrase = command.Frase;
             Icon = command.Icone;

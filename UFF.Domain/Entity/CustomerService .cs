@@ -1,0 +1,30 @@
+﻿using System;
+using UFF.Domain.Commands.Customer;
+using UFF.Domain.Entity;
+
+public class CustomerService : To
+{
+    private CustomerService()
+    {
+    }
+
+    public CustomerService(CustomerServiceCreateCommand command)
+    {
+        CustomerId = command.CustomerId;
+        ServiceId = command.ServiceId;
+        QueueId = command.QueueId;
+        FinalPrice = command.FinalPrice;
+    }
+
+    public int CustomerId { get; private set; }
+    public Customer Customer { get; private set; }
+
+    public int ServiceId { get; private set; }
+    public Service Service { get; private set; }
+
+    public decimal? FinalPrice { get; private set; }
+    public TimeSpan? Duration { get; private set; }
+
+    public int QueueId { get; private set; }
+    public Queue Queue { get; private set; }
+}
