@@ -24,7 +24,8 @@ namespace UFF.Domain.Entity
         public string Password { get; private set; }
         public int? StoreId { get; private set; }
         public ProfileEnum Profile { get; private set; }
-        public ICollection<Store> Stores { get; set; } = new List<Store>();
+        public ICollection<Customer> CustomerInstances { get; private set; } = new List<Customer>();
+        public ICollection<Store> Stores { get; private set; } = new List<Store>();
 
         public User(UserCreateCommand user)
         {
