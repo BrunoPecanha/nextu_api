@@ -1,0 +1,14 @@
+﻿using System;
+using UFF.Domain.Enum;
+
+namespace UFF.Domain.Dto
+{
+    public class QueueDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime Date { get; set; }
+        public QueueStatusEnum Status { get; set; }
+        public int CurrentCount { get; set; }
+    }
+}

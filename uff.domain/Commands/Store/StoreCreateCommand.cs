@@ -21,8 +21,8 @@ namespace UFF.Domain.Commands.Store
         public string LogoPath { get; set; }
         public string WallPaperPath { get; set; }
         public int CategoryId { get; set; }
-        public virtual ICollection<OpeningHoursCommand> OpeningHours { get; private set; } = new List<OpeningHoursCommand>();
-        public virtual ICollection<HighLightCommand> HighLights { get; private set; } = new List<HighLightCommand>();
+        public virtual ICollection<OpeningHoursCreateCommand> OpeningHours { get; private set; } = new List<OpeningHoursCreateCommand>();
+        public virtual ICollection<HighLightCreateCommand> HighLights { get; private set; } = new List<HighLightCreateCommand>();
 
         public bool IsValid()
         {
