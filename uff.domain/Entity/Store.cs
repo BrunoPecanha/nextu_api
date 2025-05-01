@@ -104,7 +104,11 @@ namespace UFF.Domain.Entity
         public void SetOwner(User owner)
         {
             OwnerId = owner.Id;
-            Owner = owner;
+        }
+
+        public void SetCategory(Category category)
+        {
+            CategoryId = category.Id;
         }
 
         public void Disable() => Status = StatusEnum.Disabled;

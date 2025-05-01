@@ -2,7 +2,7 @@
 {
     public class HighLightCreateCommand
     {
-        public string Frase { get; set; }
-        public string Icone { get; set; }
+        public string Phrase { get; set; }
+        public string Icon { get; set; }
     }
 }
