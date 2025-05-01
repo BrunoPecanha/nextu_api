@@ -30,7 +30,7 @@ namespace WeApi.Controllers
 
         [HttpGet("{id}")]
       //  [Authorize]
-        public async Task<IActionResult> GetByIdAsync([FromRoute]int id)
+        public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var store = await _service.GetByIdAsync(id);
 

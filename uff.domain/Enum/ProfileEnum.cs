@@ -3,8 +3,10 @@
 namespace UFF.Domain.Enum {
     public enum ProfileEnum
     {
-        [Description("User")]
-        User,
+        [Description("Customer")]
+        Customer,
+        [Description("Employee")]
+        Employee,
         [Description("Owner")]
         Owner,
         [Description("Admin")]

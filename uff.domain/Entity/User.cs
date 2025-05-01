@@ -42,7 +42,7 @@ namespace UFF.Domain.Entity
             City = user.City;
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
-            Profile = ProfileEnum.User;
+            Profile = ProfileEnum.Customer;
         }
 
         public void UpdateAllUserInfo(UserEditCommand user)
@@ -69,6 +69,9 @@ namespace UFF.Domain.Entity
                 || string.IsNullOrEmpty(Password));
              
         }
+
+        public void ChageUserToOwner()
+            => Profile= ProfileEnum.Owner;
 
         public void Disable()
             => Status = StatusEnum.Disabled;
