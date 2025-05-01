@@ -24,12 +24,12 @@ namespace WeApi.Controllers
             var response = await _service.CreateAsync(command);
 
             if (!response.Valid)
-                return BadRequest(response.Data);
+                return BadRequest(response);
 
             return Ok(response);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -42,6 +42,18 @@ namespace WeApi.Controllers
         }
 
     
+        [HttpGet("owner/{id}")]
+        //[Authorize]
+        public async Task<IActionResult> GetByOwnerId([FromRoute] int id)
+        {
+            var stores = await _service.GetByOwnerIdAsync(id);
+
+            if (!stores.Valid)
+                BadRequest(stores.Data);
+
+            return Ok(stores);
+        }
+
         [HttpGet("{categoryId}/stores")]
 
         public async Task<IActionResult> GetByCategoryId([FromRoute] int categoryId)
@@ -55,7 +67,6 @@ namespace WeApi.Controllers
         }
 
 
-        //TODO - Implementar paginação - Store
         [HttpGet("all")]
         //  [Authorize]
         public async Task<IActionResult> GetAllAsync()

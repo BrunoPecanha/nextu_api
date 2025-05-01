@@ -17,13 +17,15 @@ namespace UFF.Service
     {
         private readonly IStoreRepository _storeRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
-        public StoreService(IStoreRepository repository, IMapper mapper, IUserRepository userRepository)
+        public StoreService(IStoreRepository repository, IMapper mapper, IUserRepository userRepository, ICategoryRepository categoryRepository)
         {
             _storeRepository = repository;
             _mapper = mapper;
             _userRepository = userRepository;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<CommandResult> GetAllAsync()
@@ -41,7 +43,7 @@ namespace UFF.Service
             var store = await _storeRepository.GetByIdAsync(id);
 
             if (store is null)
-                return new CommandResult(false, store);            
+                return new CommandResult(false, store);
 
             return new CommandResult(true, _mapper.Map<StoreDto>(store));
         }
@@ -56,10 +58,22 @@ namespace UFF.Service
             return new CommandResult(true, _mapper.Map<StoreDto[]>(store));
         }
 
+        public async Task<CommandResult> GetByOwnerIdAsync(int id)
+        {
+            var stores = await _storeRepository.GetByOwnerIdAsync(id);
+
+            if (stores is null)
+                return new CommandResult(false, stores);
+
+            return new CommandResult(true, _mapper.Map<StoreDto[]>(stores));
+        }
+
         public async Task<CommandResult> CreateAsync(StoreCreateCommand command)
         {
             try
-            {             
+            {
+                // Adicionar validações
+                //CNPJ EXISTENTE NAO GRAVAR
                 var store = new Store(command);
 
                 if (!store.IsValid())
@@ -70,7 +84,16 @@ namespace UFF.Service
                 if (owner is null)
                     return new CommandResult(false, Resources.OwnerNotFound);
 
+                owner.ChageUserToOwner();
+
                 store.SetOwner(owner);
+
+                var category = await _categoryRepository.GetByIdAsync(command.CategoryId);
+
+                if (category is null)
+                    return new CommandResult(false, Resources.OwnerNotFound);
+
+                store.SetCategory(category);
 
                 await _storeRepository.AddAsync(store);
                 await _storeRepository.SaveChangesAsync();
@@ -79,7 +102,7 @@ namespace UFF.Service
             }
             catch (Exception ex)
             {
-                return new CommandResult(false, ex.Message);
+                return new CommandResult(false, ex, ex.InnerException.Message);
             }
         }
 
@@ -104,7 +127,6 @@ namespace UFF.Service
                 return new CommandResult(false, ex.Message);
             }
         }
-
         public async Task<CommandResult> DeleteAsync(int id)
         {
             try

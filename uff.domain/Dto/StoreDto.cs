@@ -23,6 +23,7 @@ namespace UFF.Domain.Dto
         public bool WhatsAppNotice { get; private set; }
         public string LogoPath { get; set; }
         public string WallPaperPath { get; set; }
+        public int CategoryId { get; set; }
         public virtual ICollection<OpeningHoursDto> OpeningHours { get; private set; } = new List<OpeningHoursDto>();
         public virtual ICollection<HighLightDto> HighLights { get; private set; } = new List<HighLightDto>();
     }
