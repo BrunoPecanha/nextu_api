@@ -16,8 +16,8 @@ namespace UFF.Domain.Entity
 
         public HighLight(HighLightCreateCommand command)
         {
-            Phrase = command.Frase;
-            Icon = command.Icone;
+            Phrase = command.Phrase;
+            Icon = command.Icon;
             Activated = true;
         }
     }
