@@ -78,6 +78,18 @@ namespace WeApi.Controllers
             return Ok(customers);
         }
 
+        [HttpGet("{customerId}/customer-in-queue")]
+        //[Authorize]
+        public async Task<IActionResult> GetCustomersInQueueByCustomerId([FromRoute]int customerId)
+        {
+            var customers = await _service.GetCustomerInQueueByCustomerId(customerId);
+
+            if (customers == null)
+                BadRequest(customers);
+
+            return Ok(customers);
+        }
+
         [HttpGet("{idStore}")]
         //[Authorize]
         public async Task<IActionResult> GetAllByStoreIdAsync(int idStore)

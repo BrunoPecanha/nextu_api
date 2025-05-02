@@ -10,6 +10,5 @@
         public Queue Queue { get; private set; }
         public int CustomerId { get; private set; }
         public Customer Customer { get; private set; }
-
     }
 }
