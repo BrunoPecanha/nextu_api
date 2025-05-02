@@ -13,9 +13,21 @@ namespace WeApi.AutoMapper
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
 
+            CreateMap<CustomerInQueueForEmployeeDto, Customer>();
+            CreateMap<Customer, CustomerInQueueForEmployeeDto>()
+                  .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.Join(" ", src.User.Name, src.User.LastName)))
+                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => string.Join(", ", src.CustomerServices.Select(o => o.Service.Name).ToList())))
+                  .ForMember(dest => dest.TimeGotInQueue, opt => opt.MapFrom(src => src.TimeEnteredQueue.ToString("HH:mm")))
+                  .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
+                  .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
+                  .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
+                  .ForMember(dest => dest.InService, opt => opt.MapFrom(src => src.Status == CustomerStatusEnum.InService));
+
             CreateMap<CustomerInQueueReducedDto, Customer>();
             CreateMap<Customer, CustomerInQueueReducedDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.Join(" ", src.User.Name, src.User.LastName)))
                   .ForMember(dest => dest.ServiceQtd, opt => opt.MapFrom(src => src.CustomerServices.Count()))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
@@ -26,7 +38,7 @@ namespace WeApi.AutoMapper
             CreateMap<CustomerInQueueComplementDto, Customer>();
             CreateMap<Customer, CustomerInQueueComplementDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                  .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, "À vista")))
+                  .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, src.Payment.Notes)))
                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices.Select(o => new ServiceDto(o.Service.Name, o.Service.Category.Icon, o.Service.Price))));
 
             CreateMap<PaymentDto, Payment>();
