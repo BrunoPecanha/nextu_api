@@ -6,6 +6,7 @@ namespace UFF.Domain.Dto
     {
         public int? Id { get; set; }
         public int Position { get; set; }
+        public string Name { get; set; }
         public int ServiceQtd { get; set; }
         public string Payment { get; set; }
         public string PaymentIcon { get; set; }

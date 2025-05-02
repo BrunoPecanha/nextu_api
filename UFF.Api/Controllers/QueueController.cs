@@ -80,7 +80,7 @@ namespace WeApi.Controllers
 
         [HttpGet("{customerId}/customer-in-queue")]
         //[Authorize]
-        public async Task<IActionResult> GetCustomersInQueueByCustomerId([FromRoute]int customerId)
+        public async Task<IActionResult> GetCustomerInQueueReducedByCustomerId([FromRoute]int customerId)
         {
             var customers = await _service.GetCustomerInQueueReducedByCustomerId(customerId);
 

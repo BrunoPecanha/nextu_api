@@ -77,7 +77,10 @@ namespace UFF.Service
             if (customers == null)
                 return new CommandResult(false, customers);
 
-            return new CommandResult(true, _mapper.Map<CustomerInQueueReducedDto[]>(customers));
+            var dto = _mapper.Map<CustomerInQueueForEmployeeDto[]>(customers);
+          //  await UpdateCustomerTimeToWait(dto);            
+
+            return new CommandResult(true, dto);
         }
 
         public async Task<CommandResult> GetCustomerInQueueReducedByCustomerId(int customerId)
@@ -129,6 +132,9 @@ namespace UFF.Service
         {
             throw new NotImplementedException();
         }
+
+        //private async Task UpdateCustomerTimeToWait(CustomerInQueueForEmployeeDto customerInQueueDto)
+        // => customerInQueueDto.TimeGotInQueue = await _queueRepository.GetEstimatedWaitTimeForCustomer(customerInQueueDto.QueueId, customerInQueueDto.Position);
 
         private async Task UpdateCustomerTimeToWait(CustomerInQueueReducedDto customerInQueueDto)
          => customerInQueueDto.TimeToWait = await _queueRepository.GetEstimatedWaitTimeForCustomer(customerInQueueDto.QueueId, customerInQueueDto.Position);
