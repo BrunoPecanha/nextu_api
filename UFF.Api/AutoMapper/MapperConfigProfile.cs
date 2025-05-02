@@ -16,15 +16,29 @@ namespace WeApi.AutoMapper
             CreateMap<CustomerInQueueReducedDto, Customer>();
             CreateMap<Customer, CustomerInQueueReducedDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.Join(" ", src.User.Name, src.User.LastName)))
-                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => string.Join(", ", src.CustomerServices.Select(o => o.Service.Name).ToList())))
-                  .ForMember(dest => dest.TimeGotInQueue, opt => opt.MapFrom(src => src.TimeEnteredQueue.ToString("HH:mm")))
+                  .ForMember(dest => dest.ServiceQtd, opt => opt.MapFrom(src => src.CustomerServices.Count()))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
+                  .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
-                  //.ForMember(dest => dest.Ser, opt => opt.MapFrom(src => src.Payment.Icon))
-                  .ForMember(dest => dest.InService, opt => opt.MapFrom(src => src.Status == CustomerStatusEnum.InService));
-                  
+                  .ForMember(dest => dest.LogoPath, opt => opt.MapFrom(src => src.Queue.Store.LogoPath));
+
+            CreateMap<CustomerInQueueComplementDto, Customer>();
+            CreateMap<Customer, CustomerInQueueComplementDto>()
+                  .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                  .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, "À vista")))
+                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices.Select(o => new ServiceDto(o.Service.Name, o.Service.Category.Icon, o.Service.Price))));
+
+            CreateMap<PaymentDto, Payment>();
+            CreateMap<Payment, PaymentDto>()
+                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                 .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Icon));
+
+            CreateMap<ServiceDto, Service>();
+            CreateMap<Service, ServiceDto>()
+                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                  .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon))
+                  .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price));
 
             CreateMap<StoreDto, Store>();
             CreateMap<Store, StoreDto>()
