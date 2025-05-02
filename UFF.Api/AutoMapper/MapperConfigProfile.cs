@@ -13,15 +13,18 @@ namespace WeApi.AutoMapper
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
 
-            CreateMap<CustomerInQueueDto, Customer>();
-            CreateMap<Customer, CustomerInQueueDto>()
+            CreateMap<CustomerInQueueReducedDto, Customer>();
+            CreateMap<Customer, CustomerInQueueReducedDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                   .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.Join(" ", src.User.Name, src.User.LastName)))
                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => string.Join(", ", src.CustomerServices.Select(o => o.Service.Name).ToList())))
-                  .ForMember(dest => dest.TimeGotInQueue, opt => opt.MapFrom(src => src.RegisteringDate.ToString("HH:mm")))
+                  .ForMember(dest => dest.TimeGotInQueue, opt => opt.MapFrom(src => src.TimeEnteredQueue.ToString("HH:mm")))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
+                  .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
+                  //.ForMember(dest => dest.Ser, opt => opt.MapFrom(src => src.Payment.Icon))
                   .ForMember(dest => dest.InService, opt => opt.MapFrom(src => src.Status == CustomerStatusEnum.InService));
+                  
 
             CreateMap<StoreDto, Store>();
             CreateMap<Store, StoreDto>()

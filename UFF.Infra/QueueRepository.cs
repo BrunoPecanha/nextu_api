@@ -71,5 +71,33 @@ namespace UFF.Infra
                 .AsNoTracking()
                 .Select(x => x.Customer)
                 .ToArrayAsync();
+
+        public async Task<Customer> GetCustomerInQueueByCustomerId(int customerId)
+              => await _dbContext.Customer
+                  .Include(x => x.User)
+                  .Include(x => x.Payment)
+                  .Include(x => x.Queue)
+                  .ThenInclude(x => x.Employee)
+                  .Include(g => g.CustomerServices)
+                   .ThenInclude(x => x.Service)
+                  .AsNoTracking()
+                  .Where(x => x.Status == CustomerStatusEnum.Waiting)
+                  .FirstOrDefaultAsync(y => y.Id == customerId);
+
+        public async Task<TimeSpan> GetEstimatedWaitTimeForCustomer(int queueId, int currentCustomerPosition)
+        {
+            var totalMinutes = await _dbContext.Queue
+                .AsNoTracking()
+                .Where(q => q.Id == queueId)
+                .SelectMany(q => q.QueueCustomers)
+                .Select(qc => qc.Customer)
+                .Where(c => c.Status == CustomerStatusEnum.Waiting)
+                .Where(c => c.Position < currentCustomerPosition)
+                .SelectMany(c => c.CustomerServices)
+                .Select(cs => cs.Service) 
+                .SumAsync(s => s.Duration.TotalMinutes); 
+
+            return TimeSpan.FromMinutes(totalMinutes);
+        }
     }
 }
