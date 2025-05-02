@@ -20,9 +20,8 @@ namespace UFF.Domain.Entity
         public string? Notes { get; private set; }
         public int? Rating { get; private set; }
         public string? Review { get; private set; }
-
         public int Position { get; private set; }
-        public DateTime? TimeEnteredQueue { get; private set; } = DateTime.UtcNow;
+        public DateTime TimeEnteredQueue { get; private set; } = DateTime.UtcNow;
         public DateTime? TimeCalledInQueue { get; private set; }
         public DateTime? ServiceStartTime { get; private set; }
         public DateTime? ServiceEndTime { get; private set; }
