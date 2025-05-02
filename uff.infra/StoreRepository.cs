@@ -8,24 +8,52 @@ using UFF.Domain.Repository;
 
 namespace UFF.Infra
 {
-    public class CategoryRepository : RepositoryBase<Category>, ICategoryRepository
+    public class StoreRepository : RepositoryBase<Store>, IStoreRepository
     {
         private readonly IUffContext _dbContext;
 
-        public CategoryRepository(IUffContext dbContext)
+        public StoreRepository(IUffContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Category>> GetAllAsync()
-            => await _dbContext.Category
-                             .OrderBy(x => x.Id)
+        public async Task<IEnumerable<Store>> GetAllAsync()
+            => await _dbContext.Store
+                             .OrderByDescending(x => x.RegisteringDate)
                              .AsNoTracking()
-                             .ToArrayAsync();                            
+                             .Include(x => x.Owner)
+                             .Include(x => x.Category)
+                             .ToArrayAsync();
 
-        public async Task<Category> GetByIdAsync(int id)
-            => await _dbContext.Category
+        public async Task<Store> GetByIdAsync(int id)
+            => await _dbContext.Store
+                               .Include(x => x.Category)
                                .AsNoTracking()
-                               .FirstOrDefaultAsync(x => x.Id == id);       
+                               .Include(x => x.Owner)
+                               .FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<Store[]> GetByCategoryId(int id)
+            => await _dbContext.Store
+                           .Include(x => x.Category)
+                           .Where(x => x.Category.Id == id)
+                           .AsNoTracking()
+                           .ToArrayAsync();
+
+        public async Task<Store[]> GetByOwnerIdAsync(int id)
+            => await _dbContext.Store
+                           .Include(x => x.Category)
+                           .Include(x => x.Owner)
+                           .Where(x => x.Owner.Id == id)
+                           .AsNoTracking()
+                           .ToArrayAsync();
+
+        public async Task<Store[]> GetByEmployeeId(int id)
+          => await _dbContext.EmployeeStore
+                         .Include(x => x.Store)
+                         .ThenInclude(y => y.Category)
+                         .Where(x => x.EmployeeId == id)
+                         .AsNoTracking()
+                         .Select(x => x.Store)
+                         .ToArrayAsync();
     }
 }

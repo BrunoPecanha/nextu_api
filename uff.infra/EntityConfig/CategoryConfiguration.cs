@@ -38,6 +38,11 @@ namespace UFF.Infra.EntityConfig
                 .HasColumnType("varchar(255)")
                 .HasMaxLength(255);
 
+            builder.Property(c => c.Icon)
+             .HasColumnName("icon")
+             .HasColumnType("varchar(15)")
+             .HasMaxLength(255);
+
             builder.HasIndex(c => c.Name)
                 .HasDatabaseName("ix_categories_name")
                 .IsUnique();

@@ -12,8 +12,8 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    [Migration("20250429234826_Adiciona script")]
-    partial class Adicionascript
+    [Migration("20250502004854_poe_datas_da_cliente_x_fila_como_nullables")]
+    partial class poe_datas_da_cliente_x_fila_como_nullables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,10 +47,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("final_price");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update");
@@ -82,6 +78,11 @@ namespace UFF.Infra.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(15)")
+                        .HasColumnName("icon");
 
                     b.Property<string>("ImgPath")
                         .HasMaxLength(255)
@@ -179,6 +180,53 @@ namespace UFF.Infra.Migrations
                         .HasDatabaseName("ix_customers_user_id");
 
                     b.ToTable("customers", (string)null);
+                });
+
+            modelBuilder.Entity("UFF.Domain.Entity.EmployeeStore", b =>
+                {
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("integer")
+                        .HasColumnName("store_id");
+
+                    b.Property<bool?>("IsActive")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<DateTime>("LastUpdate")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_update")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+
+                    b.Property<DateTime>("RegisteringDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("registering_date")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+
+                    b.HasKey("EmployeeId", "StoreId")
+                        .HasName("pk_employee_stores");
+
+                    b.HasIndex("EmployeeId")
+                        .HasDatabaseName("ix_employee_stores_user_id");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_employee_stores_is_active");
+
+                    b.HasIndex("RegisteringDate")
+                        .HasDatabaseName("ix_employee_stores_registering_date");
+
+                    b.HasIndex("StoreId")
+                        .HasDatabaseName("ix_employee_stores_store_id");
+
+                    b.ToTable("employee_stores", (string)null);
                 });
 
             modelBuilder.Entity("UFF.Domain.Entity.HighLight", b =>
@@ -307,6 +355,10 @@ namespace UFF.Infra.Migrations
                         .HasColumnName("date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("employee_id");
+
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update");
@@ -336,6 +388,8 @@ namespace UFF.Infra.Migrations
                     b.HasIndex("Date")
                         .HasDatabaseName("ix_queues_date");
 
+                    b.HasIndex("EmployeeId");
+
                     b.HasIndex("Status")
                         .HasDatabaseName("ix_queues_status");
 
@@ -358,10 +412,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("customer_id");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
                     b.Property<bool>("IsPriority")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -380,11 +430,11 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date");
 
-                    b.Property<DateTime>("ServiceEndTime")
+                    b.Property<DateTime?>("ServiceEndTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("service_end_time");
 
-                    b.Property<DateTime>("ServiceStartTime")
+                    b.Property<DateTime?>("ServiceStartTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("service_start_time");
 
@@ -393,11 +443,12 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(30)")
                         .HasColumnName("status");
 
-                    b.Property<DateTime>("TimeCalledInQueue")
+                    b.Property<DateTime?>("TimeCalledInQueue")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("time_called_in_queue");
 
-                    b.Property<DateTime>("TimeEnteredQueue")
+                    b.Property<DateTime?>("TimeEnteredQueue")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("time_entered_queue")
@@ -808,10 +859,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("status");
 
-                    b.Property<int?>("StoreId")
-                        .HasColumnType("integer")
-                        .HasColumnName("store_id");
-
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -883,6 +930,27 @@ namespace UFF.Infra.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("UFF.Domain.Entity.EmployeeStore", b =>
+                {
+                    b.HasOne("UFF.Domain.Entity.User", "Employee")
+                        .WithMany("EmployeeStore")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_employee_stores_users");
+
+                    b.HasOne("UFF.Domain.Entity.Store", "Store")
+                        .WithMany("EmployeeStore")
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_employee_stores_stores");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Store");
+                });
+
             modelBuilder.Entity("UFF.Domain.Entity.HighLight", b =>
                 {
                     b.HasOne("UFF.Domain.Entity.Store", "Store")
@@ -909,12 +977,21 @@ namespace UFF.Infra.Migrations
 
             modelBuilder.Entity("UFF.Domain.Entity.Queue", b =>
                 {
+                    b.HasOne("UFF.Domain.Entity.User", "Employee")
+                        .WithMany("Queues")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_queues_users");
+
                     b.HasOne("UFF.Domain.Entity.Store", "Store")
                         .WithMany("Queues")
                         .HasForeignKey("StoreId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_queues_stores");
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Store");
                 });
@@ -1006,6 +1083,8 @@ namespace UFF.Infra.Migrations
 
             modelBuilder.Entity("UFF.Domain.Entity.Store", b =>
                 {
+                    b.Navigation("EmployeeStore");
+
                     b.Navigation("HighLights");
 
                     b.Navigation("OpeningHours");
@@ -1018,6 +1097,10 @@ namespace UFF.Infra.Migrations
             modelBuilder.Entity("UFF.Domain.Entity.User", b =>
                 {
                     b.Navigation("CustomerInstances");
+
+                    b.Navigation("EmployeeStore");
+
+                    b.Navigation("Queues");
 
                     b.Navigation("Stores");
                 });
