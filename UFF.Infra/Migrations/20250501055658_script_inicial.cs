@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace UFF.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class Adicionascript : Migration
+    public partial class script_inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,6 +20,7 @@ namespace UFF.Infra.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     img_path = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
+                    icon = table.Column<string>(type: "varchar(15)", maxLength: 255, nullable: true),
                     registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
                     last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
@@ -115,6 +116,33 @@ namespace UFF.Infra.Migrations
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "employee_stores",
+                columns: table => new
+                {
+                    user_id = table.Column<int>(type: "integer", nullable: false),
+                    store_id = table.Column<int>(type: "integer", nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_employee_stores", x => new { x.user_id, x.store_id });
+                    table.ForeignKey(
+                        name: "fk_employee_stores_stores",
+                        column: x => x.store_id,
+                        principalTable: "stores",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_employee_stores_users",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -371,6 +399,26 @@ namespace UFF.Infra.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_employee_stores_is_active",
+                table: "employee_stores",
+                column: "is_active");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_employee_stores_registering_date",
+                table: "employee_stores",
+                column: "registering_date");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_employee_stores_store_id",
+                table: "employee_stores",
+                column: "store_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_employee_stores_user_id",
+                table: "employee_stores",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_highlights_registering_date",
                 table: "highlights",
                 column: "registering_date");
@@ -542,6 +590,9 @@ namespace UFF.Infra.Migrations
         {
             migrationBuilder.DropTable(
                 name: "customer_services");
+
+            migrationBuilder.DropTable(
+                name: "employee_stores");
 
             migrationBuilder.DropTable(
                 name: "highlights");

@@ -9,5 +9,6 @@ namespace UFF.Domain.Repository
         public Task<Store[]> GetByCategoryId(int id);        
         public Task<IEnumerable<Store>> GetAllAsync();
         public Task<Store[]> GetByOwnerIdAsync(int id);
+        public Task<Store[]> GetByEmployeeId(int id);
     }
 }

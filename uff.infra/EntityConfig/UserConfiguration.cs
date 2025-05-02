@@ -7,12 +7,12 @@ namespace UFF.Infra.EntityConfig
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
-        {            
+        {
             builder.ToTable("users")
                    .HasKey(x => x.Id)
                    .HasName("pk_users");
 
-            
+
             builder.Property(u => u.RegisteringDate)
                    .HasColumnName("registering_date")
                    .HasColumnType("timestamp with time zone")
@@ -26,7 +26,7 @@ namespace UFF.Infra.EntityConfig
                    .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                    .ValueGeneratedOnAddOrUpdate();
 
-            
+
             builder.Property(u => u.Name)
                    .HasColumnName("name")
                    .HasColumnType("varchar(100)")
@@ -45,7 +45,7 @@ namespace UFF.Infra.EntityConfig
                    .HasMaxLength(11)
                    .IsRequired();
 
-            
+
             builder.Property(u => u.Email)
                    .HasColumnName("email")
                    .HasColumnType("varchar(100)")
@@ -57,7 +57,7 @@ namespace UFF.Infra.EntityConfig
                    .HasColumnType("varchar(20)")
                    .HasMaxLength(20)
                    .IsRequired();
-            
+
             builder.Property(u => u.Address)
                    .HasColumnName("address")
                    .HasColumnType("varchar(200)")
@@ -78,7 +78,7 @@ namespace UFF.Infra.EntityConfig
                    .HasColumnType("char(2)")
                    .HasMaxLength(2);
 
-            
+
             builder.Property(u => u.Password)
                    .HasColumnName("password")
                    .HasColumnType("varchar(255)")
@@ -87,10 +87,14 @@ namespace UFF.Infra.EntityConfig
 
             builder.Property(u => u.Status)
                    .HasColumnName("status")
-                   .HasColumnType("varchar(20)") 
+                   .HasColumnType("varchar(20)")
                    .IsRequired();
 
-            
+            builder.HasMany(u => u.Queues)
+                   .WithOne(q => q.Employee)
+                   .HasForeignKey(q => q.EmployeeId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasMany(u => u.Stores)
                    .WithOne(s => s.Owner)
                    .HasForeignKey(s => s.OwnerId)

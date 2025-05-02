@@ -22,10 +22,11 @@ namespace UFF.Domain.Entity
         public StatusEnum Status { get; private set; }
         public string Email { get; private set; }
         public string Password { get; private set; }
-        public int? StoreId { get; private set; }
         public ProfileEnum Profile { get; private set; }
         public ICollection<Customer> CustomerInstances { get; private set; } = new List<Customer>();
         public ICollection<Store> Stores { get; private set; } = new List<Store>();
+        public virtual ICollection<EmployeeStore> EmployeeStore { get; private set; } = new List<EmployeeStore>();
+        public virtual ICollection<Queue> Queues { get; private set; } = new List<Queue>();
 
         public User(UserCreateCommand user)
         {

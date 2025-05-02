@@ -12,6 +12,8 @@ namespace UFF.Domain.Enum {
         [Description("Done")]
         Done,
         [Description("Absent")]
-        Absent
+        Absent,
+        [Description("Canceled")]
+        Canceled
     }
 }
