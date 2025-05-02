@@ -32,6 +32,7 @@ namespace UFF.Domain.Entity
         public virtual ICollection<HighLight> HighLights { get; private set; } = new List<HighLight>();
         public virtual ICollection<Queue> Queues { get; private set; } = new List<Queue>();
         public virtual ICollection<Service> Services { get; private set; } = new List<Service>();
+        public virtual ICollection<EmployeeStore> EmployeeStore { get; private set; } = new List<EmployeeStore>();
         public int OwnerId { get; private set; }
         public User Owner { get; private set; }
         public StatusEnum Status { get; private set; }

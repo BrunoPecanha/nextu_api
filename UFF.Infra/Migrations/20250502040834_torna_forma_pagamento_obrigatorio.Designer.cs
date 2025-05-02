@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250502040834_torna_forma_pagamento_obrigatorio")]
+    partial class torna_forma_pagamento_obrigatorio
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,12 +126,6 @@ namespace UFF.Infra.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsPriority")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_priority");
-
                     b.Property<DateTime>("LastUpdate")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
@@ -142,10 +139,6 @@ namespace UFF.Infra.Migrations
                     b.Property<int>("PaymentId")
                         .HasColumnType("integer")
                         .HasColumnName("payment_id");
-
-                    b.Property<int>("Position")
-                        .HasColumnType("integer")
-                        .HasColumnName("position");
 
                     b.Property<int>("QueueId")
                         .HasColumnType("integer")
@@ -165,30 +158,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("text")
                         .HasColumnName("review");
 
-                    b.Property<DateTime?>("ServiceEndTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("service_end_time");
-
-                    b.Property<DateTime?>("ServiceStartTime")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("service_start_time");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("varchar(30)")
-                        .HasColumnName("status");
-
-                    b.Property<DateTime?>("TimeCalledInQueue")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("time_called_in_queue");
-
-                    b.Property<DateTime?>("TimeEnteredQueue")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("time_entered_queue")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
-
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
                         .HasColumnName("user_id");
@@ -199,9 +168,6 @@ namespace UFF.Infra.Migrations
                     b.HasIndex("PaymentId")
                         .HasDatabaseName("ix_customers_payment_id");
 
-                    b.HasIndex("Position")
-                        .HasDatabaseName("ix_queue_customers_position");
-
                     b.HasIndex("QueueId")
                         .HasDatabaseName("ix_customers_queue_id");
 
@@ -209,18 +175,8 @@ namespace UFF.Infra.Migrations
                         .HasDatabaseName("ix_customers_rating")
                         .HasFilter("rating IS NOT NULL");
 
-                    b.HasIndex("Status")
-                        .HasDatabaseName("ix_queue_customers_status");
-
-                    b.HasIndex("TimeEnteredQueue")
-                        .HasDatabaseName("ix_queue_customers_time_entered");
-
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_customers_user_id");
-
-                    b.HasIndex("QueueId", "Position")
-                        .IsDescending(false, true)
-                        .HasDatabaseName("ix_queue_customers_queue_position");
 
                     b.ToTable("customers", (string)null);
                 });
@@ -489,18 +445,69 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("customer_id");
 
+                    b.Property<bool>("IsPriority")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_priority");
+
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("integer")
+                        .HasColumnName("position");
 
                     b.Property<DateTime>("RegisteringDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date");
 
+                    b.Property<DateTime?>("ServiceEndTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("service_end_time");
+
+                    b.Property<DateTime?>("ServiceStartTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("service_start_time");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("TimeCalledInQueue")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("time_called_in_queue");
+
+                    b.Property<DateTime?>("TimeEnteredQueue")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("time_entered_queue")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+
                     b.HasKey("QueueId", "CustomerId")
                         .HasName("pk_queue_customers");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("ix_queue_customers_customer_id");
+
+                    b.HasIndex("Position")
+                        .HasDatabaseName("ix_queue_customers_position");
+
+                    b.HasIndex("QueueId")
+                        .HasDatabaseName("ix_queue_customers_queue_id");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("ix_queue_customers_status");
+
+                    b.HasIndex("TimeEnteredQueue")
+                        .HasDatabaseName("ix_queue_customers_time_entered");
+
+                    b.HasIndex("QueueId", "Position")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("ix_queue_customers_queue_position");
 
                     b.ToTable("queue_customers", (string)null);
                 });

@@ -36,6 +36,12 @@ namespace UFF.Infra.EntityConfig
                 .HasConstraintName("fk_queues_stores")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(q => q.Employee)
+            .WithMany(u => u.Queues) 
+            .HasForeignKey(q => q.EmployeeId)
+            .HasConstraintName("fk_queues_users")
+            .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasMany(q => q.QueueCustomers)
                 .WithOne(qc => qc.Queue)
                 .HasForeignKey(qc => qc.QueueId)

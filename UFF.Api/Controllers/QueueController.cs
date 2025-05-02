@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Queue;
@@ -56,9 +54,33 @@ namespace WeApi.Controllers
             return Ok(queues);
         }
 
+        [HttpGet("{id}/employee")]
+        //[Authorize]
+        public async Task<IActionResult> GetOpenedQueueByEmployeeId([FromRoute] int id)
+        {
+            var queues = await _service.GetOpenedQueueByEmployeeId(id);
+
+            if (queues == null)
+                BadRequest(queues);
+
+            return Ok(queues);
+        }
+
+        [HttpGet("{storeId}/{employeeId}/customers-in-queue")]
+        //[Authorize]
+        public async Task<IActionResult> GetAllCustomersInQueueByEmployeeAndStoreId([FromRoute] int storeId, int employeeId)
+        {
+            var customers = await _service.GetAllCustomersInQueueByEmployeeAndStoreId(storeId, employeeId);
+
+            if (customers == null)
+                BadRequest(customers);
+
+            return Ok(customers);
+        }
+
         [HttpGet("{idStore}")]
         //[Authorize]
-        public async Task<IActionResult> GetAllAsync(int idStore)
+        public async Task<IActionResult> GetAllByStoreIdAsync(int idStore)
         {
             var queue = await _service.GetAllByStoreIdAsync(idStore);
 
@@ -66,9 +88,7 @@ namespace WeApi.Controllers
                 BadRequest(queue.Data);
 
             return Ok(queue);
-        }
-
-        
+        }        
 
         [HttpDelete]
         //[Authorize]
