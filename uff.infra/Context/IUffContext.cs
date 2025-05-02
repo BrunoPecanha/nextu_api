@@ -17,6 +17,8 @@ namespace UFF.Infra.Context
         DbSet<Store> Store { get; }
         DbSet<User> User { get; }
 
+        DbSet<EmployeeStore> EmployeeStore { get; }
+
         int SaveChanges();
     }
 }

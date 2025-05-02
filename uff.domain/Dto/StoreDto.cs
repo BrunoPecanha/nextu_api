@@ -4,6 +4,7 @@ namespace UFF.Domain.Dto
 {
     public class StoreDto
     {
+        public int Id { get; set; }
         public string Cnpj { get; private set; }
         public string Name { get; private set; }
         public string Address { get; private set; }
@@ -11,6 +12,7 @@ namespace UFF.Domain.Dto
         public string City { get; private set; }
         public int MinorQueue { get; set; }
         public string Category { get; set; }
+        public string Icon { get; set; }
         public decimal Rating { get; set; }
         public int Votes { get; set; }
         public string State { get; private set; }

@@ -7,15 +7,14 @@ namespace UFF.Infra.EntityConfig
     public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
     {
         public void Configure(EntityTypeBuilder<Customer> builder)
-        {            
+        {
             builder.ToTable("customers")
                    .HasKey(c => c.Id)
                    .HasName("pk_customers");
 
-            // Propriedades
             builder.Property(c => c.Notes)
                 .HasColumnName("notes")
-                .HasColumnType("text");  
+                .HasColumnType("text");
 
             builder.Property(c => c.Rating)
                 .HasColumnName("rating")
@@ -25,12 +24,6 @@ namespace UFF.Infra.EntityConfig
                 .HasColumnName("review")
                 .HasColumnType("text");
 
-            builder.Property(c => c.Status)
-                .HasColumnName("status")
-                .HasColumnType("varchar(30)") 
-                .HasConversion<string>()
-                .IsRequired();
-                        
             builder.Property(c => c.RegisteringDate)
                 .HasColumnName("registering_date")
                 .HasColumnType("timestamp with time zone")
@@ -44,7 +37,7 @@ namespace UFF.Infra.EntityConfig
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .ValueGeneratedOnAddOrUpdate();
 
-            // Relacionamentos
+
             builder.HasOne(c => c.Queue)
                 .WithMany()
                 .HasForeignKey(c => c.QueueId)
@@ -56,6 +49,15 @@ namespace UFF.Infra.EntityConfig
                 .HasForeignKey(c => c.UserId)
                 .HasConstraintName("fk_customers_users")
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(c => c.Payment)
+                .WithMany()
+                .HasForeignKey(c => c.PaymentId)
+                .HasConstraintName("fk_customers_payments")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(c => c.PaymentId)
+                .IsRequired();
 
             builder.HasMany(c => c.QueueCustomers)
                 .WithOne(qc => qc.Customer)
@@ -69,15 +71,65 @@ namespace UFF.Infra.EntityConfig
                 .HasConstraintName("fk_customer_services_customers")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Índices
+            builder.Property(qc => qc.Position)
+              .HasColumnName("position")
+              .IsRequired();
+
+            builder.Property(qc => qc.TimeEnteredQueue)
+                .HasColumnName("time_entered_queue")
+                .HasColumnType("timestamp with time zone")
+                .IsRequired()
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+
+            builder.Property(qc => qc.TimeCalledInQueue)
+                .HasColumnName("time_called_in_queue")
+                .HasColumnType("timestamp with time zone");
+
+            builder.Property(qc => qc.ServiceStartTime)
+                .HasColumnName("service_start_time")
+                .HasColumnType("timestamp with time zone");
+
+            builder.Property(qc => qc.ServiceEndTime)
+                .HasColumnName("service_end_time")
+                .HasColumnType("timestamp with time zone");
+
+            builder.Property(qc => qc.Status)
+                .HasColumnName("status")
+                .IsRequired()
+                .HasConversion<string>()
+                .HasColumnType("varchar(30)");
+
+            builder.Property(qc => qc.IsPriority)
+                .HasColumnName("is_priority")
+                .IsRequired()
+                .HasDefaultValue(false);
+
+
+            builder.HasIndex(qc => qc.QueueId)
+                   .HasDatabaseName("ix_queue_customers_queue_id");
+
+            builder.HasIndex(qc => qc.Status)
+                   .HasDatabaseName("ix_queue_customers_status");
+
+            builder.HasIndex(qc => qc.Position)
+                   .HasDatabaseName("ix_queue_customers_position");
+
+            builder.HasIndex(qc => qc.TimeEnteredQueue)
+                   .HasDatabaseName("ix_queue_customers_time_entered");
+
+
+            builder.HasIndex(qc => new { qc.QueueId, qc.Position })
+                   .HasDatabaseName("ix_queue_customers_queue_position")
+                   .IsDescending(false, true);
+
             builder.HasIndex(c => c.QueueId)
                 .HasDatabaseName("ix_customers_queue_id");
 
             builder.HasIndex(c => c.UserId)
                 .HasDatabaseName("ix_customers_user_id");
 
-            builder.HasIndex(c => c.Status)
-                .HasDatabaseName("ix_customers_status");
+            builder.HasIndex(c => c.PaymentId)
+                .HasDatabaseName("ix_customers_payment_id");
 
             builder.HasIndex(c => c.Rating)
                 .HasDatabaseName("ix_customers_rating")

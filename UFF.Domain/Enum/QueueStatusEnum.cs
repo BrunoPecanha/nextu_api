@@ -3,10 +3,10 @@
 namespace UFF.Domain.Enum {
     public enum QueueStatusEnum
     {
-        [Description("Closed")]
-        Closed,
         [Description("Open")]
         Open,
+        [Description("Closed")]
+        Closed,       
         [Description("Paused")]
         Paused
     }

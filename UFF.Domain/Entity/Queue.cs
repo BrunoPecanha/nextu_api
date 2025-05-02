@@ -12,6 +12,9 @@ namespace UFF.Domain.Entity
 
         public Store Store { get; private set; }
         public int StoreId { get; private set; }
+        public User Employee { get; private set; }
+        public int EmployeeId { get; private set; }
+
         public string Name { get; private set; }
         public DateTime Date { get; private set; }
         public QueueStatusEnum Status { get; private set; }

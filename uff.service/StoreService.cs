@@ -68,6 +68,16 @@ namespace UFF.Service
             return new CommandResult(true, _mapper.Map<StoreDto[]>(stores));
         }
 
+        public async Task<CommandResult> GetByEmployeeId(int id)
+        {
+            var stores = await _storeRepository.GetByEmployeeId(id);
+
+            if (stores is null)
+                return new CommandResult(false, stores);
+
+            return new CommandResult(true, _mapper.Map<StoreDto[]>(stores));
+        }
+
         public async Task<CommandResult> CreateAsync(StoreCreateCommand command)
         {
             try

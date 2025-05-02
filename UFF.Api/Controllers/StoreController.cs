@@ -54,6 +54,19 @@ namespace WeApi.Controllers
             return Ok(stores);
         }
 
+
+        [HttpGet("employee/{id}")]
+        //[Authorize]
+        public async Task<IActionResult> GetByEmployeeId([FromRoute] int id)
+        {
+            var stores = await _service.GetByEmployeeId(id);
+
+            if (!stores.Valid)
+                BadRequest(stores.Data);
+
+            return Ok(stores);
+        }
+
         [HttpGet("{categoryId}/stores")]
 
         public async Task<IActionResult> GetByCategoryId([FromRoute] int categoryId)
