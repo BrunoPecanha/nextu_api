@@ -70,7 +70,6 @@ namespace UFF.Service
             return new CommandResult(true, _mapper.Map<QueueDto[]>(queue));
         }
 
-
         public async Task<CommandResult> GetAllCustomersInQueueByEmployeeAndStoreId(int storeId, int employeeId)
         {
             var customers = await _queueRepository.GetAllCustomersInQueueByEmployeeAndStoreId(storeId, employeeId);
@@ -78,9 +77,33 @@ namespace UFF.Service
             if (customers == null)
                 return new CommandResult(false, customers);
 
-            return new CommandResult(true, _mapper.Map<CustomerInQueueDto[]>(customers));
+            return new CommandResult(true, _mapper.Map<CustomerInQueueReducedDto[]>(customers));
         }
 
+        public async Task<CommandResult> GetCustomerInQueueReducedByCustomerId(int customerId)
+        {
+            var customers = await _queueRepository.GetCustomerInQueueReducedByCustomerId(customerId);
+
+            if (customers == null)
+                return new CommandResult(false, customers);
+
+            var dto = _mapper.Map<CustomerInQueueReducedDto>(customers);
+            await UpdateCustomerTimeToWait(dto);
+
+            return new CommandResult(true, dto);
+        }
+
+        public async Task<CommandResult> GetCustomerInQueueComplementByCustomerId(int customerId)
+        {
+            var customers = await _queueRepository.GetCustomerInQueueComplementByCustomerId(customerId);
+
+            if (customers == null)
+                return new CommandResult(false, customers);
+
+            var dto = _mapper.Map<CustomerInQueueComplementDto>(customers);          
+
+            return new CommandResult(true, dto);
+        }
 
         public async Task<CommandResult> GetByDateAsync(int idStore, DateTime date)
         {
@@ -106,6 +129,9 @@ namespace UFF.Service
         {
             throw new NotImplementedException();
         }
+
+        private async Task UpdateCustomerTimeToWait(CustomerInQueueReducedDto customerInQueueDto)
+         => customerInQueueDto.TimeToWait = await _queueRepository.GetEstimatedWaitTimeForCustomer(customerInQueueDto.QueueId, customerInQueueDto.Position);
 
         public async Task<CommandResult> UpdateAsync(QueueEditCommand command)
         {
