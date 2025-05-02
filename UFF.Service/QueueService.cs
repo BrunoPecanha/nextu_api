@@ -80,15 +80,27 @@ namespace UFF.Service
             return new CommandResult(true, _mapper.Map<CustomerInQueueReducedDto[]>(customers));
         }
 
-        public async Task<CommandResult> GetCustomerInQueueByCustomerId(int customerId)
+        public async Task<CommandResult> GetCustomerInQueueReducedByCustomerId(int customerId)
         {
-            var customers = await _queueRepository.GetCustomerInQueueByCustomerId(customerId);
+            var customers = await _queueRepository.GetCustomerInQueueReducedByCustomerId(customerId);
 
             if (customers == null)
                 return new CommandResult(false, customers);
 
             var dto = _mapper.Map<CustomerInQueueReducedDto>(customers);
             await UpdateCustomerTimeToWait(dto);
+
+            return new CommandResult(true, dto);
+        }
+
+        public async Task<CommandResult> GetCustomerInQueueComplementByCustomerId(int customerId)
+        {
+            var customers = await _queueRepository.GetCustomerInQueueComplementByCustomerId(customerId);
+
+            if (customers == null)
+                return new CommandResult(false, customers);
+
+            var dto = _mapper.Map<CustomerInQueueComplementDto>(customers);          
 
             return new CommandResult(true, dto);
         }

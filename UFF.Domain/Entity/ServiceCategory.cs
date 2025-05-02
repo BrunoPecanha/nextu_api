@@ -10,6 +10,7 @@ namespace UFF.Domain.Entity
 
         public string Name { get; private set; }
         public string ImgPath { get; private set; }
+        public string Icon { get; set; }
         public virtual ICollection<Service> Services { get; private set; } = new List<Service>();
 
         public ServiceCategory(string name, string imgPath)
