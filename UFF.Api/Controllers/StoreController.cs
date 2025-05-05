@@ -92,6 +92,26 @@ namespace WeApi.Controllers
             return Ok(stores);
         }
 
+        [HttpGet("professionals/{storeId}")]
+        //   [Authorize]
+        public async Task<IActionResult> GetStoreWithEmployeesAsync([FromRoute] int storeId)
+        {
+            var store = await _service.GetStoreWithProfessionalsAndWaitInfoAsync(storeId);
+
+            if (!store.Valid)
+                BadRequest(store.Data);
+
+            return Ok(store);
+        }
+
+        [HttpPatch]
+        //   [Authorize]
+        public async Task<IActionResult> LikeProfessional([FromBody] LikeStoreProfessionalCommand command)
+        {
+            await _service.LikeProfessional(command);
+            return Ok();
+        }
+
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> UpdateAsync([FromBody] StoreEditCommand command)
