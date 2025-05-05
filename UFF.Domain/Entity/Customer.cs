@@ -1,7 +1,7 @@
 ﻿using System;
+using UFF.Domain.Enum;
 using System.Collections.Generic;
 using UFF.Domain.Commands.Customer;
-using UFF.Domain.Enum;
 
 namespace UFF.Domain.Entity
 {
@@ -47,13 +47,9 @@ namespace UFF.Domain.Entity
            => ServiceEndTime = DateTime.UtcNow;
 
         public void AddReview(string review)
-        {
-            Review = review;
-        }
+            => Review = review;        
 
         public void AddRating(int rating)
-        {
-            Rating = rating;
-        }
+            => Rating = rating;        
     }
 }

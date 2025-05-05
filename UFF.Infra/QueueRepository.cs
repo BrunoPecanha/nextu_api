@@ -48,13 +48,6 @@ namespace UFF.Infra
                             .ThenBy(x => x.Date)
                             .ToArrayAsync();
 
-
-        /// <summary>
-        /// Esse método só é chamado quando a fila está aberta
-        /// </summary>
-        /// <param name="storeId">Id do estabelecimento</param>
-        /// <param name="employeeId">Id do profissional</param>
-        /// <returns></returns>
         public async Task<Customer[]> GetAllCustomersInQueueByEmployeeAndStoreId(int storeId, int employeeId)
             => await _dbContext.QueueCustomer
                 .Include(x => x.Queue)
@@ -70,9 +63,10 @@ namespace UFF.Infra
                         && x.Queue.Status == QueueStatusEnum.Open)
                 .AsNoTracking()
                 .Select(x => x.Customer)
+                .OrderBy(x => x.Position)
                 .ToArrayAsync();
 
-        public async Task<Customer> GetCustomerInQueueReducedByCustomerId(int customerId)
+        public async Task<Customer[]> GetCustomerInQueueCardByUserId(int userId)
               => await _dbContext.Customer
                   .Include(x => x.Payment)
                   .Include(g => g.CustomerServices)
@@ -80,11 +74,13 @@ namespace UFF.Infra
                   .ThenInclude(x => x.Store)
                   .ThenInclude(o => o.Category)
                   .AsNoTracking()
-                  .Where(x => x.Status == CustomerStatusEnum.Waiting)
-                  .FirstOrDefaultAsync(y => y.Id == customerId);
+                  .Where(x => x.Status == CustomerStatusEnum.Waiting
+                  && x.User.Id == userId)
+                  .ToArrayAsync();
 
-        public async Task<Customer> GetCustomerInQueueComplementByCustomerId(int customerId)
+        public async Task<Customer> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId)
             => await _dbContext.Customer
+                .Include(g => g.QueueCustomers)
                 .Include(x => x.User)
                 .Include(x => x.Payment)
                 .Include(x => x.Queue)
@@ -96,23 +92,27 @@ namespace UFF.Infra
                 .ThenInclude(x => x.Service)
                 .ThenInclude(x => x.Category)
                 .AsNoTracking()
-                .Where(x => x.Status == CustomerStatusEnum.Waiting)
-                .FirstOrDefaultAsync(y => y.Id == customerId);
+                .FirstOrDefaultAsync(y => y.Id == customerId && y.QueueId == queueId && y.Status == CustomerStatusEnum.Waiting);
 
-        public async Task<TimeSpan> GetEstimatedWaitTimeForCustomer(int queueId, int currentCustomerPosition)
+        public async Task<(int TotalCustomers, TimeSpan EstimatedWaitTime)> GetQueueStatusAsync(int queueId, int currentCustomerPosition)
         {
-            var totalMinutes = await _dbContext.Queue
+            var query = _dbContext.Queue
                 .AsNoTracking()
-                .Where(q => q.Id == queueId)
+                .Where(q => q.Id == queueId && q.Status == QueueStatusEnum.Open);
+
+            var totalCustomers = await query
                 .SelectMany(q => q.QueueCustomers)
-                .Select(qc => qc.Customer)
-                .Where(c => c.Status == CustomerStatusEnum.Waiting)
-                .Where(c => c.Position < currentCustomerPosition)
-                .SelectMany(c => c.CustomerServices)
+                .CountAsync();
+
+            var totalMinutes = await query
+                .SelectMany(q => q.QueueCustomers)
+                .Where(qc => qc.Customer.Status == CustomerStatusEnum.Waiting)
+                .Where(qc => qc.Customer.Position < currentCustomerPosition)
+                .SelectMany(qc => qc.Customer.CustomerServices)
                 .Select(cs => cs.Service)
                 .SumAsync(s => s.Duration.TotalMinutes);
 
-            return TimeSpan.FromMinutes(totalMinutes);
+            return (totalCustomers, TimeSpan.FromMinutes(totalMinutes));
         }
     }
 }
