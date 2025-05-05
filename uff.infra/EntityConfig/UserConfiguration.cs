@@ -52,6 +52,18 @@ namespace UFF.Infra.EntityConfig
                    .HasMaxLength(100)
                    .IsRequired();
 
+            builder.Property(u => u.Subtitle)
+                   .HasColumnName("subtitle")
+                   .HasColumnType("varchar(100)")
+                   .HasMaxLength(100)
+                   .IsRequired();
+
+            builder.Property(u => u.ServicesProvided)
+                 .HasColumnName("services_provided")
+                 .HasColumnType("varchar(100)")
+                 .HasMaxLength(100)
+                 .IsRequired();
+
             builder.Property(u => u.Phone)
                    .HasColumnName("phone")
                    .HasColumnType("varchar(20)")

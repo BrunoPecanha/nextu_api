@@ -69,6 +69,22 @@ namespace WeApi.AutoMapper
                                                      (src.Status == QueueStatusEnum.Open || src.Status == QueueStatusEnum.Paused)
                                                          ? src.QueueCustomers.Count(x => x.Customer.Status == CustomerStatusEnum.Waiting || x.Customer.Status == CustomerStatusEnum.InService)
                                                          : src.QueueCustomers.Count(x => x.Customer.Status == CustomerStatusEnum.Absent || x.Customer.Status == CustomerStatusEnum.Removed || x.Customer.Status == CustomerStatusEnum.Done)));
+
+
+            CreateMap<StoreProfessionalsDto, Store>();
+            CreateMap<Store, StoreProfessionalsDto>()
+                .ForMember(dest => dest.StoreLogoPath, opt => opt.MapFrom(src => src.LogoPath))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Subtitle, opt => opt.MapFrom(src => src.StoreSubtitle))
+                .ForMember(dest => dest.Professionals, opt => opt.MapFrom(src => src.EmployeeStore.Select(es => es.Employee)));
+
+            CreateMap<ProfessionalDto, User>();
+            CreateMap<User, ProfessionalDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Subtitle, opt => opt.MapFrom(src => src.Subtitle))
+                .ForMember(dest => dest.ServicesProvided, opt => opt.MapFrom(src => src.ServicesProvided))
+                .ForMember(dest => dest.Liked, opt => opt.MapFrom(src => true));
+
         }
     }
 }

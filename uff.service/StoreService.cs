@@ -37,7 +37,6 @@ namespace UFF.Service
 
             return new CommandResult(true, _mapper.Map<List<StoreDto>>(stores));
         }
-
         public async Task<CommandResult> GetByIdAsync(int id)
         {
             var store = await _storeRepository.GetByIdAsync(id);
@@ -47,7 +46,6 @@ namespace UFF.Service
 
             return new CommandResult(true, _mapper.Map<StoreDto>(store));
         }
-
         public async Task<CommandResult> GetByCategoryIdAsync(int id)
         {
             var store = await _storeRepository.GetByCategoryId(id);
@@ -57,7 +55,6 @@ namespace UFF.Service
 
             return new CommandResult(true, _mapper.Map<StoreDto[]>(store));
         }
-
         public async Task<CommandResult> GetByOwnerIdAsync(int id)
         {
             var stores = await _storeRepository.GetByOwnerIdAsync(id);
@@ -67,7 +64,6 @@ namespace UFF.Service
 
             return new CommandResult(true, _mapper.Map<StoreDto[]>(stores));
         }
-
         public async Task<CommandResult> GetByEmployeeId(int id)
         {
             var stores = await _storeRepository.GetByEmployeeId(id);
@@ -77,7 +73,60 @@ namespace UFF.Service
 
             return new CommandResult(true, _mapper.Map<StoreDto[]>(stores));
         }
+        public async Task<CommandResult> GetStoreWithProfessionalsAndWaitInfoAsync(int storeId)
+        {
+            var store = await _storeRepository.GetStoreWithEmployeesAndQueuesAsync(storeId);
 
+            if (store == null)
+                return new CommandResult(false, "Loja não encontrada");
+
+            var dto = new StoreProfessionalsDto(store.Name, store.LogoPath, store.StoreSubtitle);
+
+            foreach (var employeeStore in store.EmployeeStore)
+            {
+                var employeeQueues = store.Queues
+                    .Where(q => q.EmployeeId == employeeStore.EmployeeId)
+                    .ToList();
+
+                int waitingCustomers = employeeQueues
+                    .SelectMany(q => q.QueueCustomers)
+                    .Count(qc => qc.Customer.Status == Domain.Enum.CustomerStatusEnum.Waiting);
+                                
+                if (employeeQueues.Any() || waitingCustomers > 0)
+                {
+                    dto.Professionals.Add(new ProfessionalDto
+                    {
+                        Name = employeeStore.Employee.Name,
+                        Liked = true,
+                        Subtitle = employeeStore.Employee.Subtitle,
+                        CustomersWaiting = waitingCustomers,
+                        AverageWaitingTime = await CalculateAverageWaitingTime(employeeStore.Employee.Id),
+                        ServicesProvided = employeeStore.Employee.ServicesProvided
+                    });
+                }
+            }
+
+            return new CommandResult(true, dto);
+        }
+
+        public async Task<TimeSpan> CalculateAverageWaitingTime(int professionalId)
+        {
+            var queue = await _storeRepository.CalculateAverageWaitingTime(professionalId);
+
+            if (queue?.QueueCustomers == null || !queue.QueueCustomers.Any())
+                return TimeSpan.Zero;
+
+            double totalWaitTime = queue.QueueCustomers
+                .Sum(qc => qc.Customer.CustomerServices.Sum(s => s.Duration.TotalMinutes));
+
+            double averageWaitTime = totalWaitTime / queue.QueueCustomers.Count;
+
+            return TimeSpan.FromMinutes(averageWaitTime);
+        }
+        public async Task LikeProfessional(LikeStoreProfessionalCommand command)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<CommandResult> CreateAsync(StoreCreateCommand command)
         {
             try
@@ -115,7 +164,6 @@ namespace UFF.Service
                 return new CommandResult(false, ex, ex.InnerException.Message);
             }
         }
-
         public async Task<CommandResult> UpdateAsync(StoreEditCommand command)
         {
             try
