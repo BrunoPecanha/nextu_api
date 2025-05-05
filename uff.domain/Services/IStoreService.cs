@@ -14,5 +14,7 @@ namespace UFF.Domain.Services
         public Task<CommandResult> DeleteAsync(int id);
         public Task<CommandResult> GetByOwnerIdAsync(int id);
         public Task<CommandResult> GetByEmployeeId(int id);
+        public Task<CommandResult> GetStoreWithProfessionalsAndWaitInfoAsync(int storeId);
+        public Task LikeProfessional(LikeStoreProfessionalCommand command);
     }
 }

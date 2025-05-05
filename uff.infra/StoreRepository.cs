@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UFF.Domain.Entity;
-using UFF.Infra.Context;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UFF.Domain.Entity;
+using UFF.Domain.Enum;
 using UFF.Domain.Repository;
+using UFF.Infra.Context;
 
 namespace UFF.Infra
 {
@@ -32,6 +34,15 @@ namespace UFF.Infra
                                .Include(x => x.Owner)
                                .FirstOrDefaultAsync(x => x.Id == id);
 
+        public async Task<Store> GetByIdWithProfessionalsAsync(int id)
+            => await _dbContext.Store
+                               .Include(x => x.Category)
+                               .Include(y => y.EmployeeStore)
+                               .ThenInclude(x => x.Employee)
+                               .AsNoTracking()
+                               .Include(x => x.Owner)
+                               .FirstOrDefaultAsync(x => x.Id == id);
+
         public async Task<Store[]> GetByCategoryId(int id)
             => await _dbContext.Store
                            .Include(x => x.Category)
@@ -55,5 +66,37 @@ namespace UFF.Infra
                          .AsNoTracking()
                          .Select(x => x.Store)
                          .ToArrayAsync();
+
+        public async Task<Store> GetStoreWithEmployeesAndQueuesAsync(int storeId)
+        {
+            var today = DateTime.UtcNow.Date;
+
+            return await _dbContext.Store 
+                .Include(y => y.Queues
+                    .Where(o => o.RegisteringDate.Date == today))
+                .ThenInclude(k => k.Employee)                
+                .Include(y => y.Queues
+                    .Where(o => o.RegisteringDate.Date == today))
+                .ThenInclude(o => o.QueueCustomers)
+                .ThenInclude(x => x.Customer)                
+                .Include(s => s.EmployeeStore)
+                .ThenInclude(es => es.Employee)
+                .Include(s => s.EmployeeStore)
+                .ThenInclude(es => es.Employee)
+                .ThenInclude(x => x.Queues
+                    .Where(q => q.RegisteringDate.Date == today))
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == storeId);
+        }
+
+        public async Task<Queue> CalculateAverageWaitingTime(int professionalId)
+        {
+            return await _dbContext.Queue
+                .Include(q => q.QueueCustomers
+                    .Where(qc => qc.Customer.Status == CustomerStatusEnum.Waiting))
+                .ThenInclude(qc => qc.Customer)
+                .ThenInclude(c => c.CustomerServices)
+                .FirstOrDefaultAsync(q => q.EmployeeId == professionalId && q.Status == QueueStatusEnum.Open);
+        }        
     }
 }

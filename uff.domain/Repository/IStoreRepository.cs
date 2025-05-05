@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UFF.Domain.Entity;
 
@@ -10,5 +11,8 @@ namespace UFF.Domain.Repository
         public Task<IEnumerable<Store>> GetAllAsync();
         public Task<Store[]> GetByOwnerIdAsync(int id);
         public Task<Store[]> GetByEmployeeId(int id);
+        public Task<Store> GetStoreWithEmployeesAndQueuesAsync(int id);
+        public Task<Queue> CalculateAverageWaitingTime(int professionalId);
+        public Task<Store> GetByIdWithProfessionalsAsync(int id);
     }
 }
