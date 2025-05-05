@@ -49,7 +49,6 @@ namespace UFF.Service
             }
         }
 
-
         public async Task<CommandResult> GetAllByStoreIdAsync(int idStore)
         {
             var queue = await _queueRepository.GetAllByStoreIdAsync(idStore);
@@ -78,32 +77,32 @@ namespace UFF.Service
                 return new CommandResult(false, customers);
 
             var dto = _mapper.Map<CustomerInQueueForEmployeeDto[]>(customers);
-          //  await UpdateCustomerTimeToWait(dto);            
 
             return new CommandResult(true, dto);
         }
 
-        public async Task<CommandResult> GetCustomerInQueueReducedByCustomerId(int customerId)
+        public async Task<CommandResult> GetCustomerInQueueCardByCustomerId(int userId)
         {
-            var customers = await _queueRepository.GetCustomerInQueueReducedByCustomerId(customerId);
+            var customers = await _queueRepository.GetCustomerInQueueCardByUserId(userId);
 
             if (customers == null)
                 return new CommandResult(false, customers);
 
-            var dto = _mapper.Map<CustomerInQueueReducedDto>(customers);
-            await UpdateCustomerTimeToWait(dto);
+            var dto = _mapper.Map<CustomerInQueueCardDto[]>(customers);
 
             return new CommandResult(true, dto);
         }
 
-        public async Task<CommandResult> GetCustomerInQueueComplementByCustomerId(int customerId)
+        public async Task<CommandResult> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId)
         {
-            var customers = await _queueRepository.GetCustomerInQueueComplementByCustomerId(customerId);
+            var customers = await _queueRepository.GetCustomerInQueueCardDetailsByCustomerId(customerId, queueId);
 
             if (customers == null)
                 return new CommandResult(false, customers);
 
-            var dto = _mapper.Map<CustomerInQueueComplementDto>(customers);          
+            var dto = _mapper.Map<CustomerInQueueCardDetailsDto>(customers);
+            await UpdateTotalLeftTimeInQueueAndTotalCustomers(dto);
+
 
             return new CommandResult(true, dto);
         }
@@ -133,12 +132,9 @@ namespace UFF.Service
             throw new NotImplementedException();
         }
 
-        //private async Task UpdateCustomerTimeToWait(CustomerInQueueForEmployeeDto customerInQueueDto)
-        // => customerInQueueDto.TimeGotInQueue = await _queueRepository.GetEstimatedWaitTimeForCustomer(customerInQueueDto.QueueId, customerInQueueDto.Position);
-
-        private async Task UpdateCustomerTimeToWait(CustomerInQueueReducedDto customerInQueueDto)
-         => customerInQueueDto.TimeToWait = await _queueRepository.GetEstimatedWaitTimeForCustomer(customerInQueueDto.QueueId, customerInQueueDto.Position);
-
+        private async Task UpdateTotalLeftTimeInQueueAndTotalCustomers(CustomerInQueueCardDetailsDto customerInQueueCardDetailsDto)
+            => (customerInQueueCardDetailsDto.TotalPeopleInQueue, customerInQueueCardDetailsDto.TimeToWait) = await _queueRepository.GetQueueStatusAsync(customerInQueueCardDetailsDto.QueueId, customerInQueueCardDetailsDto.Position);
+       
         public async Task<CommandResult> UpdateAsync(QueueEditCommand command)
         {
             throw new NotImplementedException();

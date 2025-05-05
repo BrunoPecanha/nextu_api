@@ -78,11 +78,11 @@ namespace WeApi.Controllers
             return Ok(customers);
         }
 
-        [HttpGet("{customerId}/customer-in-queue")]
+        [HttpGet("{customerId}/card")]
         //[Authorize]
-        public async Task<IActionResult> GetCustomerInQueueReducedByCustomerId([FromRoute]int customerId)
+        public async Task<IActionResult> GetCustomerInQueueCardByCustomerId([FromRoute]int customerId)
         {
-            var customers = await _service.GetCustomerInQueueReducedByCustomerId(customerId);
+            var customers = await _service.GetCustomerInQueueCardByCustomerId(customerId);
 
             if (customers == null)
                 BadRequest(customers);
@@ -90,11 +90,11 @@ namespace WeApi.Controllers
             return Ok(customers);
         }
 
-        [HttpGet("{customerId}/customer-in-queue/complement")]
+        [HttpGet("{customerId}/{queueId}/card/details")]
         //[Authorize]
-        public async Task<IActionResult> GetCustomerInQueueComplementByCustomerId([FromRoute] int customerId)
+        public async Task<IActionResult> GetCustomerInQueueCardDetailsByCustomerId([FromRoute] int customerId, int queueId)
         {
-            var customers = await _service.GetCustomerInQueueComplementByCustomerId(customerId);
+            var customers = await _service.GetCustomerInQueueCardDetailsByCustomerId(customerId, queueId);
 
             if (customers == null)
                 BadRequest(customers);
