@@ -24,22 +24,23 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
                   .ForMember(dest => dest.InService, opt => opt.MapFrom(src => src.Status == CustomerStatusEnum.InService));
 
-            CreateMap<CustomerInQueueReducedDto, Customer>();
-            CreateMap<Customer, CustomerInQueueReducedDto>()
+            CreateMap<CustomerInQueueCardDto, Customer>();
+            CreateMap<Customer, CustomerInQueueCardDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.Join(" ", src.User.Name, src.User.LastName)))
                   .ForMember(dest => dest.ServiceQtd, opt => opt.MapFrom(src => src.CustomerServices.Count()))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
-                  .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
-                  .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
+                  .ForMember(dest => dest.StoreIcon, opt => opt.MapFrom(src => src.Queue.Store.Category.Icon))
                   .ForMember(dest => dest.LogoPath, opt => opt.MapFrom(src => src.Queue.Store.LogoPath));
 
-            CreateMap<CustomerInQueueComplementDto, Customer>();
-            CreateMap<Customer, CustomerInQueueComplementDto>()
+            CreateMap<CustomerInQueueCardDetailsDto, Customer>();
+            CreateMap<Customer, CustomerInQueueCardDetailsDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                  .ForMember(dest => dest.AttendantsName, opt => opt.MapFrom(src => src.Queue.Employee.Name))
+                  .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, src.Payment.Notes)))
-                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices.Select(o => new ServiceDto(o.Service.Name, o.Service.Category.Icon, o.Service.Price))));
+                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices.Select(o => new ServiceDto(o.Service.Name, o.Service.Category.Icon, o.Service.Price))))
+                  .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CustomerServices.Sum(o => o.Service.Price)));
 
             CreateMap<PaymentDto, Payment>();
             CreateMap<Payment, PaymentDto>()
