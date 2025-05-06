@@ -4,6 +4,7 @@ namespace UFF.Domain.Dto
 {
     public class ProfessionalDto
     {
+        public int QueueId { get; set; }
         public string Name { get; set; }
         public string Subtitle { get; set; }
         public bool Liked { get; set; }
