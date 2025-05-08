@@ -94,7 +94,9 @@ namespace UFF.Service
                     .Count(qc => qc.Customer.Status == Domain.Enum.CustomerStatusEnum.Waiting);
 
                 if (waitingCustomers > 0)
-                {
+                {                    
+                    var (averageWaitingTime, averageServiceTime) = await CalculateAverageWaitingTime(employeeStore.Employee.Id);
+
                     dto.Professionals.Add(new ProfessionalDto
                     {
                         QueueId = employeeTodayQueues.Id,
@@ -102,7 +104,8 @@ namespace UFF.Service
                         Liked = true,
                         Subtitle = employeeStore.Employee.Subtitle,
                         CustomersWaiting = waitingCustomers,
-                        AverageWaitingTime = await CalculateAverageWaitingTime(employeeStore.Employee.Id),
+                        AverageWaitingTime = averageWaitingTime,  
+                        AverageServiceTime = averageServiceTime,
                         ServicesProvided = employeeStore.Employee.ServicesProvided
                     });
                 }
@@ -110,19 +113,19 @@ namespace UFF.Service
 
             return new CommandResult(true, dto);
         }
-        private async Task<TimeSpan> CalculateAverageWaitingTime(int professionalId)
+        private async Task<(TimeSpan, TimeSpan)> CalculateAverageWaitingTime(int professionalId)
         {
             var queue = await _storeRepository.CalculateAverageWaitingTime(professionalId);
 
             if (queue?.QueueCustomers == null || !queue.QueueCustomers.Any())
-                return TimeSpan.Zero;
+                return (TimeSpan.Zero, TimeSpan.Zero);
 
             double totalWaitTime = queue.QueueCustomers
                 .Sum(qc => qc.Customer.CustomerServices.Sum(s => s.Duration.TotalMinutes));
 
-            //double averageWaitTime = totalWaitTime / queue.QueueCustomers.Count;
+            double averageWaitTime = totalWaitTime / queue.QueueCustomers.Count;
 
-            return TimeSpan.FromMinutes(totalWaitTime);
+            return (TimeSpan.FromMinutes(totalWaitTime), TimeSpan.FromMinutes(averageWaitTime));
         }
         public async Task LikeProfessional(LikeStoreProfessionalCommand command)
         {

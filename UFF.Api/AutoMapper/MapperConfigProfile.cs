@@ -57,6 +57,7 @@ namespace WeApi.AutoMapper
             CreateMap<Store, StoreDto>()
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.RegisteringDate))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
             CreateMap<CategoryDto, Category>();

@@ -11,5 +11,6 @@ namespace UFF.Domain.Dto
         public string ServicesProvided { get; set; }
         public int CustomersWaiting { get; set; }
         public TimeSpan AverageWaitingTime { get; set; }
+        public TimeSpan AverageServiceTime { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace UFF.Domain.Dto
 {
@@ -26,6 +27,7 @@ namespace UFF.Domain.Dto
         public string LogoPath { get; set; }
         public string WallPaperPath { get; set; }
         public int CategoryId { get; set; }
+        public DateTime CreatedAt { get; set; }
         public virtual ICollection<OpeningHoursDto> OpeningHours { get; private set; } = new List<OpeningHoursDto>();
         public virtual ICollection<HighLightDto> HighLights { get; private set; } = new List<HighLightDto>();
     }
