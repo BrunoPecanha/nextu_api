@@ -71,14 +71,13 @@ namespace UFF.Infra
         {
             var today = DateTime.UtcNow.Date;
 
-            return await _dbContext.Store 
-                .Include(y => y.Queues
-                    .Where(o => o.RegisteringDate.Date == today))
-                .ThenInclude(k => k.Employee)                
+            return await _dbContext.Store
+                .Include(y => y.Queues)
+                .ThenInclude(k => k.Employee)
                 .Include(y => y.Queues
                     .Where(o => o.RegisteringDate.Date == today))
                 .ThenInclude(o => o.QueueCustomers)
-                .ThenInclude(x => x.Customer)                
+                .ThenInclude(x => x.Customer)
                 .Include(s => s.EmployeeStore)
                 .ThenInclude(es => es.Employee)
                 .Include(s => s.EmployeeStore)
