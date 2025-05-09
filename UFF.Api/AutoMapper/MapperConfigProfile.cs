@@ -50,8 +50,15 @@ namespace WeApi.AutoMapper
             CreateMap<ServiceDto, Service>();
             CreateMap<Service, ServiceDto>()
                   .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                  .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon))
-                  .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price));
+                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                  .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name))
+                  .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+                  .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
+                  .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))
+                  .ForMember(dest => dest.Activated, opt => opt.MapFrom(src => src.Activated))
+                  .ForMember(dest => dest.VariableTime, opt => opt.MapFrom(src => src.VariableTime))
+                  .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))
+                  .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon));
 
             CreateMap<StoreDto, Store>();
             CreateMap<Store, StoreDto>()

@@ -14,7 +14,7 @@ namespace UFF.Domain.Entity
         public int CategoryId { get; set; }
         public Store Store { get; set; }
         public int StoreId { get; set; }
-        public Decimal Price { get; private set; }
+        public decimal Price { get; private set; }
         public TimeSpan Duration { get; private set; }
         public string ImgPath { get; private set; }
         public bool VariableTime { get; private set; }
