@@ -83,12 +83,12 @@ namespace UFF.Service
 
         public async Task<CommandResult> GetCustomerInQueueCardByCustomerId(int userId)
         {
-            var customers = await _queueRepository.GetCustomerInQueueCardByUserId(userId);
+            var queueUserIsIn = await _queueRepository.GetCustomerInQueueCardByUserId(userId);
 
-            if (customers == null)
-                return new CommandResult(false, customers);
+            if (queueUserIsIn == null)
+                return new CommandResult(false, queueUserIsIn);
 
-            var dto = _mapper.Map<CustomerInQueueCardDto[]>(customers);
+            var dto = _mapper.Map<CustomerInQueueCardDto[]>(queueUserIsIn);
 
             return new CommandResult(true, dto);
         }

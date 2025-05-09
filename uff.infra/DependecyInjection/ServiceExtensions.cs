@@ -28,6 +28,8 @@ namespace UFF.Infra.dependecyInjection
             services.AddTransient<IQueueRepository, QueueRepository>();
             services.AddTransient<IQueueService, QueueService>();
 
+            services.AddTransient<IServiceService, ServiceService>();
+            services.AddTransient<IServiceRepository, ServiceRepository>();
 
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 

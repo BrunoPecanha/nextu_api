@@ -82,25 +82,30 @@ namespace UFF.Service
 
             var dto = new StoreProfessionalsDto(store.Name, store.LogoPath, store.StoreSubtitle);
 
+            if (store.Queues.Count <= 0)
+                return new CommandResult(false, dto);
+
             foreach (var employeeStore in store.EmployeeStore)
             {
-                var employeeQueues = store.Queues
-                    .Where(q => q.EmployeeId == employeeStore.EmployeeId)
-                    .ToList();
+                var employeeTodayQueues = store.Queues
+                    .FirstOrDefault(q => q.EmployeeId == employeeStore.EmployeeId);
 
-                int waitingCustomers = employeeQueues
-                    .SelectMany(q => q.QueueCustomers)
+                int waitingCustomers = employeeTodayQueues.QueueCustomers
                     .Count(qc => qc.Customer.Status == Domain.Enum.CustomerStatusEnum.Waiting);
-                                
-                if (employeeQueues.Any() || waitingCustomers > 0)
-                {
+
+                if (waitingCustomers > 0)
+                {                    
+                    var (averageWaitingTime, averageServiceTime) = await CalculateAverageWaitingTime(employeeStore.Employee.Id);
+
                     dto.Professionals.Add(new ProfessionalDto
                     {
+                        QueueId = employeeTodayQueues.Id,
                         Name = employeeStore.Employee.Name,
                         Liked = true,
                         Subtitle = employeeStore.Employee.Subtitle,
                         CustomersWaiting = waitingCustomers,
-                        AverageWaitingTime = await CalculateAverageWaitingTime(employeeStore.Employee.Id),
+                        AverageWaitingTime = averageWaitingTime,  
+                        AverageServiceTime = averageServiceTime,
                         ServicesProvided = employeeStore.Employee.ServicesProvided
                     });
                 }
@@ -108,20 +113,19 @@ namespace UFF.Service
 
             return new CommandResult(true, dto);
         }
-
-        public async Task<TimeSpan> CalculateAverageWaitingTime(int professionalId)
+        private async Task<(TimeSpan, TimeSpan)> CalculateAverageWaitingTime(int professionalId)
         {
             var queue = await _storeRepository.CalculateAverageWaitingTime(professionalId);
 
             if (queue?.QueueCustomers == null || !queue.QueueCustomers.Any())
-                return TimeSpan.Zero;
+                return (TimeSpan.Zero, TimeSpan.Zero);
 
             double totalWaitTime = queue.QueueCustomers
                 .Sum(qc => qc.Customer.CustomerServices.Sum(s => s.Duration.TotalMinutes));
 
             double averageWaitTime = totalWaitTime / queue.QueueCustomers.Count;
 
-            return TimeSpan.FromMinutes(averageWaitTime);
+            return (TimeSpan.FromMinutes(totalWaitTime), TimeSpan.FromMinutes(averageWaitTime));
         }
         public async Task LikeProfessional(LikeStoreProfessionalCommand command)
         {

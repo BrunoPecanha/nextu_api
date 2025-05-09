@@ -80,14 +80,14 @@ namespace WeApi.Controllers
 
         [HttpGet("{customerId}/card")]
         //[Authorize]
-        public async Task<IActionResult> GetCustomerInQueueCardByCustomerId([FromRoute]int customerId)
+        public async Task<IActionResult> GetCustomerInQueueCardByCustomerId([FromRoute]int userId)
         {
-            var customers = await _service.GetCustomerInQueueCardByCustomerId(customerId);
+            var queueUserIsIn = await _service.GetCustomerInQueueCardByCustomerId(userId);
 
-            if (customers == null)
-                BadRequest(customers);
+            if (queueUserIsIn == null)
+                BadRequest(queueUserIsIn);
 
-            return Ok(customers);
+            return Ok(queueUserIsIn);
         }
 
         [HttpGet("{customerId}/{queueId}/card/details")]
