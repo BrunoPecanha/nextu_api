@@ -26,6 +26,7 @@ namespace UFF.Domain.Entity
         public DateTime? ServiceStartTime { get; private set; }
         public DateTime? ServiceEndTime { get; private set; }
         public CustomerStatusEnum Status { get; private set; }
+        public string RandomCustomerName { get; set; }
         public bool IsPriority { get; private set; }
         public virtual ICollection<QueueCustomer> QueueCustomers { get; private set; } = new List<QueueCustomer>();
         public virtual ICollection<CustomerService> CustomerServices { get; private set; } = new List<CustomerService>();

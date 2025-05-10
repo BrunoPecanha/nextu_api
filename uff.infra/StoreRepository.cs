@@ -75,7 +75,7 @@ namespace UFF.Infra
                 .Include(y => y.Queues)
                 .ThenInclude(k => k.Employee)
                 .Include(y => y.Queues
-                    .Where(o => o.RegisteringDate.Date == today))
+                    .Where(o => o.Date.Date == today))
                 .ThenInclude(o => o.QueueCustomers)
                 .ThenInclude(x => x.Customer)
                 .Include(s => s.EmployeeStore)
@@ -83,7 +83,7 @@ namespace UFF.Infra
                 .Include(s => s.EmployeeStore)
                 .ThenInclude(es => es.Employee)
                 .ThenInclude(x => x.Queues
-                    .Where(q => q.RegisteringDate.Date == today))
+                    .Where(q => q.Date.Date == today))
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == storeId);
         }
