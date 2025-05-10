@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using UFF.Domain.Commands.Service;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -13,6 +14,28 @@ namespace WeApi.Controllers
         public ServiceController(IServiceService service)
         {
             _service = service;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync([FromForm] ServiceCreateCommand command)
+        {
+            var response = await _service.CreateAsync(command);
+
+            if (!response.Valid)
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
+        [HttpPut("{serviceId}")]
+        public async Task<IActionResult> UpdateAsyncAsync(int serviceId, [FromForm] ServiceEditCommand command)
+        {
+            var response = await _service.UpdateAsync(command);
+
+            if (!response.Valid)
+                return BadRequest(response);
+
+            return Ok(response);
         }
 
         [HttpGet("all/{idStore}")]
@@ -32,6 +55,18 @@ namespace WeApi.Controllers
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var store = await _service.GetByIdAsync(id);
+
+            if (store is null)
+                BadRequest(store);
+
+            return Ok(store);
+        }
+
+        [HttpGet("categories")]
+        //[Authorize]
+        public async Task<IActionResult> GetAllCategoriesAsync()
+        {
+            var store = await _service.GetAllCategoriesAsync();
 
             if (store is null)
                 BadRequest(store);

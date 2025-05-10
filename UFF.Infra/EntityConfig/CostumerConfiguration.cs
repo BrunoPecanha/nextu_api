@@ -99,6 +99,12 @@ namespace UFF.Infra.EntityConfig
                 .HasConversion<string>()
                 .HasColumnType("varchar(30)");
 
+
+            builder.Property(qc => qc.RandomCustomerName)
+                .HasColumnName("random_customer_name")
+                .IsRequired(false)
+                .HasColumnType("varchar(30)");
+
             builder.Property(qc => qc.IsPriority)
                 .HasColumnName("is_priority")
                 .IsRequired()

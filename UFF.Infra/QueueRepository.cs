@@ -23,7 +23,7 @@ namespace UFF.Infra
         public async Task<IEnumerable<Queue>> GetAllByStoreIdAsync(int storeId)
             => await _dbContext.Queue
                                .Where(x => x.StoreId == storeId)
-                               .OrderByDescending(x => x.RegisteringDate)
+                               .OrderByDescending(x => x.Date)
                                .AsNoTracking()
                                .ToArrayAsync();
 
