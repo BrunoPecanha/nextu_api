@@ -8,6 +8,7 @@ using UFF.Domain.Services;
 using UFF.Domain.Commands;
 using UFF.Domain.Dto;
 using UFF.Service.Properties;
+using UFF.Domain.Commands.Service;
 
 namespace UFF.Service
 {
@@ -15,11 +16,17 @@ namespace UFF.Service
     {
         private readonly IServiceRepository _serviceRepository;
         private readonly IMapper _mapper;
+        private readonly IServiceCategoryRepository _category;
+        private readonly IStoreRepository _store;
+        private readonly ImageService _imageService;
 
-        public ServiceService(IServiceRepository serviceRepository, IMapper mapper)
+        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, IServiceCategoryRepository category, IStoreRepository store, ImageService imageService)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
+            _category = category;
+            _store = store;
+            _imageService = imageService;
         }
 
         public async Task<CommandResult> GetAllAsync(int storeId)
@@ -32,34 +39,48 @@ namespace UFF.Service
             return new CommandResult(true, _mapper.Map<List<ServiceDto>>(services));
         }
 
+        public async Task<CommandResult> GetAllCategoriesAsync()
+        {
+            var servicesCategories = await _serviceRepository.GetAllCategoriesAsync();
+
+            if (servicesCategories is null || !servicesCategories.Any())
+                return new CommandResult(false, servicesCategories);
+
+            return new CommandResult(true, _mapper.Map<List<ServiceCategoryDto>>(servicesCategories));
+        }
+
         public async Task<CommandResult> GetByIdAsync(int id)
         {
             var service = await _serviceRepository.GetByIdAsync(id);
 
             if (service is null)
-                return new CommandResult(false, service);            
+                return new CommandResult(false, service);
 
             return new CommandResult(true, _mapper.Map<ServiceDto>(service));
         }
 
-        public async Task<CommandResult> CreateAsync(object command)
+        public async Task<CommandResult> CreateAsync(ServiceCreateCommand command)
         {
             try
-            {             
-                //var store = new Store(command);
+            {
+                string saveDirectory = "C:\\Estudos\\app\\www\\assets\\images\\services";
+        
+                string imagePath = await _imageService.SaveImageAndGetPath(command.ImageFile, saveDirectory);
 
-                //if (!store.IsValid())
-                //    return new CommandResult(false, Resources.MissingInfo);
+                var category = await _category.GetByIdAsync(command.CategoryId);
 
-                //var owner = await _userRepository.GetByIdAsync(command.OwnerId);
+                if (category is null)
+                    return new CommandResult(false, "Categoria não encontrada");
 
-                //if (owner is null)
-                //    return new CommandResult(false, Resources.OwnerNotFound);
+                var store = await _store.GetByIdAsync(command.StoreId);
 
-                //store.SetOwner(owner);
+                if (!store.IsValid())
+                    return new CommandResult(false, Resources.MissingInfo);
 
-                //await _storeRepository.AddAsync(store);
-                //await _storeRepository.SaveChangesAsync();
+                var service = new Domain.Entity.Service(command, category.Id, store.Id, imagePath);
+
+                await _serviceRepository.AddAsync(service);
+                await _serviceRepository.SaveChangesAsync();
 
                 return new CommandResult(true, null);
             }
@@ -69,26 +90,42 @@ namespace UFF.Service
             }
         }
 
-        public async Task<CommandResult> UpdateAsync(object command)
+        public async Task<CommandResult> UpdateAsync(ServiceEditCommand command)
         {
             try
             {
-                var store = await _serviceRepository.GetByIdAsync(1);
+                string _imagePath = await SaveImage(command);
 
-                if (store is null)
+                var service = await _serviceRepository.GetByIdAsync(command.Id);
+
+                if (service is null)
                     return new CommandResult(false, Resources.NotFound);
 
-                //                store.UpdateAllUserInfo(command);
+                service.UpdateServiceDetails(command, _imagePath);
 
-                _serviceRepository.Update(store);
+                _serviceRepository.Update(service);
                 await _serviceRepository.SaveChangesAsync();
 
-                return new CommandResult(true, _mapper.Map<UserDto>(store));
+                return new CommandResult(true, _mapper.Map<ServiceDto>(service));
             }
             catch (Exception ex)
             {
                 return new CommandResult(false, ex.Message);
             }
+        }
+
+        private async Task<string> SaveImage(ServiceEditCommand command)
+        {
+            if (command.ImageFile != null)
+            {
+                string saveDirectory = "C:\\Estudos\\app\\www\\assets\\images\\services";
+
+                string imagePath = await _imageService.SaveImageAndGetPath(command.ImageFile, saveDirectory);
+
+               return _imageService.GetImageUrl(imagePath);
+            }
+
+            return string.Empty;
         }
 
         public async Task<CommandResult> DeleteAsync(int id)

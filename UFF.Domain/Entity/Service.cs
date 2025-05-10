@@ -1,4 +1,5 @@
 ﻿using System;
+using UFF.Domain.Commands.Service;
 
 namespace UFF.Domain.Entity
 {
@@ -19,12 +20,34 @@ namespace UFF.Domain.Entity
         public string ImgPath { get; private set; }
         public bool VariableTime { get; private set; }
         public bool VariablePrice { get; private set; }
-        public bool? Activated { get; private set; }
+        public bool Activated { get; private set; }
 
-        public Service(string name)
+        public Service(ServiceCreateCommand command, int categoryId, int storeId, string imgPath)
         {
-            Name = name;
-            Activated = true;
+            Name = command.Name;
+            Description = command.Description;
+            CategoryId = categoryId;
+            StoreId = storeId;
+            Activated = command.Activated;
+            Price = command.Price;
+            Duration = command.Duration;
+            VariableTime = command.VariableTime;
+            VariablePrice = command.VariablePrice;
+            ImgPath= imgPath;
+        }
+
+        public void UpdateServiceDetails(ServiceEditCommand command, string imgPath)
+        {
+            Name = command.Name;
+            Description = command.Description;
+            CategoryId = command.CategoryId;
+            StoreId = command.StoreId;
+            Activated = command.Activated;
+            Price = command.Price;
+            Duration = command.Duration;
+            VariableTime = command.VariableTime;
+            VariablePrice = command.VariablePrice;
+            ImgPath = imgPath;
         }
     }
 }

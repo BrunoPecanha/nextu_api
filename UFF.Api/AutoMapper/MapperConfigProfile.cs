@@ -13,6 +13,13 @@ namespace WeApi.AutoMapper
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
 
+            CreateMap<ServiceCategoryDto, ServiceCategory>();
+            CreateMap<ServiceCategory, ServiceCategoryDto>()
+                  .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                  .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))
+                  .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Icon));
+
             CreateMap<CustomerInQueueForEmployeeDto, Customer>();
             CreateMap<Customer, CustomerInQueueForEmployeeDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -49,9 +56,9 @@ namespace WeApi.AutoMapper
 
             CreateMap<ServiceDto, Service>();
             CreateMap<Service, ServiceDto>()
+                  .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                   .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
-                  .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name))
+                  .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))                  
                   .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                   .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
                   .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))
@@ -69,7 +76,9 @@ namespace WeApi.AutoMapper
 
             CreateMap<CategoryDto, Category>();
             CreateMap<Category, CategoryDto>()
-                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Icon));
 
             CreateMap<QueueDto, Queue>();
             CreateMap<Queue, QueueDto>()
