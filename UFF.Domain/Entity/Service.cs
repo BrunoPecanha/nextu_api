@@ -20,7 +20,7 @@ namespace UFF.Domain.Entity
         public string ImgPath { get; private set; }
         public bool VariableTime { get; private set; }
         public bool VariablePrice { get; private set; }
-        public bool Activated { get; private set; }
+        public bool? Activated { get; private set; } = true;
 
         public Service(ServiceCreateCommand command, int categoryId, int storeId, string imgPath)
         {
