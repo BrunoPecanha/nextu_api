@@ -10,9 +10,10 @@ namespace UFF.Domain.Entity
         private Store() { }
 
         public string Cnpj { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; private set; }        
         public string Address { get; private set; }
         public string Number { get; private set; }
+        public string PhoneNumber { get; set; }
         public string City { get; private set; }
         public string State { get; private set; }
         public bool OpenAutomatic { get; private set; } 
@@ -28,6 +29,10 @@ namespace UFF.Domain.Entity
         public int CategoryId { get; private set; }
         public decimal Rating { get; private set; }
         public int Votes { get; private set; }
+        public string Instagram { get; private set; }
+        public string Facebook { get; private set; }
+        public string Youtube { get; private set; }
+        public string Site { get; private set; }
         public virtual ICollection<OpeningHours> OpeningHours { get; private set; } = new List<OpeningHours>();
         public virtual ICollection<HighLight> HighLights { get; private set; } = new List<HighLight>();
         public virtual ICollection<Queue> Queues { get; private set; } = new List<Queue>();
