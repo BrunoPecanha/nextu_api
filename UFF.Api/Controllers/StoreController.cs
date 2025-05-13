@@ -30,7 +30,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+     //   [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var store = await _service.GetByIdAsync(id);
@@ -78,7 +78,6 @@ namespace WeApi.Controllers
 
             return Ok(stores);
         }
-
 
         [HttpGet("all")]
         //  [Authorize]

@@ -29,6 +29,8 @@ namespace UFF.Infra
 
         public async Task<Store> GetByIdAsync(int id)
             => await _dbContext.Store
+                               .Include(x => x.HighLights)
+                               .Include(o => o.OpeningHours)
                                .Include(x => x.Category)
                                .AsNoTracking()
                                .Include(x => x.Owner)

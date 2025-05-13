@@ -54,12 +54,12 @@ namespace WeApi.Controllers
         //[Authorize]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
-            var store = await _service.GetByIdAsync(id);
+            var service = await _service.GetByIdAsync(id);
 
-            if (store is null)
-                BadRequest(store);
+            if (service is null)
+                BadRequest(service);
 
-            return Ok(store);
+            return Ok(service);
         }
 
         [HttpGet("categories")]

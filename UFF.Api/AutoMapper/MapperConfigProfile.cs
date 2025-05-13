@@ -72,7 +72,21 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.RegisteringDate))
+                .ForMember(dest => dest.Whatsapp, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.Facebook, opt => opt.MapFrom(src => src.Facebook))
+                .ForMember(dest => dest.Instagram, opt => opt.MapFrom(src => src.Instagram))
+                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.Site, opt => opt.MapFrom(src => src.Site))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
+
+            CreateMap<HighLightDto, HighLight>();
+            CreateMap<HighLight, HighLightDto>();
+
+            CreateMap<OpeningHoursDto, OpeningHours>();
+            CreateMap<OpeningHours, OpeningHoursDto>()
+                .ForMember(dest => dest.WeekDay, opt => opt.MapFrom(src => src.WeekDay))
+                .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.Start))
+                .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.End));                
 
             CreateMap<CategoryDto, Category>();
             CreateMap<Category, CategoryDto>()
@@ -87,7 +101,6 @@ namespace WeApi.AutoMapper
                                                          ? src.QueueCustomers.Count(x => x.Customer.Status == CustomerStatusEnum.Waiting || x.Customer.Status == CustomerStatusEnum.InService)
                                                          : src.QueueCustomers.Count(x => x.Customer.Status == CustomerStatusEnum.Absent || x.Customer.Status == CustomerStatusEnum.Removed || x.Customer.Status == CustomerStatusEnum.Done)));
 
-
             CreateMap<StoreProfessionalsDto, Store>();
             CreateMap<Store, StoreProfessionalsDto>()
                 .ForMember(dest => dest.StoreLogoPath, opt => opt.MapFrom(src => src.LogoPath))
@@ -101,7 +114,6 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Subtitle, opt => opt.MapFrom(src => src.Subtitle))
                 .ForMember(dest => dest.ServicesProvided, opt => opt.MapFrom(src => src.ServicesProvided))
                 .ForMember(dest => dest.Liked, opt => opt.MapFrom(src => true));
-
         }
     }
 }
