@@ -1,5 +1,4 @@
 ﻿using System;
-using UFF.Domain.Commands.Service;
 using UFF.Domain.Commands.Store;
 
 namespace UFF.Domain.Entity
