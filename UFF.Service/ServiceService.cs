@@ -29,9 +29,9 @@ namespace UFF.Service
             _imageService = imageService;
         }
 
-        public async Task<CommandResult> GetAllAsync(int storeId)
+        public async Task<CommandResult> GetAllAsync(int storeId, bool onlyActivated = true)
         {
-            var services = await _serviceRepository.GetAllAsync(storeId);
+            var services = await _serviceRepository.GetAllAsync(storeId, onlyActivated);
 
             if (services is null || !services.Any())
                 return new CommandResult(false, services);

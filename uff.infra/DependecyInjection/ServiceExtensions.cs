@@ -15,6 +15,8 @@ namespace UFF.Infra.dependecyInjection
         {
             services.AddDbContext<UffContext>(o => o.UseNpgsql(connectionString));
             services.AddTransient<IUffContext, UffContext>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+
 
             //Entidadades
             services.AddTransient<IAuthService, AuthService>();
@@ -30,6 +32,12 @@ namespace UFF.Infra.dependecyInjection
 
             services.AddTransient<IServiceService, ServiceService>();
             services.AddTransient<IServiceRepository, ServiceRepository>();
+            
+            services.AddTransient<IQueueCustomerRepository, QueueCustomerRepository>();
+
+            services.AddTransient<ICustomerServiceRepository, CustomerServiceRepository>();
+            services.AddTransient<ICustomerRepository, CustomerRepository>();
+
 
             services.AddTransient<IServiceCategoryRepository, ServiceCategoryRepository>();
 
