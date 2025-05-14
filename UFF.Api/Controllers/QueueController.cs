@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
+using UFF.Domain.Commands.Customer;
 using UFF.Domain.Commands.Queue;
-using UFF.Domain.Commands.Store;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -20,9 +20,9 @@ namespace WeApi.Controllers
 
         [HttpPost]
         //[Authorize]
-        public async Task<IActionResult> CreateAsync([FromBody] StoreCreateCommand command)
+        public async Task<IActionResult> AddCustomerToQueueAsync([FromBody] QueueAddCustomerCommand command)
         {
-            var response = await _service.CreateAsync(null);
+            var response = await _service.AddCustomerToQueueAsync(command);
 
             if (!response.Valid)
                 return BadRequest(response.Data);
@@ -30,16 +30,48 @@ namespace WeApi.Controllers
             return Ok(response);
         }
 
-        [HttpPut]
-        //[Authorize]
-        public async Task<IActionResult> UpdateAsync([FromBody] StoreEditCommand command)
+        [HttpGet("start-service/{customerId}")]
+        public async Task<IActionResult> StartCustomerService([FromRoute] int customerId)
         {
-            var store = await _service.UpdateAsync(null);
+            var customer = await _service.StartCustomerService(customerId);
 
-            if (!store.Valid)
-                return BadRequest(store.Data);
+            if (!customer.Valid)
+                return BadRequest(customer);
 
-            return Ok(store);
+            return Ok(customer);
+        }
+
+        [HttpGet("notify-customer/{customerId}")]
+        public async Task<IActionResult> NotifyTimeCustomerWasCalledInTheQueue([FromRoute] int customerId)
+        {
+            var customer = await _service.SetTimeCustomerWasCalledInTheQueue(customerId);
+
+            if (!customer.Valid)
+                return BadRequest(customer);
+
+            return Ok(customer);
+        }
+
+        [HttpPut("finish-service/{customerId}")]
+        public async Task<IActionResult> NotifyTimeCustomerServiceWasCompleted([FromRoute] int customerId)
+        {
+            var customer = await _service.SetTimeCustomerServiceWasCompleted(customerId);
+
+            if (!customer.Valid)
+                return BadRequest(customer);
+
+            return Ok(customer);
+        }
+
+        [HttpPut("remove")]
+        public async Task<IActionResult> RemoveMissingCustomer([FromBody] CustomerRemoveFromQueueCommand command)
+        {
+            var customer = await _service.RemoveMissingCustomer(command);
+
+            if (!customer.Valid)
+                return BadRequest(customer);
+
+            return Ok(customer);
         }
 
         [HttpPost("date")]
@@ -80,7 +112,7 @@ namespace WeApi.Controllers
 
         [HttpGet("{customerId}/card")]
         //[Authorize]
-        public async Task<IActionResult> GetCustomerInQueueCardByCustomerId([FromRoute]int userId)
+        public async Task<IActionResult> GetCustomerInQueueCardByCustomerId([FromRoute] int userId)
         {
             var queueUserIsIn = await _service.GetCustomerInQueueCardByCustomerId(userId);
 
@@ -112,7 +144,7 @@ namespace WeApi.Controllers
                 BadRequest(queue.Data);
 
             return Ok(queue);
-        }        
+        }
 
         [HttpDelete]
         //[Authorize]

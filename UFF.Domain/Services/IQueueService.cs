@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
+using UFF.Domain.Commands.Customer;
 using UFF.Domain.Commands.Queue;
 
 namespace UFF.Domain.Services
 {
     public interface IQueueService
     {
-        public Task<CommandResult> CreateAsync(QueueCreateCommand command);
-        public Task<CommandResult> UpdateAsync(QueueEditCommand command);
+        public Task<CommandResult> AddCustomerToQueueAsync(QueueAddCustomerCommand command);
+        public Task<CommandResult> StartCustomerService(int customerId);
+        public Task<CommandResult> SetTimeCustomerWasCalledInTheQueue(int customerId);
+        public Task<CommandResult> SetTimeCustomerServiceWasCompleted(int customerId);
+        public Task<CommandResult> RemoveMissingCustomer(CustomerRemoveFromQueueCommand command);
         public Task<CommandResult> GetAllByStoreIdAsync(int idStore);
         public Task<CommandResult> GetByDateAsync(int idStore, DateTime date);
         public Task<CommandResult> GetByIdAsync(int id);

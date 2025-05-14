@@ -9,6 +9,7 @@
         public string Services { get; set; }
         public int QueueId { get; set; }
         public string TimeGotInQueue { get; set; }
+        public string TimeCalledInQueue { get; set; }        
         public bool InService { get; set; }
     }
 }

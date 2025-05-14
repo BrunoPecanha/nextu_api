@@ -21,14 +21,15 @@ namespace UFF.Domain.Entity
         public int? Rating { get; private set; }
         public string? Review { get; private set; }
         public int Position { get; private set; }
-        public DateTime TimeEnteredQueue { get; private set; } = DateTime.UtcNow;
-        public DateTime? TimeCalledInQueue { get; private set; }
-        public DateTime? ServiceStartTime { get; private set; }
-        public DateTime? ServiceEndTime { get; private set; }
+        public DateTimeOffset TimeEnteredQueue { get; private set; } = DateTime.UtcNow;
+        public DateTimeOffset? TimeCalledInQueue { get; private set; }
+        public DateTimeOffset? MissingCustomerRemovalTime { get; private set; }
+        public DateTimeOffset? ServiceStartTime { get; private set; }
+        public DateTimeOffset ? ServiceEndTime { get; private set; }
         public CustomerStatusEnum Status { get; private set; }
         public string RandomCustomerName { get; set; }
         public bool IsPriority { get; private set; }
-        public virtual ICollection<QueueCustomer> QueueCustomers { get; private set; } = new List<QueueCustomer>();
+        public string RemoveReason { get; set; }
         public virtual ICollection<CustomerService> CustomerServices { get; private set; } = new List<CustomerService>();
 
         public Customer(CustomerCreateCommand command)
@@ -38,19 +39,46 @@ namespace UFF.Domain.Entity
             Notes = command.Notes;
         }
 
+        public Customer(User user, Queue queue, int paymentMethod, string notes, int position)
+        {
+            QueueId = queue.Id;            
+            UserId = user.Id;  
+            Notes = notes;
+            Position = position;
+            PaymentId = paymentMethod;
+            RegisteringDate = DateTime.UtcNow;
+            LastUpdate = DateTime.UtcNow;
+        }
+
+        public void RemoveMissingCustomer(string removeReason)
+        {
+            RemoveReason = removeReason;
+            Status = CustomerStatusEnum.Removed;
+            MissingCustomerRemovalTime = DateTime.UtcNow;
+        }
+
         public void SetTimeCalledInQueue()
-          => TimeCalledInQueue = DateTime.UtcNow;
+        {
+            TimeCalledInQueue = DateTime.UtcNow;
+            Status = CustomerStatusEnum.Absent;
+        }
 
         public void SetStartTime()
-            => ServiceStartTime = DateTime.UtcNow;
+        {
+            ServiceStartTime = DateTime.UtcNow;
+            Status = CustomerStatusEnum.InService;
+        }        
 
         public void SetEndTime()
-           => ServiceEndTime = DateTime.UtcNow;
+        {
+            ServiceStartTime = DateTime.UtcNow;
+            Status = CustomerStatusEnum.Done;
+        }
 
         public void AddReview(string review)
-            => Review = review;        
+            => Review = review;
 
         public void AddRating(int rating)
-            => Rating = rating;        
+            => Rating = rating;
     }
 }
