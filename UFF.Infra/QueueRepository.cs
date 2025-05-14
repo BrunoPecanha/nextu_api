@@ -14,7 +14,7 @@ namespace UFF.Infra
     {
         private readonly IUffContext _dbContext;
 
-        public QueueRepository(IUffContext dbContext)
+        public QueueRepository(UffContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }
@@ -27,11 +27,16 @@ namespace UFF.Infra
                                .AsNoTracking()
                                .ToArrayAsync();
 
-        public async Task<Queue> GetByIdAsync(int id)
+        public async Task<Queue> GetByIdWithStoreAsync(int id)
             => await _dbContext.Queue
-                               .Include(x => x.Id == id)
+                               .Include(x => x.Store)
                                .AsNoTracking()
                                .FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<Queue> GetByIdAsync(int id)
+           => await _dbContext.Queue
+                              .AsNoTracking()
+                              .FirstOrDefaultAsync(x => x.Id == id);
 
         public async Task<Queue[]> GetByDateAsync(DateTime date, int storeId)
             => await _dbContext.Queue
@@ -60,7 +65,9 @@ namespace UFF.Infra
                         .ThenInclude(cs => cs.Service)
                 .Where(x => x.Queue.EmployeeId == employeeId
                         && x.Queue.Store.Id == storeId
-                        && x.Queue.Status == QueueStatusEnum.Open)
+                        && x.Queue.Status == QueueStatusEnum.Open
+                        && x.Customer.Status == CustomerStatusEnum.Waiting ||
+                x.Customer.Status == CustomerStatusEnum.InService || x.Customer.Status == CustomerStatusEnum.Absent)
                 .AsNoTracking()
                 .Select(x => x.Customer)
                 .OrderBy(x => x.Position)
@@ -80,7 +87,6 @@ namespace UFF.Infra
 
         public async Task<Customer> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId)
             => await _dbContext.Customer
-                .Include(g => g.QueueCustomers)
                 .Include(x => x.User)
                 .Include(x => x.Payment)
                 .Include(x => x.Queue)

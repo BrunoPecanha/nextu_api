@@ -7,7 +7,6 @@ public class CustomerService : To
     private CustomerService()
     {
     }
-
     public CustomerService(CustomerServiceCreateCommand command)
     {
         CustomerId = command.CustomerId;
@@ -15,6 +14,21 @@ public class CustomerService : To
         QueueId = command.QueueId;
         FinalPrice = command.FinalPrice;
     }
+
+    public CustomerService(Customer customer, Service service, Queue queue, int quantity, decimal price, TimeSpan duration)
+    {
+        Quantity = quantity;
+        CustomerId = customer.Id;
+        Customer = customer;
+        ServiceId = service.Id;
+        QueueId = queue.Id;   
+        FinalPrice = quantity * price;
+        Duration = quantity * duration;
+        RegisteringDate = DateTime.UtcNow;
+        LastUpdate = DateTime.UtcNow;
+    }
+
+    public int Quantity { get; set; }
 
     public int CustomerId { get; private set; }
     public Customer Customer { get; private set; }

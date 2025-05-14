@@ -59,12 +59,6 @@ namespace UFF.Infra.EntityConfig
             builder.Property(c => c.PaymentId)
                 .IsRequired();
 
-            builder.HasMany(c => c.QueueCustomers)
-                .WithOne(qc => qc.Customer)
-                .HasForeignKey(qc => qc.CustomerId)
-                .HasConstraintName("fk_queue_customers_customers")
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasMany(c => c.CustomerServices)
                 .WithOne(cs => cs.Customer)
                 .HasForeignKey(cs => cs.CustomerId)
@@ -80,6 +74,15 @@ namespace UFF.Infra.EntityConfig
                 .HasColumnType("timestamp with time zone")
                 .IsRequired()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+
+            builder.Property(qc => qc.MissingCustomerRemovalTime)
+             .HasColumnName("missing_customer_removal_time")
+             .HasColumnType("timestamp with time zone")
+             .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+
+            builder.Property(c => c.RemoveReason)
+                .HasColumnName("remove_reason")
+                .HasColumnType("text");
 
             builder.Property(qc => qc.TimeCalledInQueue)
                 .HasColumnName("time_called_in_queue")
@@ -122,7 +125,6 @@ namespace UFF.Infra.EntityConfig
 
             builder.HasIndex(qc => qc.TimeEnteredQueue)
                    .HasDatabaseName("ix_queue_customers_time_entered");
-
 
             builder.HasIndex(qc => new { qc.QueueId, qc.Position })
                    .HasDatabaseName("ix_queue_customers_queue_position")

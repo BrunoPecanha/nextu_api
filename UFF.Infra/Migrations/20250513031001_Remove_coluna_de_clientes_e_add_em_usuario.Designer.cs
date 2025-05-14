@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250513031001_Remove_coluna_de_clientes_e_add_em_usuario")]
+    partial class Remove_coluna_de_clientes_e_add_em_usuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,10 +50,6 @@ namespace UFF.Infra.Migrations
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer")
-                        .HasColumnName("quantity");
 
                     b.Property<DateTime>("RegisteringDate")
                         .HasColumnType("timestamp with time zone")
@@ -139,12 +138,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnName("last_update")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
-                    b.Property<DateTimeOffset?>("MissingCustomerRemovalTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("missing_customer_removal_time")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
-
                     b.Property<string>("Notes")
                         .HasColumnType("text")
                         .HasColumnName("notes");
@@ -175,19 +168,15 @@ namespace UFF.Infra.Migrations
                         .HasColumnName("registering_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
-                    b.Property<string>("RemoveReason")
-                        .HasColumnType("text")
-                        .HasColumnName("remove_reason");
-
                     b.Property<string>("Review")
                         .HasColumnType("text")
                         .HasColumnName("review");
 
-                    b.Property<DateTimeOffset?>("ServiceEndTime")
+                    b.Property<DateTime?>("ServiceEndTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("service_end_time");
 
-                    b.Property<DateTimeOffset?>("ServiceStartTime")
+                    b.Property<DateTime?>("ServiceStartTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("service_start_time");
 
@@ -196,11 +185,11 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(30)")
                         .HasColumnName("status");
 
-                    b.Property<DateTimeOffset?>("TimeCalledInQueue")
+                    b.Property<DateTime?>("TimeCalledInQueue")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("time_called_in_queue");
 
-                    b.Property<DateTimeOffset>("TimeEnteredQueue")
+                    b.Property<DateTime>("TimeEnteredQueue")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("time_entered_queue")
@@ -510,10 +499,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("customer_id");
 
-                    b.Property<int>("Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update");
@@ -530,8 +515,6 @@ namespace UFF.Infra.Migrations
                         .HasName("pk_queue_customers");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("queue_customers", (string)null);
                 });
@@ -1108,19 +1091,19 @@ namespace UFF.Infra.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_queue_customers_customers");
 
+                    b.HasOne("UFF.Domain.Entity.User", "User")
+                        .WithMany("QueueCustomers")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_queue_customers_users");
+
                     b.HasOne("UFF.Domain.Entity.Queue", "Queue")
                         .WithMany("QueueCustomers")
                         .HasForeignKey("QueueId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_queue_customers_queues");
-
-                    b.HasOne("UFF.Domain.Entity.User", "User")
-                        .WithMany("QueueCustomers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_queue_customers_users");
 
                     b.Navigation("Customer");
 

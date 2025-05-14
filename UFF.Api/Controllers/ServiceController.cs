@@ -38,11 +38,11 @@ namespace WeApi.Controllers
             return Ok(response);
         }
 
-        [HttpGet("all/{idStore}")]
+        [HttpGet("all/{idStore}/{onlyActivated}")]
         //[Authorize]
-        public async Task<IActionResult> GetAllAsync([FromRoute]int idStore)
+        public async Task<IActionResult> GetAllAsync([FromRoute]int idStore, bool onlyActivated = true)
         {
-            var services = await _service.GetAllAsync(idStore);
+            var services = await _service.GetAllAsync(idStore, onlyActivated);
 
             if (!services.Valid)
                 BadRequest(services.Data);

@@ -28,7 +28,7 @@ namespace WeApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var dbConnectionString = Configuration.GetConnectionString("postgresConnection");
+            var dbConnectionString = Configuration.GetConnectionString("postgresConnection") + ";Timezone=America/Sao_Paulo";
             services.AddDbContext<UffContext>(options => options.UseNpgsql(dbConnectionString));
             services.RegisterServices(dbConnectionString);
             services.AddControllers();
