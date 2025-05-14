@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
@@ -8,6 +9,7 @@ using UFF.Domain.Dto;
 using UFF.Domain.Entity;
 using UFF.Domain.Repository;
 using UFF.Domain.Services;
+using UFF.Service.Hubs;
 
 namespace UFF.Service
 {
@@ -21,9 +23,11 @@ namespace UFF.Service
         private readonly IServiceRepository _serviceRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHubContext<QueueHub> _hubContext;
 
         public QueueService(IQueueRepository repository, IMapper mapper, IUserRepository userRepository, IQueueCustomerRepository queueCustomerRepository,
-            ICustomerRepository customerRepository, ICustomerServiceRepository customerServiceRepository, IServiceRepository serviceRepository, IUnitOfWork uow)
+            ICustomerRepository customerRepository, ICustomerServiceRepository customerServiceRepository, IServiceRepository serviceRepository, IUnitOfWork uow,
+            IHubContext<QueueHub> hubContext)
         {
             _queueRepository = repository;
             _mapper = mapper;
@@ -33,6 +37,7 @@ namespace UFF.Service
             _customerServiceRepository = customerServiceRepository;
             _serviceRepository = serviceRepository;
             _unitOfWork = uow;
+            _hubContext = hubContext;
         }
 
         public async Task<CommandResult> AddCustomerToQueueAsync(QueueAddCustomerCommand command)
@@ -68,6 +73,8 @@ namespace UFF.Service
                 }
 
                 await _unitOfWork.CommitAsync();
+                await SendUpdateNotificationToGroup(queue);
+
                 return new CommandResult(true, "Cliente adicionado à fila com sucesso");
             }
             catch (Exception ex)
@@ -162,6 +169,7 @@ namespace UFF.Service
                 _customerRepository.Update(customer);
 
                 await _unitOfWork.CommitAsync();
+                await SendUpdateNotificationToGroup(customer.Queue);
                 return new CommandResult(true, $"Cliente {customer.Id} removido da fila às {DateTime.UtcNow}");
             }
             catch (Exception ex)
@@ -169,7 +177,7 @@ namespace UFF.Service
                 await _unitOfWork.RollbackAsync();
                 return new CommandResult(false, $"Erro ao remover cliente:  {ex.Message}");
             }
-        }        
+        }
 
         public async Task<CommandResult> GetAllByStoreIdAsync(int idStore)
         {
@@ -211,6 +219,7 @@ namespace UFF.Service
                 return new CommandResult(false, queueUserIsIn);
 
             var dto = _mapper.Map<CustomerInQueueCardDto[]>(queueUserIsIn);
+            await SetEstimatedTimeForCustomer(dto);
 
             return new CommandResult(true, dto);
         }
@@ -223,8 +232,7 @@ namespace UFF.Service
                 return new CommandResult(false, customers);
 
             var dto = _mapper.Map<CustomerInQueueCardDetailsDto>(customers);
-            await UpdateTotalLeftTimeInQueueAndTotalCustomers(dto);
-
+            (dto.TotalPeopleInQueue, dto.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(dto.QueueId, dto.Position);
 
             return new CommandResult(true, dto);
         }
@@ -244,12 +252,53 @@ namespace UFF.Service
             throw new NotImplementedException();
         }
 
-        public async Task<CommandResult> DeleteAsync(int id)
+        public async Task<CommandResult> ExitQueueAsync(int customerId, int queueId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var customer = await _customerRepository.GetByIdAsync(customerId);
+                if (customer == null)
+                    return new CommandResult(false, "Cliente não encontrado");
+
+                var queue = await _queueRepository.GetByIdAsync(queueId);
+                if (queue == null)
+                    return new CommandResult(false, "Fila não encontrada");
+
+                customer.ExitQueue();
+
+                _customerRepository.Update(customer);
+
+                await _unitOfWork.CommitAsync();
+
+                await SendUpdateNotificationToGroup(queue);
+
+                return new CommandResult(true, $"Cliente {customer.Id} removido da fila às {DateTime.UtcNow}");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new CommandResult(false, $"Erro ao remover cliente:  {ex.Message}");
+            }
         }
 
-        private async Task UpdateTotalLeftTimeInQueueAndTotalCustomers(CustomerInQueueCardDetailsDto customerInQueueCardDetailsDto)
-            => (customerInQueueCardDetailsDto.TotalPeopleInQueue, customerInQueueCardDetailsDto.TimeToWait) = await _queueRepository.GetQueueStatusAsync(customerInQueueCardDetailsDto.QueueId, customerInQueueCardDetailsDto.Position);
+        private async Task SendUpdateNotificationToGroup(Queue queue)
+        {
+            await _hubContext.Clients
+                .Group($"company-{queue.StoreId}")
+                .SendAsync("UpdateQueue");
+        }
+
+        private async Task SetEstimatedTimeForCustomer(CustomerInQueueCardDto[] customerInQueueCardDtos)
+        {
+            foreach (var customerInQueueCard in customerInQueueCardDtos)
+            {
+                (_, customerInQueueCard.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(customerInQueueCard.QueueId, customerInQueueCard.Position);
+            }
+        }
+
+        private async Task<(int totalPeopleInQueue, TimeSpan timeToWait)> UpdateTotalLeftTimeInQueueAndTotalCustomers(int queueId, int position)
+            => await _queueRepository.GetQueueStatusAsync(queueId, position);
     }
 }
