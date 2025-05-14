@@ -8,7 +8,7 @@ namespace UFF.Domain.Dto
         public int? Id { get; set; }
         public ICollection<ServiceDto> Services { get; set; }
         public decimal Total { get; set; }
-        public decimal TotalPeopleInQueue { get; set; }
+        public int TotalPeopleInQueue { get; set; }
         public PaymentDto Payment { get; set; }
         public int Position { get; set; }
         public TimeSpan TimeToWait { get; set; }

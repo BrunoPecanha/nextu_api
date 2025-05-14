@@ -9,8 +9,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using UFF.Infra.dependecyInjection;
 using UFF.Infra.Context;
+using UFF.Infra.dependecyInjection;
+using UFF.Service.Hubs;
 using WeApi.AutoMapper;
 using WeApi.Options;
 
@@ -25,50 +26,41 @@ namespace WeApi
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             var dbConnectionString = Configuration.GetConnectionString("postgresConnection") + ";Timezone=America/Sao_Paulo";
             services.AddDbContext<UffContext>(options => options.UseNpgsql(dbConnectionString));
+
             services.RegisterServices(dbConnectionString);
+
             services.AddControllers();
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Web Queue", Version = "v1" });
-
-                // Configuração de segurança para JWT
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,                    
-                    Description = "Insira o token JWT no formato: Bearer {token}"
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new string[] {}
-                    }
-                });
-            });
 
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new MapperConfigProfile());
             });
-                        
+
+            var mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder
+                        .WithOrigins("http://localhost:8100",
+                                     "http://localhost:4200",
+                                     "http://127.0.0.1:8100",
+                                     "capacitor://localhost")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials(); //SignalR
+                });
+            });
+
+
+            services.AddSignalR();
+
             var key = Encoding.ASCII.GetBytes(Configuration["Jwt:Key"]);
 
             services.AddAuthentication(x =>
@@ -89,25 +81,56 @@ namespace WeApi
                     ValidIssuer = Configuration["Jwt:Issuer"],
                     ValidAudience = Configuration["Jwt:Audience"],
                 };
+
+                x.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/QueueHub"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return System.Threading.Tasks.Task.CompletedTask;
+                    }
+                };
             });
 
-            var mapper = config.CreateMapper();
-            services.AddSingleton(mapper);
-
-            services.AddCors(options =>
+            services.AddSwaggerGen(c =>
             {
-                options.AddPolicy("CorsPolicy",
-                    builder => builder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
-            });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Web Queue", Version = "v1" });
 
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Insira o token JWT no formato: Bearer {token}"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -121,28 +144,13 @@ namespace WeApi
 
             var swaggerOptions = new SwaggerOptions();
             Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
-            app.UseSwagger();
 
+            app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                var swaggerOptions = new SwaggerOptions();
-                Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
                 options.SwaggerEndpoint(swaggerOptions.UIEndpoint, swaggerOptions.Description);
-                options.RoutePrefix = string.Empty; 
-                               
                 options.DisplayRequestDuration();
             });
-
-
-            app.UseCors(options => options.AllowAnyOrigin());
-
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint(swaggerOptions.UIEndpoint, swaggerOptions.Description);
-
-            });
-
-            app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -150,6 +158,7 @@ namespace WeApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<QueueHub>("/queueHub");
             });
         }
     }

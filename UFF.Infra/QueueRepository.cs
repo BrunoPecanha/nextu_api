@@ -82,8 +82,9 @@ namespace UFF.Infra
                   .ThenInclude(o => o.Category)
                   .AsNoTracking()
                   .Where(x => x.Status == CustomerStatusEnum.Waiting
+                  || x.Status == CustomerStatusEnum.Absent
                   && x.User.Id == userId)
-                  .ToArrayAsync();
+                  .ToArrayAsync();       
 
         public async Task<Customer> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId)
             => await _dbContext.Customer
@@ -98,7 +99,7 @@ namespace UFF.Infra
                 .ThenInclude(x => x.Service)
                 .ThenInclude(x => x.Category)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(y => y.Id == customerId && y.QueueId == queueId && y.Status == CustomerStatusEnum.Waiting);
+                .FirstOrDefaultAsync(y => y.Id == customerId && y.QueueId == queueId && y.Status == CustomerStatusEnum.Waiting || y.Status == CustomerStatusEnum.Absent);
 
         public async Task<(int TotalCustomers, TimeSpan EstimatedWaitTime)> GetQueueStatusAsync(int queueId, int currentCustomerPosition)
         {
@@ -108,11 +109,12 @@ namespace UFF.Infra
 
             var totalCustomers = await query
                 .SelectMany(q => q.QueueCustomers)
+                .Where(x => x.Customer.Status == CustomerStatusEnum.Waiting || x.Customer.Status == CustomerStatusEnum.Absent)
                 .CountAsync();
 
             var totalMinutes = await query
                 .SelectMany(q => q.QueueCustomers)
-                .Where(qc => qc.Customer.Status == CustomerStatusEnum.Waiting)
+                .Where(qc => qc.Customer.Status == CustomerStatusEnum.Waiting || qc.Customer.Status == CustomerStatusEnum.Absent)
                 .Where(qc => qc.Customer.Position < currentCustomerPosition)
                 .SelectMany(qc => qc.Customer.CustomerServices)
                 .Select(cs => cs.Service)
