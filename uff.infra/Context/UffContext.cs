@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 using UFF.Domain.Entity;
 using UFF.Infra.Extensions;
 
@@ -66,20 +68,41 @@ namespace UFF.Infra.Context
             optionsBuilder.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
         }
 
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity.GetType().GetProperty("RegisteringDate") != null))
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Property("RegisteringDate").CurrentValue = DateTime.UtcNow;
+                    entry.Property("LastUpdate").CurrentValue = DateTime.UtcNow;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Property("RegisteringDate").IsModified = false;
+                    entry.Property("Id").IsModified = false;
+                    entry.Property("LastUpdate").CurrentValue = DateTime.UtcNow;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+
         public override int SaveChanges()
         {
             foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity.GetType().GetProperty("RegisteringDate") != null))
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Property("RegisteringDate").CurrentValue = DateTime.Now;
-                    entry.Property("LastUpdate").CurrentValue = DateTime.Now;
+                    entry.Property("RegisteringDate").CurrentValue = DateTime.UtcNow;
+                    entry.Property("LastUpdate").CurrentValue = DateTime.UtcNow;
                 }
                 else if (entry.State == EntityState.Modified)
                 {
                     entry.Property("RegisteringDate").IsModified = false;
                     entry.Property("Id").IsModified = false;
-                    entry.Property("LastUpdate").CurrentValue = DateTime.Now;
+                    entry.Property("LastUpdate").CurrentValue = DateTime.UtcNow;
                 }
             }
             return base.SaveChanges();

@@ -6,7 +6,7 @@ namespace UFF.Domain.Repository
 {
     public interface IServiceRepository : IRepositoryBase<Service> {
         public Task<Service> GetByIdAsync(int id);
-        public Task<IEnumerable<Service>> GetAllAsync(int storeId);
+        public Task<IEnumerable<Service>> GetAllAsync(int storeId, bool onlyActivated = true);
         public Task<IEnumerable<ServiceCategory>> GetAllCategoriesAsync();
     }
 }

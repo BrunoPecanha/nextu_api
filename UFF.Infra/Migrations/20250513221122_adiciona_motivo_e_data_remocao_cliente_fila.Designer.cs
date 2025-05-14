@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250513221122_adiciona_motivo_e_data_remocao_cliente_fila")]
+    partial class adiciona_motivo_e_data_remocao_cliente_fila
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,6 +143,7 @@ namespace UFF.Infra.Migrations
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
                     b.Property<DateTimeOffset?>("MissingCustomerRemovalTime")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("missing_customer_removal_time")

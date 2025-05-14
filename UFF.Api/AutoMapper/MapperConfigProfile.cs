@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System;
 using System.Linq;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
@@ -26,6 +27,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.Join(" ", src.User.Name, src.User.LastName)))
                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => string.Join(", ", src.CustomerServices.Select(o => o.Service.Name).ToList())))
                   .ForMember(dest => dest.TimeGotInQueue, opt => opt.MapFrom(src => src.TimeEnteredQueue.ToString("HH:mm")))
+                  .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))

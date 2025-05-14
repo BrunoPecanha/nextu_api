@@ -93,22 +93,25 @@ namespace UFF.Service
                 int waitingCustomers = employeeTodayQueues.QueueCustomers
                     .Count(qc => qc.Customer.Status == Domain.Enum.CustomerStatusEnum.Waiting);
 
-                if (waitingCustomers > 0)
-                {                    
-                    var (averageWaitingTime, averageServiceTime) = await CalculateAverageWaitingTime(employeeStore.Employee.Id);
+                TimeSpan averageWaitingTime = default;
+                TimeSpan averageServiceTime = default;
 
-                    dto.Professionals.Add(new ProfessionalDto
-                    {
-                        QueueId = employeeTodayQueues.Id,
-                        Name = employeeStore.Employee.Name,
-                        Liked = true,
-                        Subtitle = employeeStore.Employee.Subtitle,
-                        CustomersWaiting = waitingCustomers,
-                        AverageWaitingTime = averageWaitingTime,  
-                        AverageServiceTime = averageServiceTime,
-                        ServicesProvided = employeeStore.Employee.ServicesProvided
-                    });
+                if (waitingCustomers > 0)
+                {
+                    (averageWaitingTime, averageServiceTime) = await CalculateAverageWaitingTime(employeeStore.Employee.Id);
                 }
+
+                dto.Professionals.Add(new ProfessionalDto
+                {
+                    QueueId = employeeTodayQueues.Id,
+                    Name = employeeStore.Employee.Name,
+                    Liked = true,
+                    Subtitle = employeeStore.Employee.Subtitle,
+                    CustomersWaiting = waitingCustomers,
+                    AverageWaitingTime = averageWaitingTime,
+                    AverageServiceTime = averageServiceTime,
+                    ServicesProvided = employeeStore.Employee.ServicesProvided
+                });
             }
 
             return new CommandResult(true, dto);

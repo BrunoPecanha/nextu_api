@@ -8,7 +8,7 @@ namespace UFF.Domain.Services
     {
         public Task<CommandResult> CreateAsync(ServiceCreateCommand command);
         public Task<CommandResult> UpdateAsync(ServiceEditCommand command);
-        public Task<CommandResult> GetAllAsync(int storeId);
+        public Task<CommandResult> GetAllAsync(int storeId, bool onlyActivated = true);
         public Task<CommandResult> GetAllCategoriesAsync();
         public Task<CommandResult> GetByIdAsync(int id);
         public Task<CommandResult> DeleteAsync(int id);

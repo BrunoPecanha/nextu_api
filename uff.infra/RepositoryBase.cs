@@ -3,35 +3,37 @@ using System.Threading.Tasks;
 using UFF.Domain.Repository;
 using UFF.Infra.Context;
 
-namespace UFF.Infra
+public class RepositoryBase<T> : IRepositoryBase<T> where T : class
 {
-    public class RepositoryBase<T> : IRepositoryBase<T> where T : class
+    protected readonly UffContext Db;
+
+    public RepositoryBase(UffContext context)
     {
-        protected UffContext Db = new UffContext(new DbContextOptions<UffContext>(), null);
+        Db = context;
+    }
 
-        public async Task AddAsync(T obj)
-        {
-            await Db.Set<T>().AddAsync(obj);
-        }
+    public async Task AddAsync(T obj)
+    {
+        await Db.Set<T>().AddAsync(obj);
+    }
 
-        public async Task DisposeAsync()
-        {
-            await Db.DisposeAsync();
-        }
-        public void Remove(T obj)
-        {
-            Db.Set<T>().Remove(obj);
-        }
+    public async Task DisposeAsync()
+    {
+        await Db.DisposeAsync();
+    }
 
-        public void Update(T obj)
-        {
-            Db.Entry(obj).State = EntityState.Modified;
-        }
+    public void Remove(T obj)
+    {
+        Db.Set<T>().Remove(obj);
+    }
 
-        public async Task SaveChangesAsync()
-        {
-            await Db.SaveChangesAsync();
-        }
+    public void Update(T obj)
+    {
+        Db.Entry(obj).State = EntityState.Modified;
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        await Db.SaveChangesAsync();
     }
 }
-
