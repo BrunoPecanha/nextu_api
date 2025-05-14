@@ -110,7 +110,12 @@ namespace WeApi.Controllers
             return Ok(customers);
         }
 
-        [HttpGet("{customerId}/card")]
+        /// <summary>
+        /// Recupera todas as filas que o usuário está na data de hoje.
+        /// </summary>
+        /// <param name="userId">Id do usuário que é comum a todas as filas</param>
+        /// <returns>Lista com todas as filas que o usuário está</returns>
+        [HttpGet("{userId}/card")]
         //[Authorize]
         public async Task<IActionResult> GetCustomerInQueueCardByCustomerId([FromRoute] int userId)
         {
@@ -120,7 +125,7 @@ namespace WeApi.Controllers
                 BadRequest(queueUserIsIn);
 
             return Ok(queueUserIsIn);
-        }
+        }     
 
         [HttpGet("{customerId}/{queueId}/card/details")]
         //[Authorize]
@@ -136,7 +141,7 @@ namespace WeApi.Controllers
 
         [HttpGet("{idStore}")]
         //[Authorize]
-        public async Task<IActionResult> GetAllByStoreIdAsync(int idStore)
+        public async Task<IActionResult> GetAllByStoreIdAsync([FromRoute] int idStore)
         {
             var queue = await _service.GetAllByStoreIdAsync(idStore);
 
@@ -146,11 +151,11 @@ namespace WeApi.Controllers
             return Ok(queue);
         }
 
-        [HttpDelete]
+        [HttpDelete("{customerId}/{queueId}/exit")]
         //[Authorize]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> ExitQueueAsync([FromRoute] int customerId, int queueId)
         {
-            var result = await _service.DeleteAsync(id);
+            var result = await _service.ExitQueueAsync(customerId, queueId);
             if (!result.Valid)
                 return BadRequest(new CommandResult(false, result.Data));
 

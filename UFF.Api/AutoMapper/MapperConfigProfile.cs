@@ -37,7 +37,7 @@ namespace WeApi.AutoMapper
             CreateMap<Customer, CustomerInQueueCardDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                   .ForMember(dest => dest.ServiceQtd, opt => opt.MapFrom(src => src.CustomerServices.Count()))
-                  .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
+                  .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))              
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
                   .ForMember(dest => dest.StoreIcon, opt => opt.MapFrom(src => src.Queue.Store.Category.Icon))
                   .ForMember(dest => dest.LogoPath, opt => opt.MapFrom(src => src.Queue.Store.LogoPath));

@@ -55,7 +55,16 @@ namespace UFF.Domain.Entity
             RemoveReason = removeReason;
             Status = CustomerStatusEnum.Removed;
             MissingCustomerRemovalTime = DateTime.UtcNow;
+            Position = -1;
         }
+
+        public void ExitQueue()
+        {
+            Status = CustomerStatusEnum.Canceled;
+            Position = -1;
+            RemoveReason = "Cliente saiu da fila";
+        }
+
 
         public void SetTimeCalledInQueue()
         {
@@ -73,6 +82,7 @@ namespace UFF.Domain.Entity
         {
             ServiceStartTime = DateTime.UtcNow;
             Status = CustomerStatusEnum.Done;
+            Position = -1;
         }
 
         public void AddReview(string review)
