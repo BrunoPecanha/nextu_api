@@ -27,7 +27,7 @@ namespace UFF.Domain.Dto
         public string LogoPath { get; set; }
         public string WallPaperPath { get; set; }
         public int CategoryId { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
         public string Instagram { get; set; }
         public string Facebook { get; set; }
         public string Youtube { get; set; }

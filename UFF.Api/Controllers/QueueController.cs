@@ -52,7 +52,7 @@ namespace WeApi.Controllers
             return Ok(customer);
         }
 
-        [HttpPut("finish-service/{customerId}")]
+        [HttpGet("finish-service/{customerId}")]
         public async Task<IActionResult> NotifyTimeCustomerServiceWasCompleted([FromRoute] int customerId)
         {
             var customer = await _service.SetTimeCustomerServiceWasCompleted(customerId);

@@ -7,11 +7,11 @@ namespace UFF.Infra.EntityConfig
     public class QueueConfiguration : IEntityTypeConfiguration<Queue>
     {
         public void Configure(EntityTypeBuilder<Queue> builder)
-        {            
-            builder.ToTable("queues")  
+        {
+            builder.ToTable("queues")
                    .HasKey(q => q.Id)
                    .HasName("pk_queues");
-            
+
             builder.Property(q => q.Name)
                 .HasColumnName("name")
                 .HasColumnType("varchar(100)")
@@ -24,12 +24,25 @@ namespace UFF.Infra.EntityConfig
                 .IsRequired()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
+            builder.Property(s => s.RegisteringDate)
+                 .HasColumnName("registering_date")
+                 .HasColumnType("timestamp with time zone")
+                 .IsRequired()
+                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+
+            builder.Property(s => s.LastUpdate)
+                   .HasColumnName("last_update")
+                   .HasColumnType("timestamp with time zone")
+                   .IsRequired()
+                   .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
+                   .ValueGeneratedOnAddOrUpdate();
+
             builder.Property(q => q.Status)
                 .HasColumnName("status")
-                .HasColumnType("varchar(20)") 
+                .HasColumnType("varchar(20)")
                 .HasConversion<string>()
                 .IsRequired();
-      
+
             builder.HasOne(q => q.Store)
                 .WithMany(s => s.Queues)
                 .HasForeignKey(q => q.StoreId)
@@ -37,16 +50,10 @@ namespace UFF.Infra.EntityConfig
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(q => q.Employee)
-            .WithMany(u => u.Queues) 
+            .WithMany(u => u.Queues)
             .HasForeignKey(q => q.EmployeeId)
             .HasConstraintName("fk_queues_users")
             .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasMany(q => q.QueueCustomers)
-                .WithOne(qc => qc.Queue)
-                .HasForeignKey(qc => qc.QueueId)
-                .HasConstraintName("fk_queue_customers_queues")
-                .OnDelete(DeleteBehavior.Cascade);
 
             // Índices
             builder.HasIndex(q => q.StoreId)
@@ -57,7 +64,7 @@ namespace UFF.Infra.EntityConfig
 
             builder.HasIndex(q => q.Status)
                 .HasDatabaseName("ix_queues_status");
-          
+
             builder.HasIndex(q => new { q.StoreId, q.Status })
                 .HasDatabaseName("ix_queues_store_status");
         }

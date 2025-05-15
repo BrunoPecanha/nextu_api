@@ -24,6 +24,7 @@ namespace UFF.Domain.Dto
         public string ImgPath { get; set; }
         public bool Activated { get; set; }
         public bool VariableTime { get; set; }
+        public int Quantity { get; set; }
         public bool VariablePrice { get; set; }
         public string Icon { get; set; }        
     }
