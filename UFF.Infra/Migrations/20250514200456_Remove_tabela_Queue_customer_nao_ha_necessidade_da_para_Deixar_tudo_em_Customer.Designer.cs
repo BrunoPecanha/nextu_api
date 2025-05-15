@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250514200456_Remove_tabela_Queue_customer_nao_ha_necessidade_da_para_Deixar_tudo_em_Customer")]
+    partial class Remove_tabela_Queue_customer_nao_ha_necessidade_da_para_Deixar_tudo_em_Customer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +47,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("final_price");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update");
 
@@ -52,7 +55,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("quantity");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date");
 
@@ -90,7 +93,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("img_path");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update")
@@ -102,7 +105,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("name");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
@@ -133,13 +136,13 @@ namespace UFF.Infra.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_priority");
 
-                    b.Property<DateTime>("LastUpdate")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTimeOffset>("LastUpdate")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
-                    b.Property<DateTime?>("MissingCustomerRemovalTime")
+                    b.Property<DateTimeOffset?>("MissingCustomerRemovalTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("missing_customer_removal_time");
 
@@ -167,7 +170,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("rating");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
@@ -181,11 +184,11 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("text")
                         .HasColumnName("review");
 
-                    b.Property<DateTime?>("ServiceEndTime")
+                    b.Property<DateTimeOffset?>("ServiceEndTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("service_end_time");
 
-                    b.Property<DateTime?>("ServiceStartTime")
+                    b.Property<DateTimeOffset?>("ServiceStartTime")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("service_start_time");
 
@@ -194,11 +197,11 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(30)")
                         .HasColumnName("status");
 
-                    b.Property<DateTime?>("TimeCalledInQueue")
+                    b.Property<DateTimeOffset?>("TimeCalledInQueue")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("time_called_in_queue");
 
-                    b.Property<DateTime>("TimeEnteredQueue")
+                    b.Property<DateTimeOffset>("TimeEnteredQueue")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("time_entered_queue")
@@ -257,13 +260,13 @@ namespace UFF.Infra.Migrations
                         .HasDefaultValue(true)
                         .HasColumnName("is_active");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
@@ -306,7 +309,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("icon");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update")
@@ -318,7 +321,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("phrase");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
@@ -357,13 +360,13 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("time without time zone")
                         .HasColumnName("end_time");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
@@ -415,7 +418,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("text")
                         .HasColumnName("img_path");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update");
 
@@ -427,7 +430,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("text")
                         .HasColumnName("notes");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date");
 
@@ -445,7 +448,7 @@ namespace UFF.Infra.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTimeOffset>("Date")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("date")
@@ -455,11 +458,9 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("employee_id");
 
-                    b.Property<DateTime>("LastUpdate")
-                        .ValueGeneratedOnAddOrUpdate()
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_update")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasColumnName("last_update");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -467,11 +468,9 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("name");
 
-                    b.Property<DateTime>("RegisteringDate")
-                        .ValueGeneratedOnAdd()
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("registering_date")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasColumnName("registering_date");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -535,7 +534,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("img_path");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update")
@@ -551,7 +550,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("numeric(10,2)")
                         .HasColumnName("price");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
@@ -613,7 +612,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("img_path");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update")
@@ -625,7 +624,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("name");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
@@ -678,12 +677,6 @@ namespace UFF.Infra.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("answer_scheduled_time");
 
-                    b.Property<bool>("AttendSimultaneously")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("attend_simultaneously");
-
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer")
                         .HasColumnName("category_id");
@@ -708,7 +701,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("text")
                         .HasColumnName("instagram");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update")
@@ -751,7 +744,7 @@ namespace UFF.Infra.Migrations
                         .HasDefaultValue(0m)
                         .HasColumnName("rating");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
@@ -864,7 +857,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("last_name");
 
-                    b.Property<DateTime>("LastUpdate")
+                    b.Property<DateTimeOffset>("LastUpdate")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_update")
@@ -897,7 +890,7 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("profile");
 
-                    b.Property<DateTime>("RegisteringDate")
+                    b.Property<DateTimeOffset>("RegisteringDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")

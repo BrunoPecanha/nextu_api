@@ -34,12 +34,10 @@ namespace UFF.Infra.EntityConfig
                 .HasColumnName("last_update")
                 .HasColumnType("timestamp with time zone")
                 .IsRequired()
-                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
-                .ValueGeneratedOnAddOrUpdate();
-
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
             builder.HasOne(c => c.Queue)
-                .WithMany()
+                .WithMany(q => q.Customers)
                 .HasForeignKey(c => c.QueueId)
                 .HasConstraintName("fk_customers_queues")
                 .OnDelete(DeleteBehavior.Restrict);
@@ -77,8 +75,7 @@ namespace UFF.Infra.EntityConfig
 
             builder.Property(qc => qc.MissingCustomerRemovalTime)
              .HasColumnName("missing_customer_removal_time")
-             .HasColumnType("timestamp with time zone")
-             .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+             .HasColumnType("timestamp with time zone");
 
             builder.Property(c => c.RemoveReason)
                 .HasColumnName("remove_reason")

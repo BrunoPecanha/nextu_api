@@ -71,33 +71,31 @@ namespace UFF.Infra
 
         public async Task<Store> GetStoreWithEmployeesAndQueuesAsync(int storeId)
         {
-            var today = DateTime.UtcNow.Date;
+            var today = DateTime.UtcNow;
 
             return await _dbContext.Store
                 .Include(y => y.Queues)
                 .ThenInclude(k => k.Employee)
                 .Include(y => y.Queues
-                    .Where(o => o.Date.Date == today))
-                .ThenInclude(o => o.QueueCustomers)
-                .ThenInclude(x => x.Customer)
+                    .Where(o => o.Date.ToLocalTime().Date == today.ToLocalTime().Date))
                 .Include(s => s.EmployeeStore)
                 .ThenInclude(es => es.Employee)
                 .Include(s => s.EmployeeStore)
                 .ThenInclude(es => es.Employee)
                 .ThenInclude(x => x.Queues
-                    .Where(q => q.Date.Date == today))
+                    .Where(q => q.Date.ToLocalTime().Date == today.ToLocalTime().Date))
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == storeId);
         }
 
         public async Task<Queue> CalculateAverageWaitingTime(int professionalId)
         {
-            return await _dbContext.Queue
-                .Include(q => q.QueueCustomers
-                    .Where(qc => qc.Customer.Status == CustomerStatusEnum.Waiting))
-                .ThenInclude(qc => qc.Customer)
-                .ThenInclude(c => c.CustomerServices)
-                .FirstOrDefaultAsync(q => q.EmployeeId == professionalId && q.Status == QueueStatusEnum.Open);
-        }        
+            return await _dbContext.Customer
+                .Include(c => c.CustomerServices)
+                .Include(q => q.Queue)
+                .Where(q => q.Queue.EmployeeId == professionalId && q.Queue.Status == QueueStatusEnum.Open && q.Status == CustomerStatusEnum.Waiting)
+                .Select(q => q.Queue)
+                .FirstOrDefaultAsync();
+        }
     }
 }

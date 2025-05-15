@@ -12,6 +12,7 @@ namespace UFF.Domain.Commands.Store
         public string City { get; set; }
         public string State { get; set; }
         public bool OpenAutomatic { get; set; }
+        public bool AttendSimultaneously { get;  set; }
         public string StoreSubtitle { get; set; }
         public bool AcceptOtherQueues { get; set; }
         public bool AnswerOutOfOrder { get; set; }

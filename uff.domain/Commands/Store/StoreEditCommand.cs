@@ -5,17 +5,23 @@ namespace UFF.Domain.Commands.Store
     public class StoreEditCommand
     {
         public int Id { get; set; }
-        public string Cnpj { get; set; }
-        public string NomeEmpresa { get; set; }
-        public string Endereco { get; set; }
-        public List<OpeningHoursCreateCommand> Horarios { get; set; } = new List<OpeningHoursCreateCommand>();
-        public bool AbrirAutomaticamente { get; set; }
-        public bool AceitarOutrasFilas { get; set; }
-        public bool AtenderForaDeOrdem { get; set; }
-        public bool AtenderHoraMarcada { get; set; }
-        public int? TempoRemocao { get; set; }
-        public bool AvisoWhatsApp { get; set; }
-        public string SubtituloLoja { get; set; }
-        public List<HighLightCreateCommand> Destaques { get; set; } = new List<HighLightCreateCommand>();
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Number { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public bool OpenAutomatic { get; set; }
+        public bool AttendSimultaneously { get; set; }
+        public string StoreSubtitle { get; set; }
+        public bool AcceptOtherQueues { get; set; }
+        public bool AnswerOutOfOrder { get; set; }
+        public bool AnswerScheduledTime { get; set; }
+        public int? TimeRemoval { get; set; }
+        public bool WhatsAppNotice { get; set; }
+        public string LogoPath { get; set; }
+        public string WallPaperPath { get; set; }
+        public int CategoryId { get; set; }
+        public virtual ICollection<OpeningHoursCreateCommand> OpeningHours { get; set; } = new List<OpeningHoursCreateCommand>();
+        public virtual ICollection<HighLightCreateCommand> HighLights { get; set; } = new List<HighLightCreateCommand>();
     }
 }
