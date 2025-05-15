@@ -16,7 +16,8 @@ namespace UFF.Domain.Entity
         public string PhoneNumber { get; set; }
         public string City { get; private set; }
         public string State { get; private set; }
-        public bool OpenAutomatic { get; private set; } 
+        public bool OpenAutomatic { get; private set; }
+        public bool AttendSimultaneously { get; private set; }
         public string StoreSubtitle { get; private set; }    
         public bool AcceptOtherQueues { get; private set; }
         public bool AnswerOutOfOrder { get; private set; }
@@ -54,6 +55,7 @@ namespace UFF.Domain.Entity
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
             StoreSubtitle = command.StoreSubtitle;
+            AttendSimultaneously = command.AttendSimultaneously;
             OpenAutomatic = command.OpenAutomatic;
             AcceptOtherQueues = command.AcceptOtherQueues;
             AnswerOutOfOrder = command.AnswerOutOfOrder;
@@ -81,7 +83,7 @@ namespace UFF.Domain.Entity
             //City = !string.IsNullOrWhiteSpace(command.City) ? command.City : City;
             //State = !string.IsNullOrWhiteSpace(command.State) ? command.State : State;
             //Status = command.;
-            //LastUpdate = DateTime.UtcNow;
+            //LastUpdate DateTime.UtcNow;
 
 
             //SubtituloLoja = command.SubtituloLoja ?? SubtituloLoja;

@@ -17,7 +17,6 @@ namespace UFF.Service
     {
         private readonly IQueueRepository _queueRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IQueueCustomerRepository _queueCustomerRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly ICustomerServiceRepository _customerServiceRepository;
         private readonly IServiceRepository _serviceRepository;
@@ -25,14 +24,13 @@ namespace UFF.Service
         private readonly IMapper _mapper;
         private readonly IHubContext<QueueHub> _hubContext;
 
-        public QueueService(IQueueRepository repository, IMapper mapper, IUserRepository userRepository, IQueueCustomerRepository queueCustomerRepository,
+        public QueueService(IQueueRepository repository, IMapper mapper, IUserRepository userRepository,
             ICustomerRepository customerRepository, ICustomerServiceRepository customerServiceRepository, IServiceRepository serviceRepository, IUnitOfWork uow,
             IHubContext<QueueHub> hubContext)
         {
             _queueRepository = repository;
             _mapper = mapper;
             _userRepository = userRepository;
-            _queueCustomerRepository = queueCustomerRepository;
             _customerRepository = customerRepository;
             _customerServiceRepository = customerServiceRepository;
             _serviceRepository = serviceRepository;
@@ -57,10 +55,7 @@ namespace UFF.Service
                 var customer = new Customer(user, queue, command.PaymentMethod, command.Notes, nextPositionInQueue);
 
                 await _customerRepository.AddAsync(customer);
-                await _unitOfWork.SaveChangesAsync();
-
-                var queueCustomer = new QueueCustomer(customer, user, queue);
-                await _queueCustomerRepository.AddAsync(queueCustomer);
+                await _unitOfWork.SaveChangesAsync();             
 
                 foreach (var selectedService in command.SelectedServices)
                 {
@@ -68,7 +63,7 @@ namespace UFF.Service
                     if (service == null)
                         continue;
 
-                    var customerServiceSeleted = new CustomerService(customer, service, queue, selectedService.Quantity, service.Id, service.Duration);
+                    var customerServiceSeleted = new Domain.Entity.CustomerService(customer, service, queue, selectedService.Quantity, service.Price, service.Duration);
                     await _customerServiceRepository.AddAsync(customerServiceSeleted);
                 }
 
@@ -90,12 +85,15 @@ namespace UFF.Service
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var customer = await _customerRepository.GetByIdAsync(customerId);
+                var customer = await _customerRepository.GetByIdReducedAsync(customerId);
                 if (customer == null)
                     return new CommandResult(false, "Cliente não encontrada");
 
                 customer.SetStartTime();
                 _customerRepository.Update(customer);
+
+                //TODO
+                //Criar rotina para rearrumar a fila
 
                 await _unitOfWork.CommitAsync();
                 return new CommandResult(true, $"Atendimento inicializado para o cliente {customer.Id}");
@@ -113,7 +111,7 @@ namespace UFF.Service
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var customer = await _customerRepository.GetByIdAsync(customerId);
+                var customer = await _customerRepository.GetByIdReducedAsync(customerId);
                 if (customer == null)
                     return new CommandResult(false, "Cliente não encontrada");
 
@@ -123,7 +121,7 @@ namespace UFF.Service
                 //Criar tabela de notificações, guardar a notificação e enviar via push para o cliente;
 
                 await _unitOfWork.CommitAsync();
-                return new CommandResult(true, customer.TimeCalledInQueue.Value.ToString("HH:mm"));
+                return new CommandResult(true, customer.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm"));
             }
             catch (Exception ex)
             {
@@ -138,12 +136,15 @@ namespace UFF.Service
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var customer = await _customerRepository.GetByIdAsync(customerId);
+                var customer = await _customerRepository.GetByIdReducedAsync(customerId);
                 if (customer == null)
                     return new CommandResult(false, "Cliente não encontrada");
 
                 customer.SetEndTime();
                 _customerRepository.Update(customer);
+
+                //TODO
+                //Criar rotina para rearrumar a fila
 
                 await _unitOfWork.CommitAsync();
                 return new CommandResult(true, $"Cliente {customer.Id} finalizado às {DateTime.UtcNow}");
@@ -161,12 +162,15 @@ namespace UFF.Service
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var customer = await _customerRepository.GetByIdAsync(command.CustomerId);
+                var customer = await _customerRepository.GetByIdReducedAsync(command.CustomerId);
                 if (customer == null)
                     return new CommandResult(false, "Cliente não encontrado");
 
                 customer.RemoveMissingCustomer(command.RemoveReason);
                 _customerRepository.Update(customer);
+
+                //TODO
+                //Criar rotina para rearrumar a fila
 
                 await _unitOfWork.CommitAsync();
                 await SendUpdateNotificationToGroup(customer.Queue);
@@ -258,7 +262,7 @@ namespace UFF.Service
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var customer = await _customerRepository.GetByIdAsync(customerId);
+                var customer = await _customerRepository.GetByIdReducedAsync(customerId);
                 if (customer == null)
                     return new CommandResult(false, "Cliente não encontrado");
 
@@ -272,6 +276,9 @@ namespace UFF.Service
 
                 await _unitOfWork.CommitAsync();
 
+                //TODO
+                //Criar rotina para rearrumar a fila
+
                 await SendUpdateNotificationToGroup(queue);
 
                 return new CommandResult(true, $"Cliente {customer.Id} removido da fila às {DateTime.UtcNow}");
@@ -282,14 +289,12 @@ namespace UFF.Service
                 return new CommandResult(false, $"Erro ao remover cliente:  {ex.Message}");
             }
         }
-
         private async Task SendUpdateNotificationToGroup(Queue queue)
         {
             await _hubContext.Clients
                 .Group($"company-{queue.StoreId}")
                 .SendAsync("UpdateQueue");
         }
-
         private async Task SetEstimatedTimeForCustomer(CustomerInQueueCardDto[] customerInQueueCardDtos)
         {
             foreach (var customerInQueueCard in customerInQueueCardDtos)
@@ -297,7 +302,6 @@ namespace UFF.Service
                 (_, customerInQueueCard.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(customerInQueueCard.QueueId, customerInQueueCard.Position);
             }
         }
-
         private async Task<(int totalPeopleInQueue, TimeSpan timeToWait)> UpdateTotalLeftTimeInQueueAndTotalCustomers(int queueId, int position)
             => await _queueRepository.GetQueueStatusAsync(queueId, position);
     }

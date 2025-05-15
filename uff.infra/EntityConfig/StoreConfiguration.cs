@@ -24,7 +24,6 @@ namespace UFF.Infra.EntityConfig
                    .IsRequired()
                    .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                    .ValueGeneratedOnAddOrUpdate();
-
             
             builder.Property(s => s.Name)
                    .HasColumnName("name")
@@ -68,6 +67,11 @@ namespace UFF.Infra.EntityConfig
                    .HasColumnName("open_automatic")
                    .IsRequired()
                    .HasDefaultValue(false);
+
+            builder.Property(s => s.AttendSimultaneously)
+              .HasColumnName("attend_simultaneously")
+              .IsRequired()
+              .HasDefaultValue(false);
 
             builder.Property(s => s.StoreSubtitle)
                    .HasColumnName("store_subtitle")

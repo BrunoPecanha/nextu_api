@@ -21,11 +21,11 @@ namespace UFF.Domain.Entity
         public int? Rating { get; private set; }
         public string? Review { get; private set; }
         public int Position { get; private set; }
-        public DateTimeOffset TimeEnteredQueue { get; private set; } = DateTime.UtcNow;
-        public DateTimeOffset? TimeCalledInQueue { get; private set; }
-        public DateTimeOffset? MissingCustomerRemovalTime { get; private set; }
-        public DateTimeOffset? ServiceStartTime { get; private set; }
-        public DateTimeOffset ? ServiceEndTime { get; private set; }
+        public DateTime TimeEnteredQueue { get; private set; } = DateTime.UtcNow;
+        public DateTime? TimeCalledInQueue { get; private set; }
+        public DateTime? MissingCustomerRemovalTime { get; private set; }
+        public DateTime? ServiceStartTime { get; private set; }
+        public DateTime ? ServiceEndTime { get; private set; }
         public CustomerStatusEnum Status { get; private set; }
         public string RandomCustomerName { get; set; }
         public bool IsPriority { get; private set; }
@@ -80,7 +80,7 @@ namespace UFF.Domain.Entity
 
         public void SetEndTime()
         {
-            ServiceStartTime = DateTime.UtcNow;
+            ServiceEndTime = DateTime.UtcNow;
             Status = CustomerStatusEnum.Done;
             Position = -1;
         }

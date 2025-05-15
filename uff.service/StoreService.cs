@@ -90,8 +90,8 @@ namespace UFF.Service
                 var employeeTodayQueues = store.Queues
                     .FirstOrDefault(q => q.EmployeeId == employeeStore.EmployeeId);
 
-                int waitingCustomers = employeeTodayQueues.QueueCustomers
-                    .Count(qc => qc.Customer.Status == Domain.Enum.CustomerStatusEnum.Waiting);
+                int waitingCustomers = employeeTodayQueues.Customers
+                    .Count(qc => qc.Status == Domain.Enum.CustomerStatusEnum.Waiting);
 
                 TimeSpan averageWaitingTime = default;
                 TimeSpan averageServiceTime = default;
@@ -120,13 +120,13 @@ namespace UFF.Service
         {
             var queue = await _storeRepository.CalculateAverageWaitingTime(professionalId);
 
-            if (queue?.QueueCustomers == null || !queue.QueueCustomers.Any())
+            if (queue?.Customers == null || !queue.Customers.Any())
                 return (TimeSpan.Zero, TimeSpan.Zero);
 
-            double totalWaitTime = queue.QueueCustomers
-                .Sum(qc => qc.Customer.CustomerServices.Sum(s => s.Duration.TotalMinutes));
+            double totalWaitTime = queue.Customers
+                .Sum(qc => qc.CustomerServices.Sum(s => s.Duration.TotalMinutes));
 
-            double averageWaitTime = totalWaitTime / queue.QueueCustomers.Count;
+            double averageWaitTime = totalWaitTime / queue.Customers.Count;
 
             return (TimeSpan.FromMinutes(totalWaitTime), TimeSpan.FromMinutes(averageWaitTime));
         }
@@ -168,7 +168,7 @@ namespace UFF.Service
             }
             catch (Exception ex)
             {
-                return new CommandResult(false, ex, ex.InnerException.Message);
+                return new CommandResult(false, ex, ex.Message);
             }
         }
         public async Task<CommandResult> UpdateAsync(StoreEditCommand command)

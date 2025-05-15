@@ -10,11 +10,6 @@ namespace UFF.Domain.Entity
         {
         }
 
-        public void Teste()
-        {
-
-        }
-
         public Store Store { get; private set; }
         public int StoreId { get; private set; }
         public User Employee { get; private set; }
@@ -23,7 +18,7 @@ namespace UFF.Domain.Entity
         public string Name { get; private set; }
         public DateTime Date { get; private set; }
         public QueueStatusEnum Status { get; private set; }
-        public virtual ICollection<QueueCustomer> QueueCustomers { get; private set; } = new List<QueueCustomer>();
+        public virtual ICollection<Customer> Customers { get; private set; } = new List<Customer>();
 
         public Queue(string description, Store store)
         {
