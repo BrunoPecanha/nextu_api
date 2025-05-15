@@ -16,11 +16,22 @@ namespace UFF.Infra
             _dbContext = dbContext;
         }
 
-        public async Task<Customer> GetByIdAsync(int id)
+        public async Task<Customer> GetByIdReducedAsync(int id)
             => await _dbContext.Customer
-                          .Include(x => x.Queue)
                           .AsNoTracking()
                           .FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<Customer> GetByIdAsync(int id)
+           => await _dbContext.Customer
+                         .Include(x => x.User)
+                         .Include(x => x.CustomerServices)
+                            .ThenInclude(x => x.Service)
+                            .ThenInclude(x => x.Category)
+                         .Include(x => x.Queue)
+                         .Include(x => x.Payment)
+                         .Include(x => x.CustomerServices)
+                         .AsNoTracking()
+                         .FirstOrDefaultAsync(x => x.Id == id);
 
         public async Task<int> GetByLasPositionInQueueByStoreAndEmployeeIdAsync(int store, int employee)
         {

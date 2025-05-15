@@ -54,22 +54,18 @@ namespace UFF.Infra
                             .ToArrayAsync();
 
         public async Task<Customer[]> GetAllCustomersInQueueByEmployeeAndStoreId(int storeId, int employeeId)
-            => await _dbContext.QueueCustomer
+            => await _dbContext.Customer
                 .Include(x => x.Queue)
-                .Include(x => x.Customer)
-                    .ThenInclude(c => c.User)
-                .Include(x => x.Customer)
-                    .ThenInclude(c => c.Payment)
-                .Include(x => x.Customer)
-                    .ThenInclude(c => c.CustomerServices)
+                .Include(x => x.Payment)
+                .Include(x => x.User)
+                .Include(c => c.CustomerServices)
                         .ThenInclude(cs => cs.Service)
                 .Where(x => x.Queue.EmployeeId == employeeId
                         && x.Queue.Store.Id == storeId
                         && x.Queue.Status == QueueStatusEnum.Open
-                        && x.Customer.Status == CustomerStatusEnum.Waiting ||
-                x.Customer.Status == CustomerStatusEnum.InService || x.Customer.Status == CustomerStatusEnum.Absent)
+                        && x.Status == CustomerStatusEnum.Waiting ||
+                x.Status == CustomerStatusEnum.InService || x.Status == CustomerStatusEnum.Absent)
                 .AsNoTracking()
-                .Select(x => x.Customer)
                 .OrderBy(x => x.Position)
                 .ToArrayAsync();
 
@@ -84,7 +80,7 @@ namespace UFF.Infra
                   .Where(x => x.Status == CustomerStatusEnum.Waiting
                   || x.Status == CustomerStatusEnum.Absent
                   && x.User.Id == userId)
-                  .ToArrayAsync();       
+                  .ToArrayAsync();
 
         public async Task<Customer> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId)
             => await _dbContext.Customer
@@ -108,15 +104,15 @@ namespace UFF.Infra
                 .Where(q => q.Id == queueId && q.Status == QueueStatusEnum.Open);
 
             var totalCustomers = await query
-                .SelectMany(q => q.QueueCustomers)
-                .Where(x => x.Customer.Status == CustomerStatusEnum.Waiting || x.Customer.Status == CustomerStatusEnum.Absent)
+                .SelectMany(q => q.Customers)
+                .Where(x => x.Status == CustomerStatusEnum.Waiting || x.Status == CustomerStatusEnum.Absent)
                 .CountAsync();
 
             var totalMinutes = await query
-                .SelectMany(q => q.QueueCustomers)
-                .Where(qc => qc.Customer.Status == CustomerStatusEnum.Waiting || qc.Customer.Status == CustomerStatusEnum.Absent)
-                .Where(qc => qc.Customer.Position < currentCustomerPosition)
-                .SelectMany(qc => qc.Customer.CustomerServices)
+                .SelectMany(q => q.Customers)
+                .Where(qc => qc.Status == CustomerStatusEnum.Waiting || qc.Status == CustomerStatusEnum.Absent)
+                .Where(qc => qc.Position < currentCustomerPosition)
+                .SelectMany(qc => qc.CustomerServices)
                 .Select(cs => cs.Service)
                 .SumAsync(s => s.Duration.TotalMinutes);
 

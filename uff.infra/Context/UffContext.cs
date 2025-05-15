@@ -28,7 +28,6 @@ namespace UFF.Infra.Context
         public DbSet<HighLight> HighLight { get; set; }
         public DbSet<OpeningHours> OpeningHour { get; set; }
         public DbSet<Queue> Queue { get; set; }
-        public DbSet<QueueCustomer> QueueCustomer { get; set; }
         public DbSet<ServiceCategory> ServiceCategory { get; set; }
         public DbSet<Domain.Entity.Service> Service { get; set; }
         public DbSet<Store> Store { get; set; }

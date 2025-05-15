@@ -113,12 +113,6 @@ namespace UFF.Infra.EntityConfig
                    .HasConstraintName("fk_stores_owner")
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany(u => u.QueueCustomers)
-         .WithOne(qc => qc.User)
-         .HasForeignKey(qc => qc.UserId) // <--- CORRETO: relaciona com UserId
-         .HasConstraintName("fk_queue_customers_users")
-         .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasMany(u => u.CustomerInstances)
                    .WithOne(c => c.User)
                    .HasForeignKey(c => c.UserId)

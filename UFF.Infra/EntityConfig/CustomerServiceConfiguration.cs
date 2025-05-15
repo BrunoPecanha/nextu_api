@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace UFF.Infra.EntityConfig
 {
-    public class CustomerServiceConfiguration : IEntityTypeConfiguration<CustomerService>
+    public class CustomerServiceConfiguration : IEntityTypeConfiguration<Domain.Entity.CustomerService>
     {
-        public void Configure(EntityTypeBuilder<CustomerService> builder)
+        public void Configure(EntityTypeBuilder<Domain.Entity.CustomerService> builder)
         {
             builder.ToTable("customer_services");
 

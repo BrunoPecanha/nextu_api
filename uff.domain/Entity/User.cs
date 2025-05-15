@@ -25,7 +25,6 @@ namespace UFF.Domain.Entity
         public ProfileEnum Profile { get; private set; }
         public string Subtitle { get; set; }
         public string ServicesProvided { get; set; }
-        public virtual ICollection<QueueCustomer> QueueCustomers { get; private set; } = new List<QueueCustomer>();
         public ICollection<Customer> CustomerInstances { get; private set; } = new List<Customer>();
         public ICollection<Store> Stores { get; private set; } = new List<Store>();
         public virtual ICollection<EmployeeStore> EmployeeStore { get; private set; } = new List<EmployeeStore>();
@@ -72,10 +71,7 @@ namespace UFF.Domain.Entity
                 || string.IsNullOrEmpty(Phone)
                 || string.IsNullOrEmpty(Password));
              
-        }
-
-        public void AddQueueToCustomer(QueueCustomer Queuecustomer)
-            => QueueCustomers.Add(Queuecustomer);
+        }  
 
         public void ChageUserToOwner()
             => Profile= ProfileEnum.Owner;
