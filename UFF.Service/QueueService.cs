@@ -91,20 +91,22 @@ namespace UFF.Service
 
                 var customer = await _customerRepository.GetByIdReducedAsync(customerId);
                 if (customer == null)
-                    return new CommandResult(false, "Cliente não encontrada");
+                    return new CommandResult(false, "Cliente não encontrado");
 
                 customer.SetStartTime();
-                await UpdateEstimatedWaitTimeInMinutes(customer, true);           
+                _customerRepository.Update(customer);
+
+                await RecalculateQueueAsync(customer.Queue.StoreId, customer.Queue.EmployeeId, customer.Id);
 
                 await _unitOfWork.CommitAsync();
-
                 await SendUpdateNotificationToGroup(customer.Queue);
+
                 return new CommandResult(true, $"Atendimento inicializado para o cliente {customer.Id}");
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                return new CommandResult(false, $"Erro ao adicionar à fila: {ex.Message}");
+                return new CommandResult(false, $"Erro ao iniciar atendimento: {ex.Message}");
             }
         }
 
@@ -116,14 +118,16 @@ namespace UFF.Service
 
                 var customer = await _customerRepository.GetByIdReducedAsync(customerId);
                 if (customer == null)
-                    return new CommandResult(false, "Cliente não encontrada");
+                    return new CommandResult(false, "Cliente não encontrado");
 
                 customer.SetTimeCalledInQueue();
+                _customerRepository.Update(customer);
 
-                await UpdateEstimatedWaitTimeInMinutes(customer, true);
+                await RecalculateQueueAsync(customer.Queue.StoreId, customer.Queue.EmployeeId, customer.Id);
 
                 await _unitOfWork.CommitAsync();
                 await SendUpdateNotificationToGroup(customer.Queue);
+
                 return new CommandResult(true, customer.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm"));
             }
             catch (Exception ex)
@@ -141,18 +145,22 @@ namespace UFF.Service
 
                 var customer = await _customerRepository.GetByIdReducedAsync(customerId);
                 if (customer == null)
-                    return new CommandResult(false, "Cliente não encontrada");
+                    return new CommandResult(false, "Cliente não encontrado");
 
                 customer.SetEndTime();
+                _customerRepository.Update(customer);
 
-                await UpdateEstimatedWaitTimeInMinutes(customer, true);
+                await RecalculateQueueAsync(customer.Queue.StoreId, customer.Queue.EmployeeId);
+
                 await _unitOfWork.CommitAsync();
+                await SendUpdateNotificationToGroup(customer.Queue);
+
                 return new CommandResult(true, $"Cliente {customer.Id} finalizado às {DateTime.UtcNow}");
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                return new CommandResult(false, $"Erro ao atualizar o cliente:  {ex.Message}");
+                return new CommandResult(false, $"Erro ao finalizar atendimento: {ex.Message}");
             }
         }
 
@@ -166,18 +174,20 @@ namespace UFF.Service
                 if (customer == null)
                     return new CommandResult(false, "Cliente não encontrado");
 
-                customer.RemoveMissingCustomer(command.RemoveReason);             
+                customer.RemoveMissingCustomer(command.RemoveReason);
+                _customerRepository.Update(customer);
 
-                await UpdateEstimatedWaitTimeInMinutes(customer, true);
+                await RecalculateQueueAsync(customer.Queue.StoreId, customer.Queue.EmployeeId, customer.Id);
 
                 await _unitOfWork.CommitAsync();
                 await SendUpdateNotificationToGroup(customer.Queue);
+
                 return new CommandResult(true, $"Cliente {customer.Id} removido da fila às {DateTime.UtcNow}");
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
-                return new CommandResult(false, $"Erro ao remover cliente:  {ex.Message}");
+                return new CommandResult(false, $"Erro ao remover cliente: {ex.Message}");
             }
         }
 
@@ -220,6 +230,12 @@ namespace UFF.Service
             if (queueUserIsIn == null)
                 return new CommandResult(false, queueUserIsIn);
 
+            var customer = queueUserIsIn.FirstOrDefault();
+            if (customer == null)
+                return new CommandResult(false, null);
+
+            await RecalculateQueueAsync(customer.Queue.StoreId, customer.Queue.EmployeeId);
+
             var dto = _mapper.Map<CustomerInQueueCardDto[]>(queueUserIsIn);
             await SetEstimatedTimeForCustomer(dto);
 
@@ -232,6 +248,8 @@ namespace UFF.Service
 
             if (customer == null)
                 return new CommandResult(false, customer);
+
+            await RecalculateQueueAsync(customer.Queue.StoreId, customer.Queue.EmployeeId);
 
             var dto = _mapper.Map<CustomerInQueueCardDetailsDto>(customer);
             await UpdateValuesEstimates(dto, customer);
@@ -264,8 +282,9 @@ namespace UFF.Service
                     return new CommandResult(false, "Fila não encontrada");
 
                 customer.ExitQueue();
+                _customerRepository.Update(customer);
 
-                await UpdateEstimatedWaitTimeInMinutes(customer, true);
+                await RecalculateQueueAsync(queue.StoreId, queue.EmployeeId);
                 await _unitOfWork.CommitAsync();
 
                 await SendUpdateNotificationToGroup(queue);
@@ -279,68 +298,68 @@ namespace UFF.Service
             }
         }
 
-        #region Método auxiliares
 
-        private async Task UpdateValuesEstimates(CustomerInQueueCardDetailsDto dto, Customer customers)
+        #region Método auxiliares
+        private async Task UpdateValuesEstimates(CustomerInQueueCardDetailsDto dto, Customer customer)
         {
             if (dto == null)
                 return;
 
             (dto.TotalPeopleInQueue, dto.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(dto.QueueId, dto.Position, dto.Id);
-            dto.TimeToWait = await UpdateEstimatedWaitTimeInMinutes(customers);
             InsertTokenIfItsCustomerTurn(dto);
         }
-        public async Task<TimeSpan> UpdateEstimatedWaitTimeInMinutes(Customer customer, bool customerFinished = false)
+        public async Task RecalculateQueueAsync(int storeId, int employeeId, int? skipCustomerUpdateId = null)
         {
-            TimeSpan timeToWait = default;
+            var customers = await _queueRepository.GetAllCustomersInQueueByEmployeeAndStoreId(storeId, employeeId);
 
-            var leftCustomersInQueue = await _queueRepository.GetAllCustomersInQueueByEmployeeAndStoreId(customer.Queue.StoreId, customer.Queue.EmployeeId);
+            var inService = customers.FirstOrDefault(c => c.Status == CustomerStatusEnum.InService);
 
-            if (leftCustomersInQueue == null || !leftCustomersInQueue.Any())
-                return timeToWait;
+            var waitingList = customers
+                              .Where(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent)
+                              .OrderBy(c => c.TimeEnteredQueue);
+
 
             var acumulatedTime = TimeSpan.Zero;
-            int position = 0;
 
-            foreach (var _customer in leftCustomersInQueue.OrderBy(c => c.Position))
+            if (inService != null)
             {
-                _customer.SetPosition(position++);
+                inService.SetPosition(0);
 
-                var totalServiceTime = TimeSpan.FromMinutes(_customer.CustomerServices
-                        .Where(s => s.Service != null)
-                        .Sum(s => s.Service.Duration.TotalMinutes));
+                var totalServiceTime = TimeSpan.FromMinutes(inService.CustomerServices
+                    .Where(s => s.Service != null)
+                    .Sum(s => s.Service.Duration.TotalMinutes));
 
-                if (_customer.Status == CustomerStatusEnum.InService && !customerFinished)
+                if (inService.ServiceStartTime.HasValue)
                 {
-                    if (_customer.ServiceStartTime.HasValue)
-                    {
-                        var elapsed = DateTime.UtcNow.ToLocalTime() - _customer.ServiceStartTime.Value.ToLocalTime();
-                        var remaining = totalServiceTime - elapsed;
-                        _customer.EstimatedWaitingTime = remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
-                        acumulatedTime = _customer.EstimatedWaitingTime;
-                    }
-                    else
-                    {
-                        _customer.EstimatedWaitingTime = totalServiceTime;
-                        acumulatedTime += totalServiceTime;
-                    }
+                    var elapsed = DateTime.UtcNow.ToLocalTime() - inService.ServiceStartTime.Value.ToLocalTime();
+                    var remaining = totalServiceTime - elapsed;
+                    inService.EstimatedWaitingTime = remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+                    acumulatedTime = inService.EstimatedWaitingTime;
                 }
                 else
                 {
-                    if (customer.Id == _customer.Id)
-                        timeToWait = acumulatedTime;
-
-                    _customer.EstimatedWaitingTime = acumulatedTime;
+                    inService.EstimatedWaitingTime = totalServiceTime;
                     acumulatedTime += totalServiceTime;
                 }
 
-                if (customerFinished)
-                    _customerRepository.Update(customer);
-                else
-                    _customerRepository.Update(_customer);
+                if (skipCustomerUpdateId != inService.Id)
+                    _customerRepository.Update(inService);
             }
 
-            return timeToWait;
+            int position = 1;
+            foreach (var customer in waitingList.Where(x => x.Id != skipCustomerUpdateId))
+            {
+                customer.SetPosition(position++);
+
+                var totalServiceTime = TimeSpan.FromMinutes(customer.CustomerServices
+                    .Where(s => s.Service != null)
+                    .Sum(s => s.Service.Duration.TotalMinutes));
+
+                customer.EstimatedWaitingTime = acumulatedTime;
+                acumulatedTime += totalServiceTime;
+
+                _customerRepository.Update(customer);
+            }
         }
         private async Task SendUpdateNotificationToGroup(Queue queue)
         {
