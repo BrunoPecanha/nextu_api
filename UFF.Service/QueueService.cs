@@ -228,13 +228,13 @@ namespace UFF.Service
 
         public async Task<CommandResult> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId)
         {
-            var customers = await _queueRepository.GetCustomerInQueueCardDetailsByCustomerId(customerId, queueId);
+            var customer = await _queueRepository.GetCustomerInQueueCardDetailsByCustomerId(customerId, queueId);
 
-            if (customers == null)
-                return new CommandResult(false, customers);
+            if (customer == null)
+                return new CommandResult(false, customer);
 
-            var dto = _mapper.Map<CustomerInQueueCardDetailsDto>(customers);
-            await UpdateValuesEstimates(dto, customers);
+            var dto = _mapper.Map<CustomerInQueueCardDetailsDto>(customer);
+            await UpdateValuesEstimates(dto, customer);
 
             return new CommandResult(true, dto);
         }
@@ -286,7 +286,7 @@ namespace UFF.Service
             if (dto == null)
                 return;
 
-            (dto.TotalPeopleInQueue, dto.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(dto.QueueId, dto.Position);
+            (dto.TotalPeopleInQueue, dto.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(dto.QueueId, dto.Position, dto.Id);
             dto.TimeToWait = await UpdateEstimatedWaitTimeInMinutes(customers);
             InsertTokenIfItsCustomerTurn(dto);
         }
@@ -352,11 +352,11 @@ namespace UFF.Service
         {
             foreach (var customerInQueueCard in customerInQueueCardDtos)
             {
-                (_, customerInQueueCard.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(customerInQueueCard.QueueId, customerInQueueCard.Position);
+                (_, customerInQueueCard.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(customerInQueueCard.QueueId, customerInQueueCard.Position, customerInQueueCard.Id);
             }
         }
-        private async Task<(int totalPeopleInQueue, TimeSpan timeToWait)> UpdateTotalLeftTimeInQueueAndTotalCustomers(int queueId, int position)
-            => await _queueRepository.GetQueueStatusAsync(queueId, position);
+        private async Task<(int totalPeopleInQueue, TimeSpan timeToWait)> UpdateTotalLeftTimeInQueueAndTotalCustomers(int queueId, int position, int id)
+            => await _queueRepository.GetQueueStatusAsync(queueId, position, id);
         private void InsertTokenIfItsCustomerTurn(CustomerInQueueCardDetailsDto dto)
         {
             if (dto != null && (dto.Position == 0))
