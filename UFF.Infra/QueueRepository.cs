@@ -56,18 +56,27 @@ namespace UFF.Infra
         public async Task<Customer[]> GetAllCustomersInQueueByEmployeeAndStoreId(int storeId, int employeeId)
             => await _dbContext.Customer
                 .Include(x => x.Queue)
+                    .ThenInclude(x => x.Store)
+                .Include(x => x.Queue)
+                    .ThenInclude(x => x.Employee)
                 .Include(x => x.Payment)
                 .Include(x => x.User)
                 .Include(c => c.CustomerServices)
-                        .ThenInclude(cs => cs.Service)
-                .Where(x => x.Queue.EmployeeId == employeeId
-                        && x.Queue.Store.Id == storeId
-                        && x.Queue.Status == QueueStatusEnum.Open
-                        && x.Status == CustomerStatusEnum.Waiting ||
-                x.Status == CustomerStatusEnum.InService || x.Status == CustomerStatusEnum.Absent)
+                    .ThenInclude(cs => cs.Service)
+                .Where(x =>
+                    x.Queue.EmployeeId == employeeId &&
+                    x.Queue.Store.Id == storeId &&
+                    x.Queue.Status == QueueStatusEnum.Open &&
+                    (
+                        x.Status == CustomerStatusEnum.Waiting ||
+                        x.Status == CustomerStatusEnum.InService ||
+                        x.Status == CustomerStatusEnum.Absent
+                    )
+                )
                 .AsNoTracking()
                 .OrderBy(x => x.Position)
                 .ToArrayAsync();
+
 
         public async Task<Customer[]> GetCustomerInQueueCardByUserId(int userId)
               => await _dbContext.Customer
@@ -97,7 +106,7 @@ namespace UFF.Infra
                 .AsNoTracking()
                 .FirstOrDefaultAsync(y => y.Id == customerId && y.QueueId == queueId && (y.Status == CustomerStatusEnum.Waiting || y.Status == CustomerStatusEnum.Absent));
 
-        public async Task<(int TotalCustomers, TimeSpan EstimatedWaitTime)> GetQueueStatusAsync(int queueId, int currentCustomerPosition)
+        public async Task<(int TotalCustomers, TimeSpan EstimatedWaitTime)> GetQueueStatusAsync(int queueId, int currentCustomerPosition, int currentCustomerId)
         {
             var queue = await _dbContext.Queue
                 .AsNoTracking()
@@ -105,7 +114,7 @@ namespace UFF.Infra
                 .Select(q => new
                 {
                     Customers = q.Customers
-                        .Where(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent)
+                        .Where(c => /*c.Id != currentCustomerId && */ (c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
                         .Select(c => new
                         {
                             c.Status,

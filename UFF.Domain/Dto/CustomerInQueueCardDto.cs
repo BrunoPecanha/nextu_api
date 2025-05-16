@@ -4,7 +4,7 @@ namespace UFF.Domain.Dto
 {
     public class CustomerInQueueCardDto
     {
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public int Position { get; set; }
         public int CustomerId { get; set; }
         public TimeSpan TimeToWait { get; set; }
