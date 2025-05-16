@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Customer;
 using UFF.Domain.Commands.Queue;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
+using UFF.Domain.Enum;
 using UFF.Domain.Repository;
 using UFF.Domain.Services;
 using UFF.Service.Hubs;
@@ -21,12 +23,13 @@ namespace UFF.Service
         private readonly ICustomerServiceRepository _customerServiceRepository;
         private readonly IServiceRepository _serviceRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
         private readonly IHubContext<QueueHub> _hubContext;
 
         public QueueService(IQueueRepository repository, IMapper mapper, IUserRepository userRepository,
             ICustomerRepository customerRepository, ICustomerServiceRepository customerServiceRepository, IServiceRepository serviceRepository, IUnitOfWork uow,
-            IHubContext<QueueHub> hubContext)
+            IHubContext<QueueHub> hubContext, ITokenService tokenService)
         {
             _queueRepository = repository;
             _mapper = mapper;
@@ -36,6 +39,7 @@ namespace UFF.Service
             _serviceRepository = serviceRepository;
             _unitOfWork = uow;
             _hubContext = hubContext;
+            _tokenService = tokenService;
         }
 
         public async Task<CommandResult> AddCustomerToQueueAsync(QueueAddCustomerCommand command)
@@ -55,7 +59,7 @@ namespace UFF.Service
                 var customer = new Customer(user, queue, command.PaymentMethod, command.Notes, nextPositionInQueue);
 
                 await _customerRepository.AddAsync(customer);
-                await _unitOfWork.SaveChangesAsync();             
+                await _unitOfWork.SaveChangesAsync();
 
                 foreach (var selectedService in command.SelectedServices)
                 {
@@ -90,12 +94,11 @@ namespace UFF.Service
                     return new CommandResult(false, "Cliente não encontrada");
 
                 customer.SetStartTime();
-                _customerRepository.Update(customer);
-
-                //TODO
-                //Criar rotina para rearrumar a fila
+                await UpdateEstimatedWaitTimeInMinutes(customer, true);           
 
                 await _unitOfWork.CommitAsync();
+
+                await SendUpdateNotificationToGroup(customer.Queue);
                 return new CommandResult(true, $"Atendimento inicializado para o cliente {customer.Id}");
             }
             catch (Exception ex)
@@ -116,11 +119,11 @@ namespace UFF.Service
                     return new CommandResult(false, "Cliente não encontrada");
 
                 customer.SetTimeCalledInQueue();
-                _customerRepository.Update(customer);
 
-                //Criar tabela de notificações, guardar a notificação e enviar via push para o cliente;
+                await UpdateEstimatedWaitTimeInMinutes(customer, true);
 
                 await _unitOfWork.CommitAsync();
+                await SendUpdateNotificationToGroup(customer.Queue);
                 return new CommandResult(true, customer.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm"));
             }
             catch (Exception ex)
@@ -141,11 +144,8 @@ namespace UFF.Service
                     return new CommandResult(false, "Cliente não encontrada");
 
                 customer.SetEndTime();
-                _customerRepository.Update(customer);
 
-                //TODO
-                //Criar rotina para rearrumar a fila
-
+                await UpdateEstimatedWaitTimeInMinutes(customer, true);
                 await _unitOfWork.CommitAsync();
                 return new CommandResult(true, $"Cliente {customer.Id} finalizado às {DateTime.UtcNow}");
             }
@@ -166,11 +166,9 @@ namespace UFF.Service
                 if (customer == null)
                     return new CommandResult(false, "Cliente não encontrado");
 
-                customer.RemoveMissingCustomer(command.RemoveReason);
-                _customerRepository.Update(customer);
+                customer.RemoveMissingCustomer(command.RemoveReason);             
 
-                //TODO
-                //Criar rotina para rearrumar a fila
+                await UpdateEstimatedWaitTimeInMinutes(customer, true);
 
                 await _unitOfWork.CommitAsync();
                 await SendUpdateNotificationToGroup(customer.Queue);
@@ -236,7 +234,7 @@ namespace UFF.Service
                 return new CommandResult(false, customers);
 
             var dto = _mapper.Map<CustomerInQueueCardDetailsDto>(customers);
-            (dto.TotalPeopleInQueue, dto.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(dto.QueueId, dto.Position);
+            await UpdateValuesEstimates(dto, customers);
 
             return new CommandResult(true, dto);
         }
@@ -249,11 +247,6 @@ namespace UFF.Service
                 return new CommandResult(false, queue);
 
             return new CommandResult(true, _mapper.Map<QueueDto[]>(queue));
-        }
-
-        public async Task<CommandResult> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<CommandResult> ExitQueueAsync(int customerId, int queueId)
@@ -272,12 +265,8 @@ namespace UFF.Service
 
                 customer.ExitQueue();
 
-                _customerRepository.Update(customer);
-
+                await UpdateEstimatedWaitTimeInMinutes(customer, true);
                 await _unitOfWork.CommitAsync();
-
-                //TODO
-                //Criar rotina para rearrumar a fila
 
                 await SendUpdateNotificationToGroup(queue);
 
@@ -288,6 +277,70 @@ namespace UFF.Service
                 await _unitOfWork.RollbackAsync();
                 return new CommandResult(false, $"Erro ao remover cliente:  {ex.Message}");
             }
+        }
+
+        #region Método auxiliares
+
+        private async Task UpdateValuesEstimates(CustomerInQueueCardDetailsDto dto, Customer customers)
+        {
+            if (dto == null)
+                return;
+
+            (dto.TotalPeopleInQueue, dto.TimeToWait) = await UpdateTotalLeftTimeInQueueAndTotalCustomers(dto.QueueId, dto.Position);
+            dto.TimeToWait = await UpdateEstimatedWaitTimeInMinutes(customers);
+            InsertTokenIfItsCustomerTurn(dto);
+        }
+        public async Task<TimeSpan> UpdateEstimatedWaitTimeInMinutes(Customer customer, bool customerFinished = false)
+        {
+            TimeSpan timeToWait = default;
+
+            var leftCustomersInQueue = await _queueRepository.GetAllCustomersInQueueByEmployeeAndStoreId(customer.Queue.StoreId, customer.Queue.EmployeeId);
+
+            if (leftCustomersInQueue == null || !leftCustomersInQueue.Any())
+                return timeToWait;
+
+            var acumulatedTime = TimeSpan.Zero;
+            int position = 0;
+
+            foreach (var _customer in leftCustomersInQueue.OrderBy(c => c.Position))
+            {
+                _customer.SetPosition(position++);
+
+                var totalServiceTime = TimeSpan.FromMinutes(_customer.CustomerServices
+                        .Where(s => s.Service != null)
+                        .Sum(s => s.Service.Duration.TotalMinutes));
+
+                if (_customer.Status == CustomerStatusEnum.InService && !customerFinished)
+                {
+                    if (_customer.ServiceStartTime.HasValue)
+                    {
+                        var elapsed = DateTime.UtcNow.ToLocalTime() - _customer.ServiceStartTime.Value.ToLocalTime();
+                        var remaining = totalServiceTime - elapsed;
+                        _customer.EstimatedWaitingTime = remaining > TimeSpan.Zero ? remaining : TimeSpan.Zero;
+                        acumulatedTime = _customer.EstimatedWaitingTime;
+                    }
+                    else
+                    {
+                        _customer.EstimatedWaitingTime = totalServiceTime;
+                        acumulatedTime += totalServiceTime;
+                    }
+                }
+                else
+                {
+                    if (customer.Id == _customer.Id)
+                        timeToWait = acumulatedTime;
+
+                    _customer.EstimatedWaitingTime = acumulatedTime;
+                    acumulatedTime += totalServiceTime;
+                }
+
+                if (customerFinished)
+                    _customerRepository.Update(customer);
+                else
+                    _customerRepository.Update(_customer);
+            }
+
+            return timeToWait;
         }
         private async Task SendUpdateNotificationToGroup(Queue queue)
         {
@@ -304,5 +357,12 @@ namespace UFF.Service
         }
         private async Task<(int totalPeopleInQueue, TimeSpan timeToWait)> UpdateTotalLeftTimeInQueueAndTotalCustomers(int queueId, int position)
             => await _queueRepository.GetQueueStatusAsync(queueId, position);
+        private void InsertTokenIfItsCustomerTurn(CustomerInQueueCardDetailsDto dto)
+        {
+            if (dto != null && (dto.Position == 0))
+                dto.Token = _tokenService.CreateToken(dto.Id, dto.QueueId);
+        }
+
+        #endregion
     }
 }

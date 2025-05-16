@@ -20,6 +20,7 @@ namespace UFF.Infra.dependecyInjection
 
             //Entidadades
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IStoreService, StoreService>();

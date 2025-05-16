@@ -77,6 +77,9 @@ namespace UFF.Infra.EntityConfig
              .HasColumnName("missing_customer_removal_time")
              .HasColumnType("timestamp with time zone");
 
+            builder.Property(qc => qc.EstimatedWaitingTime)
+            .HasColumnName("estimated_start_time");
+
             builder.Property(c => c.RemoveReason)
                 .HasColumnName("remove_reason")
                 .HasColumnType("text");
