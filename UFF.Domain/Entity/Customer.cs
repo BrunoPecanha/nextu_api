@@ -71,7 +71,7 @@ namespace UFF.Domain.Entity
         {
             TimeCalledInQueue = DateTime.UtcNow;
             Status = CustomerStatusEnum.Absent;
-            Position = --Position;
+            Position = 0;
         }
 
         public void SetStartTime()

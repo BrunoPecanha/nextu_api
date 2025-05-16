@@ -73,7 +73,6 @@ namespace UFF.Infra
                         x.Status == CustomerStatusEnum.Absent
                     )
                 )
-                .AsNoTracking()
                 .OrderBy(x => x.Position)
                 .ToArrayAsync();
 
@@ -114,12 +113,16 @@ namespace UFF.Infra
                 .Select(q => new
                 {
                     Customers = q.Customers
-                        .Where(c => /*c.Id != currentCustomerId && */ (c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
+                        .Where(c =>
+                            (c.Status == CustomerStatusEnum.Waiting ||
+                             c.Status == CustomerStatusEnum.Absent ||
+                             c.Status == CustomerStatusEnum.InService))
                         .Select(c => new
                         {
+                            c.Id,
                             c.Status,
                             c.Position,
-                            c.ServiceStartTime, 
+                            c.ServiceStartTime,
                             Services = c.CustomerServices.Select(cs => cs.Service.Duration.TotalMinutes)
                         }).ToList()
                 })
@@ -128,12 +131,13 @@ namespace UFF.Infra
             if (queue == null)
                 return (0, TimeSpan.Zero);
 
-            var totalCustomers = queue.Customers.Count;
-
             double totalMinutesToWait = 0;
 
             foreach (var customer in queue.Customers)
             {
+                if (customer.Id == currentCustomerId)
+                    continue;
+
                 if (customer.Position >= currentCustomerPosition)
                     continue;
 
@@ -150,8 +154,10 @@ namespace UFF.Infra
                     totalMinutesToWait += customerTotalMinutes;
                 }
             }
+            int totalCustomersAhead = queue.Customers.Count(c => c.Id != currentCustomerId && c.Position < currentCustomerPosition);
 
-            return (totalCustomers, TimeSpan.FromMinutes(totalMinutesToWait));
+            return (totalCustomersAhead+1, TimeSpan.FromMinutes(totalMinutesToWait));
         }
+
     }
 }

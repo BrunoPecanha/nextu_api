@@ -19,7 +19,6 @@ namespace UFF.Infra
         public async Task<Customer> GetByIdReducedAsync(int id)
             => await _dbContext.Customer
                           .Include(x => x.Queue)
-                          .AsNoTracking()
                           .FirstOrDefaultAsync(x => x.Id == id);
 
         public async Task<Customer> GetByIdAsync(int id)
