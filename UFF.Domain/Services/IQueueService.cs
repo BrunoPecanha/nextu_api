@@ -15,7 +15,6 @@ namespace UFF.Domain.Services
         public Task<CommandResult> RemoveMissingCustomer(CustomerRemoveFromQueueCommand command);
         public Task<CommandResult> GetAllByStoreIdAsync(int idStore);
         public Task<CommandResult> GetByDateAsync(int idStore, DateTime date);
-        public Task<CommandResult> GetByIdAsync(int id);
         public Task<CommandResult> GetOpenedQueueByEmployeeId(int id);
         public Task<CommandResult> GetCustomerInQueueCardByCustomerId(int userId);
         public Task<CommandResult> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId);

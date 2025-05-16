@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using System;
 using System.Linq;
+using UFF.Domain;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
 using UFF.Domain.Enum;
@@ -47,8 +47,10 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                   .ForMember(dest => dest.AttendantsName, opt => opt.MapFrom(src => src.Queue.Employee.Name))
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
+                  .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, src.Payment.Notes)))
                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices.Select(o => new ServiceDto(o.Service.Name, o.Service.Category.Icon, o.Service.Price))))
+                  .ForMember(dest => dest.EstimatedWaitingTime, opt => opt.Ignore())
                   .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CustomerServices.Sum(o => o.Service.Price)));
 
             CreateMap<PaymentDto, Payment>();
