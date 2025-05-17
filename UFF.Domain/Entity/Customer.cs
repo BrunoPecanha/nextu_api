@@ -21,6 +21,7 @@ namespace UFF.Domain.Entity
         public int? Rating { get; private set; }
         public string? Review { get; private set; }
         public int Position { get; private set; }
+        public TimeSpan EstimatedWaitingTime { get; set; }
         public DateTime TimeEnteredQueue { get; private set; } = DateTime.UtcNow;
         public DateTime? TimeCalledInQueue { get; private set; }
         public DateTime? MissingCustomerRemovalTime { get; private set; }
@@ -55,21 +56,22 @@ namespace UFF.Domain.Entity
             RemoveReason = removeReason;
             Status = CustomerStatusEnum.Removed;
             MissingCustomerRemovalTime = DateTime.UtcNow;
-            Position = -1;
         }
 
         public void ExitQueue()
         {
             Status = CustomerStatusEnum.Canceled;
-            Position = -1;
             RemoveReason = "Cliente saiu da fila";
         }
 
+        public void SetPosition(int position)
+            => Position= position;
 
         public void SetTimeCalledInQueue()
         {
             TimeCalledInQueue = DateTime.UtcNow;
             Status = CustomerStatusEnum.Absent;
+            Position = 0;
         }
 
         public void SetStartTime()
@@ -82,7 +84,6 @@ namespace UFF.Domain.Entity
         {
             ServiceEndTime = DateTime.UtcNow;
             Status = CustomerStatusEnum.Done;
-            Position = -1;
         }
 
         public void AddReview(string review)

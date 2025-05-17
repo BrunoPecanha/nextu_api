@@ -29,7 +29,12 @@ public class RepositoryBase<T> : IRepositoryBase<T> where T : class
 
     public void Update(T obj)
     {
-        Db.Entry(obj).State = EntityState.Modified;
+        var entry = Db.Entry(obj);
+        if (entry.State == EntityState.Detached)
+        {
+            Db.Set<T>().Attach(obj);
+            entry.State = EntityState.Modified;
+        }
     }
 
     public async Task SaveChangesAsync()

@@ -18,6 +18,9 @@ namespace WeApi.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Inclui cliente na fila
+        /// </summary> 
         [HttpPost]
         //[Authorize]
         public async Task<IActionResult> AddCustomerToQueueAsync([FromBody] QueueAddCustomerCommand command)
@@ -30,6 +33,9 @@ namespace WeApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Inicia atendimento
+        /// </summary> 
         [HttpGet("start-service/{customerId}")]
         public async Task<IActionResult> StartCustomerService([FromRoute] int customerId)
         {
@@ -41,6 +47,9 @@ namespace WeApi.Controllers
             return Ok(customer);
         }
 
+        /// <summary>
+        /// Envia notificação para o cliente que é a vez dele
+        /// </summary> 
         [HttpGet("notify-customer/{customerId}")]
         public async Task<IActionResult> NotifyTimeCustomerWasCalledInTheQueue([FromRoute] int customerId)
         {
@@ -52,6 +61,9 @@ namespace WeApi.Controllers
             return Ok(customer);
         }
 
+        /// <summary>
+        /// Finaliza o serviço de um cliente
+        /// </summary>  
         [HttpGet("finish-service/{customerId}")]
         public async Task<IActionResult> NotifyTimeCustomerServiceWasCompleted([FromRoute] int customerId)
         {
@@ -63,6 +75,9 @@ namespace WeApi.Controllers
             return Ok(customer);
         }
 
+        /// <summary>
+        /// Exclui o cliente da fila e marca como "ausente"
+        /// </summary>  
         [HttpPut("remove")]
         public async Task<IActionResult> RemoveMissingCustomer([FromBody] CustomerRemoveFromQueueCommand command)
         {
@@ -74,6 +89,9 @@ namespace WeApi.Controllers
             return Ok(customer);
         }
 
+        /// <summary>
+        /// Recupera as filas de um determinado dia para uma determinada loja
+        /// </summary>  
         [HttpPost("date")]
         //[Authorize]
         public async Task<IActionResult> GetByDateAsync([FromBody] QueueRequestCommand command)
@@ -86,6 +104,9 @@ namespace WeApi.Controllers
             return Ok(queues);
         }
 
+        /// <summary>
+        /// Recupera as filas que estã em aberto para um determinado funcionário
+        /// </summary>  
         [HttpGet("{id}/employee")]
         //[Authorize]
         public async Task<IActionResult> GetOpenedQueueByEmployeeId([FromRoute] int id)
@@ -98,6 +119,9 @@ namespace WeApi.Controllers
             return Ok(queues);
         }
 
+        /// <summary>
+        /// Recupera todos os clientes para uma fila de um determinado funcionário.
+        /// </summary>  
         [HttpGet("{storeId}/{employeeId}/customers-in-queue")]
         //[Authorize]
         public async Task<IActionResult> GetAllCustomersInQueueByEmployeeAndStoreId([FromRoute] int storeId, int employeeId)
@@ -110,11 +134,10 @@ namespace WeApi.Controllers
             return Ok(customers);
         }
 
+
         /// <summary>
-        /// Recupera todas as filas que o usuário está na data de hoje.
-        /// </summary>
-        /// <param name="userId">Id do usuário que é comum a todas as filas</param>
-        /// <returns>Lista com todas as filas que o usuário está</returns>
+        /// Recupera as filas que o cliente está 
+        /// </summary>  
         [HttpGet("{userId}/card")]
         //[Authorize]
         public async Task<IActionResult> GetCustomerInQueueCardByCustomerId([FromRoute] int userId)
@@ -125,8 +148,11 @@ namespace WeApi.Controllers
                 BadRequest(queueUserIsIn);
 
             return Ok(queueUserIsIn);
-        }     
+        }
 
+        /// <summary>
+        /// Recupera detalhes de uma fila que o cliente está
+        /// </summary>  
         [HttpGet("{customerId}/{queueId}/card/details")]
         //[Authorize]
         public async Task<IActionResult> GetCustomerInQueueCardDetailsByCustomerId([FromRoute] int customerId, int queueId)
@@ -139,6 +165,10 @@ namespace WeApi.Controllers
             return Ok(customers);
         }
 
+
+        /// <summary>
+        /// Recupera todas as filas de um estabelecimento
+        /// </summary>  
         [HttpGet("{idStore}")]
         //[Authorize]
         public async Task<IActionResult> GetAllByStoreIdAsync([FromRoute] int idStore)
@@ -151,6 +181,9 @@ namespace WeApi.Controllers
             return Ok(queue);
         }
 
+        /// <summary>
+        /// Remove o cliente da fila da fila (Feito pelo próprio cliente)
+        /// </summary>  
         [HttpDelete("{customerId}/{queueId}/exit")]
         //[Authorize]
         public async Task<IActionResult> ExitQueueAsync([FromRoute] int customerId, int queueId)

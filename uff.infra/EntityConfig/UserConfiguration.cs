@@ -55,14 +55,12 @@ namespace UFF.Infra.EntityConfig
             builder.Property(u => u.Subtitle)
                    .HasColumnName("subtitle")
                    .HasColumnType("varchar(100)")
-                   .HasMaxLength(100)
-                   .IsRequired();
+                   .HasMaxLength(100);
 
             builder.Property(u => u.ServicesProvided)
                  .HasColumnName("services_provided")
                  .HasColumnType("varchar(100)")
-                 .HasMaxLength(100)
-                 .IsRequired();
+                 .HasMaxLength(100);
 
             builder.Property(u => u.Phone)
                    .HasColumnName("phone")
