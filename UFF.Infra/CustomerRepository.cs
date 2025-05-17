@@ -18,7 +18,7 @@ namespace UFF.Infra
 
         public async Task<Customer> GetByIdReducedAsync(int id)
             => await _dbContext.Customer
-                          .AsNoTracking()
+                          .Include(x => x.Queue)
                           .FirstOrDefaultAsync(x => x.Id == id);
 
         public async Task<Customer> GetByIdAsync(int id)
@@ -37,7 +37,8 @@ namespace UFF.Infra
         {
             var lastCustomer = await _dbContext.Customer
                 .AsNoTracking()
-                .Where(x => x.Queue.StoreId == store && x.Queue.EmployeeId == employee)
+                .Where(x => x.Queue.StoreId == store && x.Queue.EmployeeId == employee
+                && x.Status == Domain.Enum.CustomerStatusEnum.Waiting || x.Status == Domain.Enum.CustomerStatusEnum.Absent)
                 .OrderBy(x => x.Position)
                 .LastOrDefaultAsync();
 

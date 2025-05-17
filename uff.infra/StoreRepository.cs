@@ -75,15 +75,18 @@ namespace UFF.Infra
 
             return await _dbContext.Store
                 .Include(y => y.Queues)
-                .ThenInclude(k => k.Employee)
+                    .ThenInclude(k => k.Customers
+                         .Where(o => (o.Status == CustomerStatusEnum.Waiting || o.Status == CustomerStatusEnum.Absent)))
+                .Include(y => y.Queues)                
+                    .ThenInclude(k => k.Employee)
                 .Include(y => y.Queues
                     .Where(o => o.Date.ToLocalTime().Date == today.ToLocalTime().Date))
                 .Include(s => s.EmployeeStore)
-                .ThenInclude(es => es.Employee)
+                    .ThenInclude(es => es.Employee)
                 .Include(s => s.EmployeeStore)
-                .ThenInclude(es => es.Employee)
-                .ThenInclude(x => x.Queues
-                    .Where(q => q.Date.ToLocalTime().Date == today.ToLocalTime().Date))
+                .   ThenInclude(es => es.Employee)
+                        .ThenInclude(x => x.Queues
+                        .Where(q => q.Date.ToLocalTime().Date == today.ToLocalTime().Date))
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == storeId);
         }
@@ -93,6 +96,9 @@ namespace UFF.Infra
             return await _dbContext.Customer
                 .Include(c => c.CustomerServices)
                 .Include(q => q.Queue)
+                    .ThenInclude(k => k.Customers
+                         .Where(o => (o.Status == CustomerStatusEnum.Waiting || o.Status == CustomerStatusEnum.Absent)))
+                    .ThenInclude(x => x.CustomerServices)
                 .Where(q => q.Queue.EmployeeId == professionalId && q.Queue.Status == QueueStatusEnum.Open && q.Status == CustomerStatusEnum.Waiting)
                 .Select(q => q.Queue)
                 .FirstOrDefaultAsync();
