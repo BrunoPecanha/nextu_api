@@ -8,6 +8,7 @@ namespace UFF.Domain.Dto
         public ICollection<CustomerServiceDto> Services { get; set; }
         public string Name { get; set; }
         public decimal Total { get; set; }
+        public string PaymentMethodId { get; set; }
         public string PaymentIcon { get; set; }
         public string PaymentMethod { get; set; }
         public string Notes { get; set; }
