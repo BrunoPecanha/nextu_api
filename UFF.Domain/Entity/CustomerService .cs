@@ -29,6 +29,16 @@ namespace UFF.Domain.Entity
             LastUpdate = DateTime.UtcNow;
         }
 
+        public void SetQueuId(int queueId)
+        {
+            QueueId= queueId;
+        }
+
+        public void SetFinalPrice(decimal finalPrice)
+        {
+            FinalPrice = finalPrice;
+        }
+
         public int Quantity { get; set; }
 
         public int CustomerId { get; private set; }

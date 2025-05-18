@@ -14,5 +14,6 @@ namespace UFF.Domain.Dto
         public string PaymentIcon { get; set; }
         public string LogoPath { get; set; }
         public int QueueId { get; set; }
+        public int StoreId { get; set; }
     }
 }
