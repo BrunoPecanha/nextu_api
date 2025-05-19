@@ -39,6 +39,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.ServiceQtd, opt => opt.MapFrom(src => src.CustomerServices.Count()))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
+                  .ForMember(dest => dest.StoreId, opt => opt.MapFrom(src => src.Queue.Store.Id))
                   .ForMember(dest => dest.StoreIcon, opt => opt.MapFrom(src => src.Queue.Store.Category.Icon))
                   .ForMember(dest => dest.LogoPath, opt => opt.MapFrom(src => src.Queue.Store.LogoPath));
 
@@ -50,8 +51,8 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, src.Payment.Notes)))
                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices.Select(o => new ServiceDto(o.Service.Name, o.Service.Category.Icon, o.Service.Price))))
-                  .ForMember(dest => dest.EstimatedWaitingTime, opt => opt.Ignore())
-                  .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CustomerServices.Sum(o => o.Service.Price)));
+                  .ForMember(dest => dest.EstimatedWaitingTime, opt => opt.MapFrom(x => x.EstimatedWaitingTime))
+                  .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CustomerServices.Sum(o => o.Service.Price * o.Quantity)));
 
             CreateMap<PaymentDto, Payment>();
             CreateMap<Payment, PaymentDto>()
@@ -63,13 +64,16 @@ namespace WeApi.AutoMapper
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.Join(" ", src.User.Name, src.User.LastName)))
                  .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CustomerServices.Sum(x => x.Quantity * x.Service.Price)))
                  .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
+                 .ForMember(dest => dest.PaymentMethodId, opt => opt.MapFrom(src => src.Payment.Id))
                  .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.Payment.Name))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices));
 
             CreateMap<CustomerServiceDto, CustomerService>();
             CreateMap<CustomerService, CustomerServiceDto>()
+                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ServiceId))
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Service.Name))
+                 .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
                  .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Service.Category.Icon))
                  .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Service.Price * src.Quantity));
 
@@ -80,7 +84,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                   .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                   .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
-                  .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))
+                  .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))                       
                   .ForMember(dest => dest.Activated, opt => opt.MapFrom(src => src.Activated))
                   .ForMember(dest => dest.VariableTime, opt => opt.MapFrom(src => src.VariableTime))
                   .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))

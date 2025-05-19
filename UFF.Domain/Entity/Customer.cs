@@ -1,7 +1,8 @@
 ﻿using System;
-using UFF.Domain.Enum;
 using System.Collections.Generic;
+using System.Linq;
 using UFF.Domain.Commands.Customer;
+using UFF.Domain.Enum;
 
 namespace UFF.Domain.Entity
 {
@@ -10,7 +11,6 @@ namespace UFF.Domain.Entity
         private Customer()
         {
         }
-
         public Queue Queue { get; private set; }
         public int QueueId { get; private set; }
         public User User { get; private set; }
@@ -26,7 +26,7 @@ namespace UFF.Domain.Entity
         public DateTime? TimeCalledInQueue { get; private set; }
         public DateTime? MissingCustomerRemovalTime { get; private set; }
         public DateTime? ServiceStartTime { get; private set; }
-        public DateTime ? ServiceEndTime { get; private set; }
+        public DateTime? ServiceEndTime { get; private set; }
         public CustomerStatusEnum Status { get; private set; }
         public string RandomCustomerName { get; set; }
         public bool IsPriority { get; private set; }
@@ -42,13 +42,49 @@ namespace UFF.Domain.Entity
 
         public Customer(User user, Queue queue, int paymentMethod, string notes, int position)
         {
-            QueueId = queue.Id;            
-            UserId = user.Id;  
+            QueueId = queue.Id;
+            UserId = user.Id;
             Notes = notes;
             Position = position;
             PaymentId = paymentMethod;
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
+        }
+
+        public void UpdateCustomer(CustomerEditServicesPaymentCommand command, int queueId)
+        {
+            var existingServices = CustomerServices.ToList();
+
+            foreach (var existing in existingServices)
+            {
+                if (!command.SelectedServices.Any(s => s.ServiceId == existing.ServiceId))
+                {
+                    CustomerServices.Remove(existing);
+                }
+            }
+
+            foreach (var service in command.SelectedServices)
+            {
+                var existing = CustomerServices.FirstOrDefault(cs => cs.ServiceId == service.ServiceId);
+                if (existing != null)
+                {
+                    existing.SetFinalPrice(service.Quantity * service.Price);
+                    existing.SetQueuId(queueId);
+                }
+                else
+                {
+                    CustomerServices.Add(new CustomerService(new CustomerServiceCreateCommand()
+                    {
+                        CustomerId = Id,
+                        FinalPrice = service.Quantity * service.Price,
+                        QueueId = queueId,
+                        ServiceId = service.ServiceId
+                    }));
+                }
+            }
+
+            PaymentId = command.PaymentMethod;
+            Notes = command.Notes;
         }
 
         public void RemoveMissingCustomer(string removeReason)
@@ -65,7 +101,7 @@ namespace UFF.Domain.Entity
         }
 
         public void SetPosition(int position)
-            => Position= position;
+            => Position = position;
 
         public void SetTimeCalledInQueue()
         {
@@ -78,7 +114,7 @@ namespace UFF.Domain.Entity
         {
             ServiceStartTime = DateTime.UtcNow;
             Status = CustomerStatusEnum.InService;
-        }        
+        }
 
         public void SetEndTime()
         {
@@ -91,5 +127,7 @@ namespace UFF.Domain.Entity
 
         public void AddRating(int rating)
             => Rating = rating;
+
+
     }
 }
