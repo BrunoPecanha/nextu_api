@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using UFF.Domain.Commands.Customer;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -26,5 +27,17 @@ namespace WeApi.Controllers
 
             return Ok(customer);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateAsyncAsync([FromBody] CustomerEditServicesPaymentCommand command)
+        {
+            var response = await _service.UpdateAsync(command);
+
+            if (!response.Valid)
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
     }
 }

@@ -30,7 +30,6 @@ namespace UFF.Infra
                          .Include(x => x.Queue)
                          .Include(x => x.Payment)
                          .Include(x => x.CustomerServices)
-                         .AsNoTracking()
                          .FirstOrDefaultAsync(x => x.Id == id);
 
         public async Task<int> GetByLasPositionInQueueByStoreAndEmployeeIdAsync(int store, int employee)
