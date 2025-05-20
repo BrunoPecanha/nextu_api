@@ -50,7 +50,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                   .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, src.Payment.Notes)))
-                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices.Select(o => new ServiceDto(o.Service.Name, o.Service.Category.Icon, o.Service.Price))))
+                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices))                  
                   .ForMember(dest => dest.EstimatedWaitingTime, opt => opt.MapFrom(x => x.EstimatedWaitingTime))
                   .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CustomerServices.Sum(o => o.Service.Price * o.Quantity)));
 
@@ -71,11 +71,12 @@ namespace WeApi.AutoMapper
 
             CreateMap<CustomerServiceDto, CustomerService>();
             CreateMap<CustomerService, CustomerServiceDto>()
-                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ServiceId))
+                 .ForMember(dest => dest.ServiceId, opt => opt.MapFrom(src => src.ServiceId))
+                 .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Service.Name))
                  .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
                  .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Service.Category.Icon))
-                 .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Service.Price * src.Quantity));
+                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Service.Price));
 
             CreateMap<ServiceDto, Service>();
             CreateMap<Service, ServiceDto>()
@@ -87,7 +88,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))                       
                   .ForMember(dest => dest.Activated, opt => opt.MapFrom(src => src.Activated))
                   .ForMember(dest => dest.VariableTime, opt => opt.MapFrom(src => src.VariableTime))
-                  .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))
+                  .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))       
                   .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon));
 
             CreateMap<StoreDto, Store>();

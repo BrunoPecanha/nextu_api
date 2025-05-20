@@ -70,6 +70,7 @@ namespace UFF.Domain.Entity
                 {
                     existing.SetFinalPrice(service.Quantity * service.Price);
                     existing.SetQueuId(queueId);
+                    existing.SetQuantity(service.Quantity);
                 }
                 else
                 {
@@ -78,7 +79,9 @@ namespace UFF.Domain.Entity
                         CustomerId = Id,
                         FinalPrice = service.Quantity * service.Price,
                         QueueId = queueId,
-                        ServiceId = service.ServiceId
+                        ServiceId = service.ServiceId,
+                        Quantity = service.Quantity
+                        
                     }));
                 }
             }

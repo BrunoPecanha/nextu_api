@@ -6,7 +6,7 @@ namespace UFF.Domain.Dto
     public class CustomerInQueueCardDetailsDto
     {
         public int Id { get; set; }
-        public ICollection<ServiceDto> Services { get; set; }
+        public ICollection<CustomerServiceDto> Services { get; set; }
         public decimal Total { get; set; }
         public int TotalPeopleInQueue { get; set; }
         public PaymentDto Payment { get; set; }

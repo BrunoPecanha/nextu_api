@@ -12,7 +12,7 @@ namespace UFF.Infra.EntityConfig
             builder.HasKey(cs => new { cs.CustomerId, cs.ServiceId, cs.QueueId })
                    .HasName("pk_customer_services");
 
-            builder.Ignore(x => x.Id);
+           // builder.Ignore(x => x.Id);
 
             builder.HasOne(cs => cs.Customer)
                 .WithMany(c => c.CustomerServices)
