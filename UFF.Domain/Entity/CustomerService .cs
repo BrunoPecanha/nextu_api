@@ -13,6 +13,7 @@ namespace UFF.Domain.Entity
             CustomerId = command.CustomerId;
             ServiceId = command.ServiceId;
             QueueId = command.QueueId;
+            Quantity = command.Quantity;
             FinalPrice = command.FinalPrice;
         }
 
@@ -29,6 +30,11 @@ namespace UFF.Domain.Entity
             LastUpdate = DateTime.UtcNow;
         }
 
+        public void SetQuantity(int quantity)
+        {
+            Quantity = quantity;
+        }
+
         public void SetQueuId(int queueId)
         {
             QueueId= queueId;
@@ -39,7 +45,7 @@ namespace UFF.Domain.Entity
             FinalPrice = finalPrice;
         }
 
-        public int Quantity { get; set; }
+        public int Quantity { get; private set; }
 
         public int CustomerId { get; private set; }
         public Customer Customer { get; private set; }
@@ -47,7 +53,7 @@ namespace UFF.Domain.Entity
         public int ServiceId { get; private set; }
         public Service Service { get; private set; }
 
-        public decimal? FinalPrice { get; private set; }
+        public decimal FinalPrice { get; private set; }
         public TimeSpan Duration { get; private set; }
 
         public int QueueId { get; private set; }
