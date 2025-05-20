@@ -13,6 +13,7 @@ namespace UFF.Domain.Entity
             CustomerId = command.CustomerId;
             ServiceId = command.ServiceId;
             QueueId = command.QueueId;
+            Quantity = command.Quantity;
             FinalPrice = command.FinalPrice;
         }
 
