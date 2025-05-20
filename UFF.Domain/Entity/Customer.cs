@@ -70,6 +70,7 @@ namespace UFF.Domain.Entity
                 {
                     existing.SetFinalPrice(service.Quantity * service.Price);
                     existing.SetQueuId(queueId);
+                    existing.SetQuantity(service.Quantity);
                 }
                 else
                 {
