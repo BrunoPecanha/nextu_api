@@ -78,7 +78,9 @@ namespace UFF.Domain.Entity
                         CustomerId = Id,
                         FinalPrice = service.Quantity * service.Price,
                         QueueId = queueId,
-                        ServiceId = service.ServiceId
+                        ServiceId = service.ServiceId,
+                        Quantity = service.Quantity
+                        
                     }));
                 }
             }
