@@ -47,7 +47,7 @@ namespace UFF.Domain.Entity
         public int ServiceId { get; private set; }
         public Service Service { get; private set; }
 
-        public decimal? FinalPrice { get; private set; }
+        public decimal FinalPrice { get; private set; }
         public TimeSpan Duration { get; private set; }
 
         public int QueueId { get; private set; }
