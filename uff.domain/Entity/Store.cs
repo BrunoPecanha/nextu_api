@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UFF.Domain.Commands.Store;
 using UFF.Domain.Enum;
 
@@ -10,7 +11,7 @@ namespace UFF.Domain.Entity
         private Store() { }
 
         public string Cnpj { get; private set; }
-        public string Name { get; private set; }        
+        public string Name { get; private set; }
         public string Address { get; private set; }
         public string Number { get; private set; }
         public string PhoneNumber { get; set; }
@@ -18,7 +19,7 @@ namespace UFF.Domain.Entity
         public string State { get; private set; }
         public bool OpenAutomatic { get; private set; }
         public bool AttendSimultaneously { get; private set; }
-        public string StoreSubtitle { get; private set; }    
+        public string StoreSubtitle { get; private set; }
         public bool AcceptOtherQueues { get; private set; }
         public bool AnswerOutOfOrder { get; private set; }
         public bool AnswerScheduledTime { get; private set; }
@@ -51,6 +52,7 @@ namespace UFF.Domain.Entity
             Number = command.Number;
             City = command.City;
             State = command.State;
+            PhoneNumber = command.PhoneNumber;
             Status = StatusEnum.Enabled;
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
@@ -62,6 +64,7 @@ namespace UFF.Domain.Entity
             AnswerScheduledTime = command.AnswerScheduledTime;
             TimeRemoval = command.TimeRemoval;
             WhatsAppNotice = command.WhatsAppNotice;
+            LogoPath = command.LogoPath;
 
             foreach (var hour in command.OpeningHours)
             {
@@ -74,31 +77,74 @@ namespace UFF.Domain.Entity
             }
         }
 
-        public void UpdateAllUserInfo(StoreEditCommand command)
+        public void UpdateStoreInfo(StoreEditCommand command)
         {
-            //Description = !string.IsNullOrWhiteSpace(command.Description) ? command.Description : Description;
-            //Phone = !string.IsNullOrWhiteSpace(command.Phone) ? command.Phone : Phone;
-            //Address = !string.IsNullOrWhiteSpace(command.Address) ? command.Address : Address;
-            //Number = !string.IsNullOrWhiteSpace(command.Number) ? command.Number : Number;
-            //City = !string.IsNullOrWhiteSpace(command.City) ? command.City : City;
-            //State = !string.IsNullOrWhiteSpace(command.State) ? command.State : State;
-            //Status = command.;
-            //LastUpdate DateTime.UtcNow;
+            Name = !string.IsNullOrWhiteSpace(command.Name) ? command.Name : Name;
+            Address = !string.IsNullOrWhiteSpace(command.Address) ? command.Address : Address;
+            Number = !string.IsNullOrWhiteSpace(command.Number) ? command.Number : Number;
+            City = !string.IsNullOrWhiteSpace(command.City) ? command.City : City;
+            State = !string.IsNullOrWhiteSpace(command.State) ? command.State : State;
+            StoreSubtitle = !string.IsNullOrWhiteSpace(command.StoreSubtitle) ? command.StoreSubtitle : StoreSubtitle;
+            LogoPath = !string.IsNullOrWhiteSpace(command.LogoPath) ? command.LogoPath : LogoPath;
+            WallPaperPath = !string.IsNullOrWhiteSpace(command.WallPaperPath) ? command.WallPaperPath : WallPaperPath;
+            CategoryId = command.CategoryId;
+            Facebook = command.Facebook;
+            Instagram = command.Instagram;
+            PhoneNumber = command.PhoneNumber;
+            Site = command.WebSite;
+            Youtube = command.Youtube;
+            OpenAutomatic = command.OpenAutomatic;
+            AttendSimultaneously = command.AttendSimultaneously;
+            AcceptOtherQueues = command.AcceptOtherQueues;
+            AnswerOutOfOrder = command.AnswerOutOfOrder;
+            AnswerScheduledTime = command.AnswerScheduledTime;
+            WhatsAppNotice = command.WhatsAppNotice;
+            TimeRemoval = command.TimeRemoval;
+            AttendSimultaneously = command.AttendSimultaneously;
+            CategoryId = command.CategoryId;
+           
+            UpdateOpeningHours(command.OpeningHours);
+            UpdateHighLights(command.HighLights);
+        }
 
+        private void UpdateOpeningHours(ICollection<OpeningHoursCreateCommand> newOpeningHours)
+        {
+            var existingHours = OpeningHours.ToList();
 
-            //SubtituloLoja = command.SubtituloLoja ?? SubtituloLoja;
-            //AbrirAutomaticamente = command.AbrirAutomaticamente;
-            //AceitarOutrasFilas = command.AceitarOutrasFilas;
-            //AtenderForaDeOrdem = command.AtenderForaDeOrdem;
-            //AtenderHoraMarcada = command.AtenderHoraMarcada;
-            //TempoRemocao = command.TempoRemocao ?? TempoRemocao;
-            //AvisoWhatsApp = command.AvisoWhatsApp;
+            foreach (var existing in existingHours)
+            {
+                if (!newOpeningHours.Any(h => h.WeekDay == existing.WeekDay))
+                {
+                    OpeningHours.Remove(existing);
+                }
+            }
 
-            //UpdateHorarios(command.Horarios);
+            foreach (var newHours in newOpeningHours)
+            {
+                var existing = OpeningHours.FirstOrDefault(h => h.WeekDay == newHours.WeekDay);
+                if (existing != null)
+                {
+                    existing.SetStart(newHours.Start);
+                    existing.SetEnd(newHours.End);
+                }
+                else
+                {
+                    OpeningHours.Add(new OpeningHours(
+                        new OpeningHoursCreateCommand(newHours.WeekDay, newHours.Start, newHours.End, true)
+                    ));
+                }
+            }
+        }      
 
-            //UpdateDestaques(command.Destaques);
+        private void UpdateHighLights(ICollection<HighLightCreateCommand> newHighLights)
+        {
+            HighLights.Clear(); 
 
-        }       
+            foreach (var highlightCommand in newHighLights)
+            {
+                HighLights.Add(new HighLight(highlightCommand));
+            }
+        }
 
         public bool IsValid()
         {
@@ -108,20 +154,18 @@ namespace UFF.Domain.Entity
                 && !(string.IsNullOrEmpty(City))
                 && (string.IsNullOrEmpty(Cnpj) || Cnpj.Length == 14));
         }
-
         public void SetOwner(User owner)
         {
             OwnerId = owner.Id;
         }
-
         public void SetCategory(Category category)
         {
             CategoryId = category.Id;
         }
-
-        public void Disable() => Status = StatusEnum.Disabled;
-        public void Enable() => Status = StatusEnum.Enabled;
-
+        public void Disable()
+            => Status = StatusEnum.Disabled;
+        public void Enable()
+            => Status = StatusEnum.Enabled;
         public void UpdateCnpj(string cnpj)
         {
             if (!string.IsNullOrWhiteSpace(cnpj) && cnpj.Length == 14)
