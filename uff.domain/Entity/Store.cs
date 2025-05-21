@@ -136,6 +136,11 @@ namespace UFF.Domain.Entity
             }
         }      
 
+        public void SetSmallestQueue(List<Queue> queues)
+        {
+            this.Queues = queues;
+        }
+
         private void UpdateHighLights(ICollection<HighLightCreateCommand> newHighLights)
         {
             HighLights.Clear(); 

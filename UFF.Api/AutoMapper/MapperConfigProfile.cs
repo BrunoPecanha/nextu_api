@@ -101,6 +101,7 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Instagram, opt => opt.MapFrom(src => src.Instagram))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.WebSite, opt => opt.MapFrom(src => src.Site))
+                .ForMember(dest => dest.MinorQueue, opt => opt.MapFrom(src => src.Queues.Count > 0 ? src.Queues.First().Customers.Count : 0))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
             CreateMap<HighLightDto, HighLight>();
