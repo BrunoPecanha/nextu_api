@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Store;
-using UFF.Domain.Entity;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -41,7 +39,6 @@ namespace WeApi.Controllers
 
             return Ok(store);
         }
-
 
         [HttpGet("owner/{id}")]
         //[Authorize]
