@@ -18,14 +18,19 @@ namespace UFF.Service
         private readonly IStoreRepository _storeRepository;
         private readonly IUserRepository _userRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IEmployeeStoreRepository _employeeStoreRepository;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public StoreService(IStoreRepository repository, IMapper mapper, IUserRepository userRepository, ICategoryRepository categoryRepository)
+        public StoreService(IStoreRepository repository, IMapper mapper, IUserRepository userRepository, ICategoryRepository categoryRepository,
+            IEmployeeStoreRepository employeeStoreRepository, IUnitOfWork unitOfWork)
         {
             _storeRepository = repository;
             _mapper = mapper;
             _userRepository = userRepository;
             _categoryRepository = categoryRepository;
+            _employeeStoreRepository = employeeStoreRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<CommandResult> GetAllAsync()
@@ -138,6 +143,8 @@ namespace UFF.Service
         {
             try
             {
+                await _unitOfWork.BeginTransactionAsync();
+
                 // Adicionar validações
                 //CNPJ EXISTENTE NAO GRAVAR
                 var store = new Store(command);
@@ -154,6 +161,8 @@ namespace UFF.Service
 
                 store.SetOwner(owner);
 
+                var employeeXStore = new EmployeeStore(owner.Id, store.Id, store);
+
                 var category = await _categoryRepository.GetByIdAsync(command.CategoryId);
 
                 if (category is null)
@@ -161,8 +170,11 @@ namespace UFF.Service
 
                 store.SetCategory(category);
 
+                _userRepository.Update(owner);
                 await _storeRepository.AddAsync(store);
-                await _storeRepository.SaveChangesAsync();
+                await _employeeStoreRepository.AddAsync(employeeXStore);
+
+                await _unitOfWork.CommitAsync();
 
                 return new CommandResult(true, store);
             }
@@ -171,21 +183,29 @@ namespace UFF.Service
                 return new CommandResult(false, ex, ex.Message);
             }
         }
-        public async Task<CommandResult> UpdateAsync(StoreEditCommand command)
+        public async Task<CommandResult> UpdateAsync(StoreEditCommand command, int storeId)
         {
             try
             {
-                var store = await _storeRepository.GetByIdAsync(command.Id);
+                await _unitOfWork.BeginTransactionAsync();
+
+                var store = await _storeRepository.GetByIdAsync(storeId);
 
                 if (store is null)
                     return new CommandResult(false, Resources.NotFound);
 
-                store.UpdateAllUserInfo(command);
+                var category = await _categoryRepository.GetByIdAsync(command.CategoryId);
+
+                if (category is null)
+                    return new CommandResult(false, Resources.NotFound);
+
+                store.UpdateStoreInfo(command);
 
                 _storeRepository.Update(store);
-                await _storeRepository.SaveChangesAsync();
 
-                return new CommandResult(true, _mapper.Map<UserDto>(store));
+                await _unitOfWork.CommitAsync();
+
+                return new CommandResult(true, _mapper.Map<StoreDto>(store));
             }
             catch (Exception ex)
             {

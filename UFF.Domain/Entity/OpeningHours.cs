@@ -21,5 +21,17 @@ namespace UFF.Domain.Entity
             Start = command.Start;
             End = command.End;
         }
+
+        public void SetStart(TimeSpan? start)
+        {
+            if (start != null) 
+                Start = start;
+        }
+
+        public void SetEnd(TimeSpan? end)
+        {
+            if (end != null)
+                End = end;
+        }
     }
 }
