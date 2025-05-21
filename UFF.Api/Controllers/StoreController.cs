@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Store;
+using UFF.Domain.Entity;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -30,7 +31,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{id}")]
-     //   [Authorize]
+        //   [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var store = await _service.GetByIdAsync(id);
@@ -41,7 +42,7 @@ namespace WeApi.Controllers
             return Ok(store);
         }
 
-    
+
         [HttpGet("owner/{id}")]
         //[Authorize]
         public async Task<IActionResult> GetByOwnerId([FromRoute] int id)
@@ -111,11 +112,11 @@ namespace WeApi.Controllers
             return Ok();
         }
 
-        [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> UpdateAsync([FromBody] StoreEditCommand command)
+        [HttpPut("{storeId}")]
+        // [Authorize]
+        public async Task<IActionResult> UpdateAsync([FromRoute] int storeId, [FromBody] StoreEditCommand command)
         {
-            var store = await _service.UpdateAsync(command);
+            var store = await _service.UpdateAsync(command, storeId);
 
             if (!store.Valid)
                 return BadRequest(store.Data);
@@ -124,7 +125,7 @@ namespace WeApi.Controllers
         }
 
         [HttpDelete]
-        [Authorize]
+       // [Authorize]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var result = await _service.DeleteAsync(id);

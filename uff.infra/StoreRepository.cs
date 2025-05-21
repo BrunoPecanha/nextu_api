@@ -14,7 +14,8 @@ namespace UFF.Infra
     {
         private readonly IUffContext _dbContext;
 
-        public StoreRepository(UffContext dbContext) : base(dbContext)
+        public StoreRepository(UffContext dbContext) 
+            : base(dbContext)
         {
             _dbContext = dbContext;
         }
@@ -27,13 +28,13 @@ namespace UFF.Infra
                              .Include(x => x.Category)
                              .ToArrayAsync();
 
+
         public async Task<Store> GetByIdAsync(int id)
             => await _dbContext.Store
                                .Include(x => x.HighLights)
-                               .Include(o => o.OpeningHours)
-                               .Include(x => x.Category)
-                               .AsNoTracking()
+                               .Include(o => o.OpeningHours)                      
                                .Include(x => x.Owner)
+                               .Include(x => x.Category)
                                .FirstOrDefaultAsync(x => x.Id == id);
 
         public async Task<Store> GetByIdWithProfessionalsAsync(int id)

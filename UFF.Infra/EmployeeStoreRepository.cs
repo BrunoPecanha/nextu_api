@@ -9,25 +9,25 @@ using UFF.Domain.Repository;
 namespace UFF.Infra
 {
 
-    public class ServiceCategoryRepository : RepositoryBase<ServiceCategory>, IServiceCategoryRepository
+    public class EmployeeStoreRepository : RepositoryBase<EmployeeStore>, IEmployeeStoreRepository
     {
         private readonly IUffContext _dbContext;
 
-        public ServiceCategoryRepository(UffContext dbContext) 
+        public EmployeeStoreRepository(UffContext dbContext)
             : base(dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<ServiceCategory>> GetAllAsync()
-            => await _dbContext.ServiceCategory
+        public async Task<IEnumerable<EmployeeStore>> GetAllAsync()
+            => await _dbContext.EmployeeStore
                              .OrderBy(x => x.Id)
                              .AsNoTracking()
                              .ToArrayAsync();
 
-        public async Task<ServiceCategory> GetByIdAsync(int id)
-            => await _dbContext.ServiceCategory
+        public async Task<EmployeeStore> GetByIdAsync(int id)
+            => await _dbContext.EmployeeStore
                                .AsNoTracking()
                                .FirstOrDefaultAsync(x => x.Id == id);
-    }   
+    }
 }
