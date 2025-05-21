@@ -8,7 +8,8 @@ namespace UFF.Infra
     {
         private readonly IUffContext _dbContext;
 
-        public CustomerServiceRepository(UffContext dbContext) : base(dbContext)
+        public CustomerServiceRepository(UffContext dbContext) 
+            : base(dbContext)
         {
             _dbContext = dbContext;
         }

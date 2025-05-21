@@ -99,8 +99,8 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Whatsapp, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.Facebook, opt => opt.MapFrom(src => src.Facebook))
                 .ForMember(dest => dest.Instagram, opt => opt.MapFrom(src => src.Instagram))
-                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
-                .ForMember(dest => dest.Site, opt => opt.MapFrom(src => src.Site))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.WebSite, opt => opt.MapFrom(src => src.Site))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
             CreateMap<HighLightDto, HighLight>();
