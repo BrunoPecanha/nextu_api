@@ -14,19 +14,25 @@ namespace UFF.Infra
     {
         private readonly IUffContext _dbContext;
 
-        public QueueRepository(UffContext dbContext) 
+        public QueueRepository(UffContext dbContext)
             : base(dbContext)
         {
             _dbContext = dbContext;
         }
 
         //TODO - Paginar isso
-        public async Task<IEnumerable<Queue>> GetAllByStoreIdAsync(int storeId)
-            => await _dbContext.Queue
-                               .Where(x => x.StoreId == storeId)
-                               .OrderByDescending(x => x.Date)
-                               .AsNoTracking()
-                               .ToArrayAsync();
+        public async Task<IEnumerable<Queue>> GetAllByStoreIdAsync(int storeId, DateTime startDate = default, DateTime endDate = default)
+        {
+            var query = _dbContext.Queue.Where(x => x.StoreId == storeId)
+                                    .OrderByDescending(x => x.Status == QueueStatusEnum.Open)
+                                    .AsNoTracking();
+
+            if (startDate != default)
+                query.Where(x => x.Date >= startDate && x.Date <= endDate);
+
+            return await query.ToArrayAsync();
+        }
+            
 
         public async Task<Queue> GetByIdWithStoreAsync(int id)
             => await _dbContext.Queue
@@ -157,7 +163,7 @@ namespace UFF.Infra
             }
             int totalCustomersAhead = queue.Customers.Count(c => c.Id != currentCustomerId && c.Position < currentCustomerPosition);
 
-            return (totalCustomersAhead+1, TimeSpan.FromMinutes(totalMinutesToWait));
+            return (totalCustomersAhead + 1, TimeSpan.FromMinutes(totalMinutesToWait));
         }
 
     }

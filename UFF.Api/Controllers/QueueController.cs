@@ -182,6 +182,21 @@ namespace WeApi.Controllers
         }
 
         /// <summary>
+        /// Recupera todas as filas de um estabelecimento
+        /// </summary>  
+        [HttpPost("{storeId}/filter")]
+        //[Authorize]
+        public async Task<IActionResult> GetAllByDateAndStoreIdAsync([FromRoute] int storeId, [FromBody] QueueFilterRequestCommand command)
+        {
+            var queue = await _service.GetAllByDateAndStoreIdAsync(storeId, command);
+
+            if (!queue.Valid)
+                BadRequest(queue.Data);
+
+            return Ok(queue);
+        }
+
+        /// <summary>
         /// Remove o cliente da fila da fila (Feito pelo próprio cliente)
         /// </summary>  
         [HttpDelete("{customerId}/{queueId}/exit")]

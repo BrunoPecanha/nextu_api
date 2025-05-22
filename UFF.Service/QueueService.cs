@@ -201,6 +201,16 @@ namespace UFF.Service
             return new CommandResult(true, _mapper.Map<QueueDto[]>(queue));
         }
 
+        public async Task<CommandResult> GetAllByDateAndStoreIdAsync(int idStore, QueueFilterRequestCommand command)
+        {
+            var queue = await _queueRepository.GetAllByStoreIdAsync(idStore, command.StartDate, command.EndDate);
+
+            if (queue == null)
+                return new CommandResult(false, queue);
+
+            return new CommandResult(true, _mapper.Map<QueueDto[]>(queue));
+        }
+
         public async Task<CommandResult> GetOpenedQueueByEmployeeId(int id)
         {
             var queue = await _queueRepository.GetOpenedQueueByEmployeeId(id);

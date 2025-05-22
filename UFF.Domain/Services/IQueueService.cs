@@ -13,6 +13,7 @@ namespace UFF.Domain.Services
         public Task<CommandResult> SetTimeCustomerWasCalledInTheQueue(int customerId);
         public Task<CommandResult> SetTimeCustomerServiceWasCompleted(int customerId);
         public Task<CommandResult> RemoveMissingCustomer(CustomerRemoveFromQueueCommand command);
+        public Task<CommandResult> GetAllByDateAndStoreIdAsync(int idStore, QueueFilterRequestCommand command);
         public Task<CommandResult> GetAllByStoreIdAsync(int idStore);
         public Task<CommandResult> GetByDateAsync(int idStore, DateTime date);
         public Task<CommandResult> GetOpenedQueueByEmployeeId(int id);
