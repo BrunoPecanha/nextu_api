@@ -100,6 +100,7 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Facebook, opt => opt.MapFrom(src => src.Facebook))
                 .ForMember(dest => dest.Instagram, opt => opt.MapFrom(src => src.Instagram))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.IsVerified, opt => opt.MapFrom(src => src.Verified))
                 .ForMember(dest => dest.WebSite, opt => opt.MapFrom(src => src.Site))
                 .ForMember(dest => dest.MinorQueue, opt => opt.MapFrom(src => src.Queues.Count > 0 ? src.Queues.First().Customers.Count : 0))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
@@ -121,6 +122,8 @@ namespace WeApi.AutoMapper
 
             CreateMap<QueueDto, Queue>();
             CreateMap<Queue, QueueDto>()
+                        .ForMember(dest => dest.ResponsibleId, opt => opt.MapFrom(src => src.EmployeeId))
+                        .ForMember(dest => dest.ResponsibleName, opt => opt.MapFrom(src => src.Employee.Name))
                         .ForMember(dest => dest.CurrentCount, opt => opt.MapFrom(src =>
                                                      (src.Status == QueueStatusEnum.Open || src.Status == QueueStatusEnum.Paused)
                                                          ? src.Customers.Count(x => x.Status == CustomerStatusEnum.Waiting || x.Status == CustomerStatusEnum.InService)
@@ -128,6 +131,7 @@ namespace WeApi.AutoMapper
 
             CreateMap<StoreProfessionalsDto, Store>();
             CreateMap<Store, StoreProfessionalsDto>()
+                .ForMember(dest => dest.IsVerified, opt => opt.MapFrom(src => src.Verified))
                 .ForMember(dest => dest.StoreLogoPath, opt => opt.MapFrom(src => src.LogoPath))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Subtitle, opt => opt.MapFrom(src => src.StoreSubtitle))

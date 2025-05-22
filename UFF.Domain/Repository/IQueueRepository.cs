@@ -8,7 +8,7 @@ namespace UFF.Domain.Repository
     public interface IQueueRepository : IRepositoryBase<Queue>
     {
         public Task<Queue> GetByIdWithStoreAsync(int id);
-        public Task<IEnumerable<Queue>> GetAllByStoreIdAsync(int storeId);
+        public Task<IEnumerable<Queue>> GetAllByStoreIdAsync(int storeId, DateTime startDate = default, DateTime endDate = default);
         public Task<Queue[]> GetOpenedQueueByEmployeeId(int id);
         public Task<Queue> GetByIdAsync(int id);
         public Task<Queue[]> GetByDateAsync(DateTime date, int storeId);
