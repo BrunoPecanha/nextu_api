@@ -30,10 +30,10 @@ namespace UFF.Infra
         {
             var query = _dbContext.Queue
                 .Include(x => x.Customers)
-                .Where(x => x.StoreId == storeId)             
+                .Where(x => x.StoreId == storeId)
                 .AsNoTracking();
 
-            if (startDate.HasValue  && endDate.HasValue)
+            if (startDate.HasValue && endDate.HasValue)
                 query = query.Where(x => x.Date >= startDate && x.Date <= endDate);
 
             if (responsableId.HasValue)
@@ -176,5 +176,16 @@ namespace UFF.Infra
 
             return (totalCustomersAhead + 1, TimeSpan.FromMinutes(totalMinutesToWait));
         }
+
+        public async Task<Customer[]> GetQueueReport(int id)
+            => await _dbContext.Customer
+              .Include(x => x.User)
+              .Include(x => x.Payment)
+              .Include(g => g.CustomerServices)
+              .Include(x => x.Queue)
+              .AsNoTracking()
+              .Where(x => x.QueueId == id)
+              .OrderBy(x => x.ServiceStartTime)
+              .ToArrayAsync();
     }
 }

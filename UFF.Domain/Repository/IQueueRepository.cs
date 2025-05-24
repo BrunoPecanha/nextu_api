@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UFF.Domain.Commands;
 using UFF.Domain.Entity;
 using UFF.Domain.Enum;
 
@@ -14,7 +13,8 @@ namespace UFF.Domain.Repository
         public Task<Queue[]> GetOpenedQueueByEmployeeId(int id);
         public Task<Queue> GetByIdAsync(int id);
         public Task<Queue[]> GetByDateAsync(DateTime date, int storeId);
-        public Task<Customer[]> GetAllCustomersInQueueByEmployeeAndStoreId(int storeId, int employeeId);       
+        public Task<Customer[]> GetAllCustomersInQueueByEmployeeAndStoreId(int storeId, int employeeId);
+        public Task<Customer[]> GetQueueReport(int id);
         public Task<Customer[]> GetCustomerInQueueCardByUserId(int customerId);
         public Task<Customer> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId);
         Task<(int TotalCustomers, TimeSpan EstimatedWaitTime)> GetQueueStatusAsync(int queueId, int currentCustomerPosition, int currentCustomerId);

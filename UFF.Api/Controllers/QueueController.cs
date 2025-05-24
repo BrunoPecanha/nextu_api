@@ -163,6 +163,21 @@ namespace WeApi.Controllers
         }
 
         /// <summary>
+        /// Recupera dados da fila para montagem de relatório
+        /// </summary>  
+        [HttpGet("{id}/report")]
+        //[Authorize]
+        public async Task<IActionResult> GetQueueReport([FromRoute] int id)
+        {
+            var report = await _service.GetQueueReport(id);
+
+            if (report == null)
+                BadRequest(report);
+
+            return Ok(report);
+        }
+
+        /// <summary>
         /// Recupera detalhes de uma fila que o cliente está
         /// </summary>  
         [HttpGet("{customerId}/{queueId}/card/details")]

@@ -50,7 +50,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                   .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, src.Payment.Notes)))
-                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices))                  
+                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices))
                   .ForMember(dest => dest.EstimatedWaitingTime, opt => opt.MapFrom(x => x.EstimatedWaitingTime))
                   .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CustomerServices.Sum(o => o.Service.Price * o.Quantity)));
 
@@ -85,10 +85,10 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                   .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                   .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
-                  .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))                       
+                  .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))
                   .ForMember(dest => dest.Activated, opt => opt.MapFrom(src => src.Activated))
                   .ForMember(dest => dest.VariableTime, opt => opt.MapFrom(src => src.VariableTime))
-                  .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))       
+                  .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))
                   .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon));
 
             CreateMap<StoreDto, Store>();
@@ -107,6 +107,19 @@ namespace WeApi.AutoMapper
 
             CreateMap<HighLightDto, HighLight>();
             CreateMap<HighLight, HighLightDto>();
+
+            CreateMap<QueueReportDto, Customer>();
+            CreateMap<Customer, QueueReportDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))
+                .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.ServiceStartTime))
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.ServiceEndTime))
+                .ForMember(dest => dest.QueueDate, opt => opt.MapFrom(src => src.RegisteringDate))
+                .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.Payment.Name))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.CustomerServices.Sum(x => x.FinalPrice)))
+                .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src =>
+                                src.ServiceStartTime.HasValue && src.ServiceEndTime.HasValue
+                                    ? (src.ServiceEndTime.Value - src.ServiceStartTime.Value).ToString(@"hh\:mm")
+                                    : "00:00"));
 
             CreateMap<OpeningHoursDto, OpeningHours>();
             CreateMap<OpeningHours, OpeningHoursDto>()

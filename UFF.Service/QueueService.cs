@@ -288,6 +288,18 @@ namespace UFF.Service
             return new CommandResult(true, dto);
         }
 
+        public async Task<CommandResult> GetQueueReport(int id)
+        {
+            var queueReport = await _queueRepository.GetQueueReport(id);
+
+            if (queueReport == null)
+                return new CommandResult(false, queueReport);
+
+            var dto = _mapper.Map<QueueReportDto[]>(queueReport);
+
+            return new CommandResult(true, dto);
+        }
+
         public async Task<CommandResult> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId)
         {
             var customer = await _queueRepository.GetCustomerInQueueCardDetailsByCustomerId(customerId, queueId);
@@ -407,7 +419,7 @@ namespace UFF.Service
                 if (queue == null)
                     return new CommandResult(false, "Cliente não encontrado");
 
-                _queueRepository.Remove(queue);       
+                _queueRepository.Remove(queue);
 
                 await _unitOfWork.CommitAsync();
 
@@ -502,7 +514,6 @@ namespace UFF.Service
             if (dto != null && (dto.Position == 0))
                 dto.Token = _tokenService.CreateToken(dto.Id, dto.QueueId);
         }
-
         #endregion
     }
 }
