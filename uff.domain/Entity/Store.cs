@@ -41,6 +41,7 @@ namespace UFF.Domain.Entity
         public virtual ICollection<Service> Services { get; private set; } = new List<Service>();
         public virtual ICollection<EmployeeStore> EmployeeStore { get; private set; } = new List<EmployeeStore>();
         public int OwnerId { get; private set; }
+        public bool Verified { get; set; }
         public User Owner { get; private set; }
         public StatusEnum Status { get; private set; }
 
@@ -135,6 +136,11 @@ namespace UFF.Domain.Entity
                 }
             }
         }      
+
+        public void SetSmallestQueue(List<Queue> queues)
+        {
+            this.Queues = queues;
+        }
 
         private void UpdateHighLights(ICollection<HighLightCreateCommand> newHighLights)
         {

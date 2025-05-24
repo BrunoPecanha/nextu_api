@@ -14,19 +14,37 @@ namespace UFF.Infra
     {
         private readonly IUffContext _dbContext;
 
-        public QueueRepository(UffContext dbContext) 
+        public QueueRepository(UffContext dbContext)
             : base(dbContext)
         {
             _dbContext = dbContext;
         }
 
         //TODO - Paginar isso
-        public async Task<IEnumerable<Queue>> GetAllByStoreIdAsync(int storeId)
-            => await _dbContext.Queue
-                               .Where(x => x.StoreId == storeId)
-                               .OrderByDescending(x => x.Date)
-                               .AsNoTracking()
-                               .ToArrayAsync();
+        public async Task<IEnumerable<Queue>> GetAllByStoreIdAsync(
+                                                            int storeId,
+                                                            int? responsableId,
+                                                            QueueStatusEnum? queueStatus,
+                                                            DateTime? startDate,
+                                                            DateTime? endDate)
+        {
+            var query = _dbContext.Queue
+                .Include(x => x.Customers)
+                .Where(x => x.StoreId == storeId)
+                .AsNoTracking();
+
+            if (startDate.HasValue && endDate.HasValue)
+                query = query.Where(x => x.Date >= startDate && x.Date <= endDate);
+
+            if (responsableId.HasValue)
+                query = query.Where(x => x.EmployeeId == responsableId);
+
+            if (queueStatus.HasValue)
+                query = query.Where(x => x.Status == queueStatus);
+
+            return await query.OrderByDescending(x => x.Status).ToArrayAsync();
+        }
+
 
         public async Task<Queue> GetByIdWithStoreAsync(int id)
             => await _dbContext.Queue
@@ -76,7 +94,6 @@ namespace UFF.Infra
                 )
                 .OrderBy(x => x.Position)
                 .ToArrayAsync();
-
 
         public async Task<Customer[]> GetCustomerInQueueCardByUserId(int userId)
               => await _dbContext.Customer
@@ -157,8 +174,18 @@ namespace UFF.Infra
             }
             int totalCustomersAhead = queue.Customers.Count(c => c.Id != currentCustomerId && c.Position < currentCustomerPosition);
 
-            return (totalCustomersAhead+1, TimeSpan.FromMinutes(totalMinutesToWait));
+            return (totalCustomersAhead + 1, TimeSpan.FromMinutes(totalMinutesToWait));
         }
 
+        public async Task<Customer[]> GetQueueReport(int id)
+            => await _dbContext.Customer
+              .Include(x => x.User)
+              .Include(x => x.Payment)
+              .Include(g => g.CustomerServices)
+              .Include(x => x.Queue)
+              .AsNoTracking()
+              .Where(x => x.QueueId == id)
+              .OrderBy(x => x.ServiceStartTime)
+              .ToArrayAsync();
     }
 }

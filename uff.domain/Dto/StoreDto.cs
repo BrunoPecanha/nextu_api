@@ -34,6 +34,7 @@ namespace UFF.Domain.Dto
         public string Youtube { get; set; }
         public string WebSite { get; set; }
         public string Whatsapp { get; set; }
+        public bool IsVerified { get; set; }
         public string PhoneNumber { get; set; }
         public virtual ICollection<OpeningHoursDto> OpeningHours { get; set; } = new List<OpeningHoursDto>();
         public virtual ICollection<HighLightDto> HighLights { get; set; } = new List<HighLightDto>();

@@ -54,7 +54,7 @@ namespace UFF.Service
 
                 var user = await _userRepository.GetByIdAsync(command.UserId);
 
-                int nextPositionInQueue = await _customerRepository.GetByLasPositionInQueueByStoreAndEmployeeIdAsync(queue.StoreId, queue.EmployeeId);
+                int nextPositionInQueue = await _customerRepository.GetLastPositionInQueueByStoreAndEmployeeIdAsync(queue.StoreId, queue.EmployeeId);
 
                 var customer = new Customer(user, queue, command.PaymentMethod, command.Notes, nextPositionInQueue);
 
@@ -73,6 +73,42 @@ namespace UFF.Service
 
                 await _unitOfWork.CommitAsync();
                 await SendUpdateNotificationToGroup(queue);
+
+                return new CommandResult(true, "Cliente adicionado à fila com sucesso");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new CommandResult(false, $"Erro ao adicionar à fila: {ex.Message}");
+            }
+        }
+
+        public async Task<CommandResult> CreateQueueAsync(QueueCreateCommand command)
+        {
+
+            if (!command.IsValid)
+            {
+                return new CommandResult(false, command.Notifications);
+            }
+
+            try
+            {
+
+                await _unitOfWork.BeginTransactionAsync();
+
+                var employee = await _userRepository.GetByIdAsync(command.EmployeeId);
+
+                if (employee == null)
+                    return new CommandResult(false, "Funcionário não encontrada");
+
+                var queue = new Queue(command.Description, command.StoreId, command.EmployeeId);
+
+                if (!queue.IsValid())
+                    return new CommandResult(false, "Falha ao criar a fila");
+
+                await _queueRepository.AddAsync(queue);
+
+                await _unitOfWork.CommitAsync();
 
                 return new CommandResult(true, "Cliente adicionado à fila com sucesso");
             }
@@ -193,7 +229,17 @@ namespace UFF.Service
 
         public async Task<CommandResult> GetAllByStoreIdAsync(int idStore)
         {
-            var queue = await _queueRepository.GetAllByStoreIdAsync(idStore);
+            var queue = await _queueRepository.GetAllByStoreIdAsync(idStore, null, null, null, null);
+
+            if (queue == null)
+                return new CommandResult(false, queue);
+
+            return new CommandResult(true, _mapper.Map<QueueDto[]>(queue));
+        }
+
+        public async Task<CommandResult> GetAllByDateAndStoreIdAsync(int idStore, QueueFilterRequestCommand command)
+        {
+            var queue = await _queueRepository.GetAllByStoreIdAsync(idStore, command.ResponsibleId, command.QueueStatus, command.StartDate, command.EndDate);
 
             if (queue == null)
                 return new CommandResult(false, queue);
@@ -242,6 +288,18 @@ namespace UFF.Service
             return new CommandResult(true, dto);
         }
 
+        public async Task<CommandResult> GetQueueReport(int id)
+        {
+            var queueReport = await _queueRepository.GetQueueReport(id);
+
+            if (queueReport == null)
+                return new CommandResult(false, queueReport);
+
+            var dto = _mapper.Map<QueueReportDto[]>(queueReport);
+
+            return new CommandResult(true, dto);
+        }
+
         public async Task<CommandResult> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId)
         {
             var customer = await _queueRepository.GetCustomerInQueueCardDetailsByCustomerId(customerId, queueId);
@@ -265,6 +323,58 @@ namespace UFF.Service
                 return new CommandResult(false, queue);
 
             return new CommandResult(true, _mapper.Map<QueueDto[]>(queue));
+        }
+
+        public async Task<CommandResult> CloseQueueAsync(int queueId)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var queue = await _queueRepository.GetByIdAsync(queueId);
+
+                if (queue == null)
+                    return new CommandResult(false, "Fila não encontrada.");
+
+                queue.Close();
+                _queueRepository.Update(queue);
+
+                await _unitOfWork.CommitAsync();
+                return new CommandResult(true, $"Fila ${queue.Name} fechada às {DateTime.UtcNow}");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new CommandResult(false, $"Erro ao fechar a fila:  {ex.Message}");
+            }
+        }
+
+        public async Task<CommandResult> PauseQueueAsync(QueuePauseCommand command)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var queue = await _queueRepository.GetByIdAsync(command.Id);
+
+                if (queue == null)
+                    return new CommandResult(false, "Fila não encontrada.");
+
+                if (queue.Status == QueueStatusEnum.Open)
+                    queue.Pause(command.PauseReason);
+                else
+                    queue.Unpause();
+
+                _queueRepository.Update(queue);
+
+                await _unitOfWork.CommitAsync();
+                return new CommandResult(true, $"Fila ${queue.Name} pausada às {DateTime.UtcNow}");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new CommandResult(false, $"Erro ao fechar a fila:  {ex.Message}");
+            }
         }
 
         public async Task<CommandResult> ExitQueueAsync(int customerId, int queueId)
@@ -298,6 +408,29 @@ namespace UFF.Service
             }
         }
 
+        public async Task<CommandResult> Delete(int queueId)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var queue = await _queueRepository.GetByIdAsync(queueId);
+
+                if (queue == null)
+                    return new CommandResult(false, "Cliente não encontrado");
+
+                _queueRepository.Remove(queue);
+
+                await _unitOfWork.CommitAsync();
+
+                return new CommandResult(true, "Fila deletada com sucesso");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new CommandResult(false, $"Erro ao remover fila: {ex.Message}");
+            }
+        }
 
         #region Método auxiliares
         private async Task UpdateValuesEstimates(CustomerInQueueCardDetailsDto dto, Customer customer)
@@ -381,7 +514,6 @@ namespace UFF.Service
             if (dto != null && (dto.Position == 0))
                 dto.Token = _tokenService.CreateToken(dto.Id, dto.QueueId);
         }
-
         #endregion
     }
 }

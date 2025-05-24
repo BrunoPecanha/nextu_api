@@ -21,11 +21,23 @@ namespace WeApi.Controllers
         /// <summary>
         /// Inclui cliente na fila
         /// </summary> 
-        [HttpPost]
+        [HttpPost("addCustomer")]
         //[Authorize]
         public async Task<IActionResult> AddCustomerToQueueAsync([FromBody] QueueAddCustomerCommand command)
         {
             var response = await _service.AddCustomerToQueueAsync(command);
+
+            if (!response.Valid)
+                return BadRequest(response.Data);
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        //[Authorize]
+        public async Task<IActionResult> CreateQueueAsync([FromBody] QueueCreateCommand command)
+        {
+            var response = await _service.CreateQueueAsync(command);
 
             if (!response.Valid)
                 return BadRequest(response.Data);
@@ -151,6 +163,21 @@ namespace WeApi.Controllers
         }
 
         /// <summary>
+        /// Recupera dados da fila para montagem de relatório
+        /// </summary>  
+        [HttpGet("{id}/report")]
+        //[Authorize]
+        public async Task<IActionResult> GetQueueReport([FromRoute] int id)
+        {
+            var report = await _service.GetQueueReport(id);
+
+            if (report == null)
+                BadRequest(report);
+
+            return Ok(report);
+        }
+
+        /// <summary>
         /// Recupera detalhes de uma fila que o cliente está
         /// </summary>  
         [HttpGet("{customerId}/{queueId}/card/details")]
@@ -182,6 +209,21 @@ namespace WeApi.Controllers
         }
 
         /// <summary>
+        /// Recupera todas as filas de um estabelecimento
+        /// </summary>  
+        [HttpPost("{storeId}/filter")]
+        //[Authorize]
+        public async Task<IActionResult> GetAllByDateAndStoreIdAsync([FromRoute] int storeId, [FromBody] QueueFilterRequestCommand command)
+        {
+            var queue = await _service.GetAllByDateAndStoreIdAsync(storeId, command);
+
+            if (!queue.Valid)
+                BadRequest(queue.Data);
+
+            return Ok(queue);
+        }
+
+        /// <summary>
         /// Remove o cliente da fila da fila (Feito pelo próprio cliente)
         /// </summary>  
         [HttpDelete("{customerId}/{queueId}/exit")]
@@ -189,6 +231,50 @@ namespace WeApi.Controllers
         public async Task<IActionResult> ExitQueueAsync([FromRoute] int customerId, int queueId)
         {
             var result = await _service.ExitQueueAsync(customerId, queueId);
+            if (!result.Valid)
+                return BadRequest(new CommandResult(false, result.Data));
+
+            return Ok(new CommandResult(true, string.Empty));
+        }
+
+        /// <summary>
+        /// Encerra a fila
+        /// </summary>  
+        [HttpDelete("{queueId}/close")]
+        //[Authorize]
+        public async Task<IActionResult> CloseQueue([FromRoute] int queueId)
+        {
+            var result = await _service.CloseQueueAsync(queueId);
+
+            if (!result.Valid)
+                return BadRequest(new CommandResult(false, result.Data));
+
+            return Ok(new CommandResult(true, result));
+        }
+
+        /// <summary>
+        /// Pausar a fila
+        /// </summary>  
+        [HttpPut("pause")]
+        //[Authorize]
+        public async Task<IActionResult> PauseQueue([FromBody] QueuePauseCommand command)
+        {
+            var result = await _service.PauseQueueAsync(command);
+
+            if (!result.Valid)
+                return BadRequest(new CommandResult(false, result.Data));
+
+            return Ok(new CommandResult(true, result));
+        }
+
+        /// <summary>
+        /// Remove a fila , desde que não tenha sido usada por ninguém 
+        /// </summary>  
+        [HttpDelete("{queueId}")]
+        //[Authorize]
+        public async Task<IActionResult> Delete([FromRoute] int queueId)
+        {
+            var result = await _service.Delete(queueId);
             if (!result.Valid)
                 return BadRequest(new CommandResult(false, result.Data));
 

@@ -73,6 +73,11 @@ namespace UFF.Infra.EntityConfig
               .IsRequired()
               .HasDefaultValue(false);
 
+            builder.Property(s => s.Verified)
+                .HasColumnName("verified")
+                .IsRequired()
+                .HasDefaultValue(false);
+
             builder.Property(s => s.StoreSubtitle)
                    .HasColumnName("store_subtitle")
                    .HasColumnType("varchar(100)")

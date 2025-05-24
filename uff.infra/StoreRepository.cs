@@ -14,28 +14,49 @@ namespace UFF.Infra
     {
         private readonly IUffContext _dbContext;
 
-        public StoreRepository(UffContext dbContext) 
+        public StoreRepository(UffContext dbContext)
             : base(dbContext)
         {
             _dbContext = dbContext;
         }
 
+        //TODO - REFATORAR ESSE MÉTODO, POIS VAI FICAR PESADO
         public async Task<IEnumerable<Store>> GetAllAsync()
-            => await _dbContext.Store
-                             .OrderByDescending(x => x.RegisteringDate)
-                             .AsNoTracking()
-                             .Include(x => x.Owner)
-                             .Include(x => x.Category)
-                             .ToArrayAsync();
+        {
+            var stores = await _dbContext.Store
+                .AsNoTracking()
+                .Include(s => s.Owner)
+                .AsNoTracking()
+                .Include(s => s.Category)
+                .OrderByDescending(s => s.RegisteringDate)
+                .ToListAsync();
 
+            foreach (var store in stores)
+            {
+                var smallestQueue = await GetSmallestQueueAsync(store.Id);
+                store.SetSmallestQueue(smallestQueue != null ? new List<Queue> { smallestQueue } : new List<Queue>());
+            }
+
+            return stores;
+        }
 
         public async Task<Store> GetByIdAsync(int id)
             => await _dbContext.Store
-                               .Include(x => x.HighLights)
-                               .Include(o => o.OpeningHours)                      
-                               .Include(x => x.Owner)
-                               .Include(x => x.Category)
-                               .FirstOrDefaultAsync(x => x.Id == id);
+                .Include(x => x.HighLights)
+                .Include(o => o.OpeningHours)
+                .Include(x => x.Owner)
+                .Include(x => x.Category)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+        private async Task<Queue> GetSmallestQueueAsync(int storeId)
+        {
+            return await _dbContext.Queue
+                .Where(q => q.StoreId == storeId)
+                .Include(q => q.Customers.Where(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
+                .OrderBy(q => q.Customers.Count(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<Store> GetByIdWithProfessionalsAsync(int id)
             => await _dbContext.Store
@@ -47,11 +68,21 @@ namespace UFF.Infra
                                .FirstOrDefaultAsync(x => x.Id == id);
 
         public async Task<Store[]> GetByCategoryId(int id)
-            => await _dbContext.Store
-                           .Include(x => x.Category)
+        {
+            var stores = await _dbContext.Store
+                .Include(x => x.Category)
                            .Where(x => x.Category.Id == id)
                            .AsNoTracking()
                            .ToArrayAsync();
+
+            foreach (var store in stores)
+            {
+                var smallestQueue = await GetSmallestQueueAsync(store.Id);
+                store.SetSmallestQueue(smallestQueue != null ? new List<Queue> { smallestQueue } : new List<Queue>());
+            }
+
+            return stores;
+        }
 
         public async Task<Store[]> GetByOwnerIdAsync(int id)
             => await _dbContext.Store
@@ -72,24 +103,34 @@ namespace UFF.Infra
 
         public async Task<Store> GetStoreWithEmployeesAndQueuesAsync(int storeId)
         {
-            var today = DateTime.UtcNow;
+            var today = DateTime.UtcNow.Date;
 
             return await _dbContext.Store
-                .Include(y => y.Queues)
-                    .ThenInclude(k => k.Customers
-                         .Where(o => (o.Status == CustomerStatusEnum.Waiting || o.Status == CustomerStatusEnum.Absent)))
-                .Include(y => y.Queues)                
-                    .ThenInclude(k => k.Employee)
-                .Include(y => y.Queues
-                    .Where(o => o.Date.ToLocalTime().Date == today.ToLocalTime().Date))
+                .Where(s => s.Id == storeId)
                 .Include(s => s.EmployeeStore)
                     .ThenInclude(es => es.Employee)
-                .Include(s => s.EmployeeStore)
-                .   ThenInclude(es => es.Employee)
-                        .ThenInclude(x => x.Queues
-                        .Where(q => q.Date.ToLocalTime().Date == today.ToLocalTime().Date))
+                        .ThenInclude(e => e.Queues
+                            .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) && q.Date.Date == today))
+                .Include(s => s.Queues
+                    .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) && q.Date.Date == today))
+                    .ThenInclude(q => q.Employee)
+                .Include(s => s.Queues
+                    .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) && q.Date.Date == today))
+                    .ThenInclude(q => q.Customers
+                        .Where(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == storeId);
+                .FirstOrDefaultAsync();
+        }
+
+
+        public async Task<IList<User>> GetProfessionalsOfStoreAsync(int storeId)
+        {
+            return await _dbContext.Customer
+                .Where(c => c.Queue.Employee.Stores.Any(s => s.Id == storeId))
+                .Select(c => c.Queue.Employee)
+                .Distinct()
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<Queue> CalculateAverageWaitingTime(int professionalId)

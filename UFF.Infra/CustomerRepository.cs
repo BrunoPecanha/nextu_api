@@ -33,7 +33,7 @@ namespace UFF.Infra
                          .Include(x => x.CustomerServices)
                          .FirstOrDefaultAsync(x => x.Id == id);
 
-        public async Task<int> GetByLasPositionInQueueByStoreAndEmployeeIdAsync(int store, int employee)
+        public async Task<int> GetLastPositionInQueueByStoreAndEmployeeIdAsync(int store, int employee)
         {
             var lastCustomer = await _dbContext.Customer
                 .AsNoTracking()
