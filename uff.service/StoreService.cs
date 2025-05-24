@@ -85,7 +85,7 @@ namespace UFF.Service
             if (store == null)
                 return new CommandResult(false, "Loja não encontrada");
 
-            var dto = new StoreProfessionalsDto(store.Name, store.LogoPath, store.StoreSubtitle);
+            var dto = new StoreProfessionalsDto(store.Name, store.LogoPath, store.StoreSubtitle, store.Verified);
 
             if (store.Queues.Count <= 0)
                 return new CommandResult(false, dto);
@@ -106,16 +106,43 @@ namespace UFF.Service
                     (averageWaitingTime, averageServiceTime) = await CalculateAverageWaitingTime(employeeStore.Employee.Id);
                 }
 
+                var queueStatus = employeeStore.Employee.Queues.FirstOrDefault(x => x.Status == Domain.Enum.QueueStatusEnum.Paused || x.Status == Domain.Enum.QueueStatusEnum.Open);
+
                 dto.Professionals.Add(new ProfessionalDto
                 {
                     QueueId = employeeTodayQueues.Id,
                     Name = employeeStore.Employee.Name,
                     Liked = true,
+                    QueueName = employeeTodayQueues.Name,
+                    Status = queueStatus.Status,
+                    PauseReason = queueStatus.Status == Domain.Enum.QueueStatusEnum.Paused ? queueStatus.PauseReason : string.Empty,
                     Subtitle = employeeStore.Employee.Subtitle,
                     CustomersWaiting = waitingCustomers,
                     AverageWaitingTime = averageWaitingTime,
                     AverageServiceTime = averageServiceTime,
+
                     ServicesProvided = employeeStore.Employee.ServicesProvided
+                }); 
+            }
+
+            return new CommandResult(true, dto);
+        }
+        public async Task<CommandResult> GetProfessionalsOfStoreAsync(int storeId)
+        {
+            var professionals = await _storeRepository.GetProfessionalsOfStoreAsync(storeId);
+
+            if (professionals == null || !professionals.Any())
+                return new CommandResult(false, "Não foram encontrados funcionários para essa loja");
+
+            var dto = new List<ProfessionalDto>();
+
+            foreach (var professional in professionals)
+            {                
+
+                dto.Add(new ProfessionalDto
+                {
+                    Id = professional.Id,
+                    Name = professional.Name                    
                 });
             }
 

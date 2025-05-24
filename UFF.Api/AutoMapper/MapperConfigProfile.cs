@@ -50,7 +50,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                   .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, src.Payment.Notes)))
-                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices))                  
+                   .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices))
                   .ForMember(dest => dest.EstimatedWaitingTime, opt => opt.MapFrom(x => x.EstimatedWaitingTime))
                   .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CustomerServices.Sum(o => o.Service.Price * o.Quantity)));
 
@@ -85,10 +85,10 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                   .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
                   .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
-                  .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))                       
+                  .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))
                   .ForMember(dest => dest.Activated, opt => opt.MapFrom(src => src.Activated))
                   .ForMember(dest => dest.VariableTime, opt => opt.MapFrom(src => src.VariableTime))
-                  .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))       
+                  .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))
                   .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon));
 
             CreateMap<StoreDto, Store>();
@@ -100,11 +100,26 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Facebook, opt => opt.MapFrom(src => src.Facebook))
                 .ForMember(dest => dest.Instagram, opt => opt.MapFrom(src => src.Instagram))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+                .ForMember(dest => dest.IsVerified, opt => opt.MapFrom(src => src.Verified))
                 .ForMember(dest => dest.WebSite, opt => opt.MapFrom(src => src.Site))
+                .ForMember(dest => dest.MinorQueue, opt => opt.MapFrom(src => src.Queues.Count > 0 ? src.Queues.First().Customers.Count : 0))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
             CreateMap<HighLightDto, HighLight>();
             CreateMap<HighLight, HighLightDto>();
+
+            CreateMap<QueueReportDto, Customer>();
+            CreateMap<Customer, QueueReportDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))
+                .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.ServiceStartTime))
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.ServiceEndTime))
+                .ForMember(dest => dest.QueueDate, opt => opt.MapFrom(src => src.RegisteringDate))
+                .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.Payment.Name))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.CustomerServices.Sum(x => x.FinalPrice)))
+                .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src =>
+                                src.ServiceStartTime.HasValue && src.ServiceEndTime.HasValue
+                                    ? (src.ServiceEndTime.Value - src.ServiceStartTime.Value).ToString(@"hh\:mm")
+                                    : "00:00"));
 
             CreateMap<OpeningHoursDto, OpeningHours>();
             CreateMap<OpeningHours, OpeningHoursDto>()
@@ -120,6 +135,10 @@ namespace WeApi.AutoMapper
 
             CreateMap<QueueDto, Queue>();
             CreateMap<Queue, QueueDto>()
+                        .ForMember(dest => dest.QueueDescription, opt => opt.MapFrom(src => src.Name))
+                        .ForMember(dest => dest.ResponsibleId, opt => opt.MapFrom(src => src.EmployeeId))
+                        .ForMember(dest => dest.ResponsibleName, opt => opt.MapFrom(src => src.Employee.Name))
+                         .ForMember(dest => dest.TotalCount, opt => opt.MapFrom(src => src.Customers.Count()))
                         .ForMember(dest => dest.CurrentCount, opt => opt.MapFrom(src =>
                                                      (src.Status == QueueStatusEnum.Open || src.Status == QueueStatusEnum.Paused)
                                                          ? src.Customers.Count(x => x.Status == CustomerStatusEnum.Waiting || x.Status == CustomerStatusEnum.InService)
@@ -127,6 +146,7 @@ namespace WeApi.AutoMapper
 
             CreateMap<StoreProfessionalsDto, Store>();
             CreateMap<Store, StoreProfessionalsDto>()
+                .ForMember(dest => dest.IsVerified, opt => opt.MapFrom(src => src.Verified))
                 .ForMember(dest => dest.StoreLogoPath, opt => opt.MapFrom(src => src.LogoPath))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Subtitle, opt => opt.MapFrom(src => src.StoreSubtitle))
@@ -134,6 +154,7 @@ namespace WeApi.AutoMapper
 
             CreateMap<ProfessionalDto, User>();
             CreateMap<User, ProfessionalDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Subtitle, opt => opt.MapFrom(src => src.Subtitle))
                 .ForMember(dest => dest.ServicesProvided, opt => opt.MapFrom(src => src.ServicesProvided))
