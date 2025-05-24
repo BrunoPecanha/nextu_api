@@ -103,24 +103,34 @@ namespace UFF.Infra
 
         public async Task<Store> GetStoreWithEmployeesAndQueuesAsync(int storeId)
         {
-            var today = DateTime.UtcNow;
+            var today = DateTime.UtcNow.Date;
 
             return await _dbContext.Store
-                .Include(y => y.Queues)
-                    .ThenInclude(k => k.Customers
-                         .Where(o => (o.Status == CustomerStatusEnum.Waiting || o.Status == CustomerStatusEnum.Absent)))
-                .Include(y => y.Queues)
-                    .ThenInclude(k => k.Employee)
-                .Include(y => y.Queues
-                    .Where(o => o.Date.ToLocalTime().Date == today.ToLocalTime().Date))
+                .Where(s => s.Id == storeId)
                 .Include(s => s.EmployeeStore)
                     .ThenInclude(es => es.Employee)
-                .Include(s => s.EmployeeStore)
-                .ThenInclude(es => es.Employee)
-                        .ThenInclude(x => x.Queues
-                        .Where(q => q.Date.ToLocalTime().Date == today.ToLocalTime().Date))
+                        .ThenInclude(e => e.Queues
+                            .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) && q.Date.Date == today))
+                .Include(s => s.Queues
+                    .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) && q.Date.Date == today))
+                    .ThenInclude(q => q.Employee)
+                .Include(s => s.Queues
+                    .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) && q.Date.Date == today))
+                    .ThenInclude(q => q.Customers
+                        .Where(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == storeId);
+                .FirstOrDefaultAsync();
+        }
+
+
+        public async Task<IList<User>> GetProfessionalsOfStoreAsync(int storeId)
+        {
+            return await _dbContext.Customer
+                .Where(c => c.Queue.Employee.Stores.Any(s => s.Id == storeId))
+                .Select(c => c.Queue.Employee)
+                .Distinct()
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<Queue> CalculateAverageWaitingTime(int professionalId)

@@ -89,7 +89,7 @@ namespace WeApi.Controllers
             return Ok(stores);
         }
 
-        [HttpGet("professionals/{storeId}")]
+        [HttpGet("{storeId}/queue/professionals")]
         //   [Authorize]
         public async Task<IActionResult> GetStoreWithEmployeesAsync([FromRoute] int storeId)
         {
@@ -99,6 +99,18 @@ namespace WeApi.Controllers
                 BadRequest(store.Data);
 
             return Ok(store);
+        }
+
+        [HttpGet("{storeId}/professionals")]
+        //   [Authorize]
+        public async Task<IActionResult> GetProfessionalsOfStoreAsync([FromRoute] int storeId)
+        {
+            var professionals = await _service.GetProfessionalsOfStoreAsync(storeId);
+
+            if (!professionals.Valid)
+                BadRequest(professionals.Data);
+
+            return Ok(professionals);
         }
 
         [HttpPatch]

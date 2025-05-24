@@ -14,5 +14,6 @@ namespace UFF.Domain.Repository
         public Task<Store> GetStoreWithEmployeesAndQueuesAsync(int id);
         public Task<Queue> CalculateAverageWaitingTime(int professionalId);
         public Task<Store> GetByIdWithProfessionalsAsync(int id);
+        public Task<IList<User>> GetProfessionalsOfStoreAsync(int storeId);
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250523183203_adiciona_coluna_hora_ajuste")]
+    partial class adiciona_coluna_hora_ajuste
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -478,10 +481,6 @@ namespace UFF.Infra.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("name");
-
-                    b.Property<string>("PauseReason")
-                        .HasColumnType("varchar(20)")
-                        .HasColumnName("pause_reason");
 
                     b.Property<DateTime>("RegisteringDate")
                         .ValueGeneratedOnAdd()

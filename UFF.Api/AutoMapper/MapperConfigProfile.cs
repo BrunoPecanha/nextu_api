@@ -122,8 +122,10 @@ namespace WeApi.AutoMapper
 
             CreateMap<QueueDto, Queue>();
             CreateMap<Queue, QueueDto>()
+                        .ForMember(dest => dest.QueueDescription, opt => opt.MapFrom(src => src.Name))
                         .ForMember(dest => dest.ResponsibleId, opt => opt.MapFrom(src => src.EmployeeId))
                         .ForMember(dest => dest.ResponsibleName, opt => opt.MapFrom(src => src.Employee.Name))
+                         .ForMember(dest => dest.TotalCount, opt => opt.MapFrom(src => src.Customers.Count()))
                         .ForMember(dest => dest.CurrentCount, opt => opt.MapFrom(src =>
                                                      (src.Status == QueueStatusEnum.Open || src.Status == QueueStatusEnum.Paused)
                                                          ? src.Customers.Count(x => x.Status == CustomerStatusEnum.Waiting || x.Status == CustomerStatusEnum.InService)
@@ -139,6 +141,7 @@ namespace WeApi.AutoMapper
 
             CreateMap<ProfessionalDto, User>();
             CreateMap<User, ProfessionalDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Subtitle, opt => opt.MapFrom(src => src.Subtitle))
                 .ForMember(dest => dest.ServicesProvided, opt => opt.MapFrom(src => src.ServicesProvided))

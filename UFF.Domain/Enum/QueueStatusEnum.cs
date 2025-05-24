@@ -8,6 +8,8 @@ namespace UFF.Domain.Enum {
         [Description("Closed")]
         Closed,       
         [Description("Paused")]
-        Paused
+        Paused,
+        [Description("All")]
+        All
     }
 }

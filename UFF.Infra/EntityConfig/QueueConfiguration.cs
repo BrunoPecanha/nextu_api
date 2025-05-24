@@ -24,6 +24,11 @@ namespace UFF.Infra.EntityConfig
                 .IsRequired()
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
+            builder.Property(q => q.ClosingDate)
+             .HasColumnName("closing_date")
+             .HasColumnType("timestamp with time zone")
+             .IsRequired(false);
+
             builder.Property(s => s.RegisteringDate)
                  .HasColumnName("registering_date")
                  .HasColumnType("timestamp with time zone")
@@ -42,6 +47,11 @@ namespace UFF.Infra.EntityConfig
                 .HasColumnType("varchar(20)")
                 .HasConversion<string>()
                 .IsRequired();
+
+            builder.Property(q => q.PauseReason)
+               .HasColumnName("pause_reason")
+               .HasColumnType("varchar(20)");              
+            
 
             builder.HasOne(q => q.Store)
                 .WithMany(s => s.Queues)
