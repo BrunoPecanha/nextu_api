@@ -85,7 +85,7 @@ namespace UFF.Service
             if (store == null)
                 return new CommandResult(false, "Loja não encontrada");
 
-            var dto = new StoreProfessionalsDto(store.Name, store.LogoPath, store.StoreSubtitle, store.Verified);
+            var dto = new StoreProfessionalsDto(store.Id, store.Name, store.LogoPath, store.StoreSubtitle, store.Verified);
 
             if (store.Queues.Count <= 0)
                 return new CommandResult(false, dto);
