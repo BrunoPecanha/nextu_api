@@ -15,7 +15,7 @@ namespace UFF.Domain.Repository
         public Task<Queue[]> GetByDateAsync(DateTime date, int storeId);
         public Task<Customer[]> GetAllCustomersInQueueByEmployeeAndStoreId(int storeId, int employeeId);
         public Task<Customer[]> GetQueueReport(int id);
-        public Task<Customer[]> GetCustomerInQueueCardByUserId(int customerId);
+        public Task<Customer[]> GetCustomerInQueueCardByUserId(int customerId);     
         public Task<Customer> GetCustomerInQueueCardDetailsByCustomerId(int customerId, int queueId);
         Task<(int TotalCustomers, TimeSpan EstimatedWaitTime)> GetQueueStatusAsync(int queueId, int currentCustomerPosition, int currentCustomerId);
     }

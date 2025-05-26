@@ -234,7 +234,7 @@ namespace WeApi.Controllers
             if (!result.Valid)
                 return BadRequest(new CommandResult(false, result.Data));
 
-            return Ok(new CommandResult(true, string.Empty));
+            return Ok(result);
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace WeApi.Controllers
             if (!result.Valid)
                 return BadRequest(new CommandResult(false, result.Data));
 
-            return Ok(new CommandResult(true, result));
+            return Ok(result);
         }
 
         /// <summary>
@@ -278,7 +278,7 @@ namespace WeApi.Controllers
             if (!result.Valid)
                 return BadRequest(new CommandResult(false, result.Data));
 
-            return Ok(new CommandResult(true, string.Empty));
+            return Ok(result);
         }
     }
 }

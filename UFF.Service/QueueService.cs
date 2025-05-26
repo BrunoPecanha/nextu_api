@@ -269,9 +269,9 @@ namespace UFF.Service
             return new CommandResult(true, dto);
         }
 
-        public async Task<CommandResult> GetCustomerInQueueCardByCustomerId(int userId)
+        public async Task<CommandResult> GetCustomerInQueueCardByCustomerId(int customerId)
         {
-            var queueUserIsIn = await _queueRepository.GetCustomerInQueueCardByUserId(userId);
+            var queueUserIsIn = await _queueRepository.GetCustomerInQueueCardByUserId(customerId);
 
             if (queueUserIsIn == null)
                 return new CommandResult(false, queueUserIsIn);
@@ -368,7 +368,8 @@ namespace UFF.Service
                 _queueRepository.Update(queue);
 
                 await _unitOfWork.CommitAsync();
-                return new CommandResult(true, $"Fila ${queue.Name} pausada às {DateTime.UtcNow}");
+                await SendUpdateNotificationToGroup(queue);
+                return new CommandResult(true, _mapper.Map<QueueDto>(queue));
             }
             catch (Exception ex)
             {
@@ -496,9 +497,17 @@ namespace UFF.Service
         }
         private async Task SendUpdateNotificationToGroup(Queue queue)
         {
+            var groupName = $"company-{queue.StoreId}";
+
+            Console.WriteLine($"Enviando atualização para grupo: {groupName}");
             await _hubContext.Clients
-                .Group($"company-{queue.StoreId}")
-                .SendAsync("UpdateQueue");
+                .Group(groupName)
+                .SendAsync("UpdateQueue", new
+                {
+                    CompanyId = queue.StoreId.ToString(),
+                    QueueId = queue.Id,
+                    Message = "Fila atualizada"
+                });
         }
         private async Task SetEstimatedTimeForCustomer(CustomerInQueueCardDto[] customerInQueueCardDtos)
         {
