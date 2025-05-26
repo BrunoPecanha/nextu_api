@@ -15,5 +15,6 @@ namespace UFF.Domain.Dto
         public string LogoPath { get; set; }
         public int QueueId { get; set; }
         public int StoreId { get; set; }
+        public bool IsPaused { get; set; }
     }
 }

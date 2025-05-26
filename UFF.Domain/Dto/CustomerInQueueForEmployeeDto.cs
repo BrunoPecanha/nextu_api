@@ -11,5 +11,6 @@
         public string TimeGotInQueue { get; set; }
         public string TimeCalledInQueue { get; set; }        
         public bool InService { get; set; }
+        public bool IsPaused { get; set; }
     }
 }

@@ -110,18 +110,39 @@ namespace UFF.Infra
                 .Include(s => s.EmployeeStore)
                     .ThenInclude(es => es.Employee)
                         .ThenInclude(e => e.Queues
-                            .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) && q.Date.Date == today))
+                            .Where(q =>
+                                (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) &&
+                                q.Date >= today && q.Date < today.AddDays(1)))
                 .Include(s => s.Queues
-                    .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) && q.Date.Date == today))
+                    .Where(q =>
+                        (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) &&
+                        q.Date >= today && q.Date < today.AddDays(1)))
                     .ThenInclude(q => q.Employee)
                 .Include(s => s.Queues
-                    .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) && q.Date.Date == today))
+                    .Where(q =>
+                        (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) &&
+                        q.Date >= today && q.Date < today.AddDays(1)))
                     .ThenInclude(q => q.Customers
                         .Where(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
 
+
+        public async Task<Store[]> GetAllStoresUserIsInByUserId(int userId)
+        {
+            var today = DateTime.UtcNow.Date;
+
+            return await _dbContext.Queue
+                .Where(q => (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused)
+                            && q.Date.Date == today
+                            && q.Customers.Any(c => c.User.Id == userId
+                                                    && (c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent)))
+                .Select(q => q.Store)
+                .Distinct()
+                .AsNoTracking()
+                .ToArrayAsync();
+        }
 
         public async Task<IList<User>> GetProfessionalsOfStoreAsync(int storeId)
         {

@@ -148,6 +148,16 @@ namespace UFF.Service
 
             return new CommandResult(true, dto);
         }
+        public async Task<CommandResult> GetAllStoresUserIsInByUserId(int userId)
+        {
+            var stores = await _storeRepository.GetAllStoresUserIsInByUserId(userId);
+
+            if (stores == null || !stores.Any())
+                return new CommandResult(false, stores);
+
+
+            return new CommandResult(true, _mapper.Map<StoreDto[]>(stores));          
+        }
         private async Task<(TimeSpan, TimeSpan)> CalculateAverageWaitingTime(int professionalId)
         {
             var queue = await _storeRepository.CalculateAverageWaitingTime(professionalId);
