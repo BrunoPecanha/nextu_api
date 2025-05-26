@@ -148,6 +148,7 @@ namespace WeApi.AutoMapper
 
             CreateMap<StoreProfessionalsDto, Store>();
             CreateMap<Store, StoreProfessionalsDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.IsVerified, opt => opt.MapFrom(src => src.Verified))
                 .ForMember(dest => dest.StoreLogoPath, opt => opt.MapFrom(src => src.LogoPath))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
