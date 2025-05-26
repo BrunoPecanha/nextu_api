@@ -113,6 +113,18 @@ namespace WeApi.Controllers
             return Ok(professionals);
         }
 
+        [HttpGet("{userId}/customer/stores")]
+        //   [Authorize]
+        public async Task<IActionResult> GetAllStoresUserIsInByUserId([FromRoute] int userId)
+        {
+            var stores = await _service.GetAllStoresUserIsInByUserId(userId);
+
+            if (!stores.Valid)
+                BadRequest(stores.Data);
+
+            return Ok(stores);
+        }
+
         [HttpPatch]
         //   [Authorize]
         public async Task<IActionResult> LikeProfessional([FromBody] LikeStoreProfessionalCommand command)

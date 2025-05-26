@@ -85,7 +85,7 @@ namespace UFF.Infra
                 .Where(x =>
                     x.Queue.EmployeeId == employeeId &&
                     x.Queue.Store.Id == storeId &&
-                    x.Queue.Status == QueueStatusEnum.Open &&
+                    (x.Queue.Status == QueueStatusEnum.Open || x.Queue.Status == QueueStatusEnum.Paused) &&
                     (
                         x.Status == CustomerStatusEnum.Waiting ||
                         x.Status == CustomerStatusEnum.InService ||
@@ -187,5 +187,6 @@ namespace UFF.Infra
               .Where(x => x.QueueId == id)
               .OrderBy(x => x.ServiceStartTime)
               .ToArrayAsync();
+        
     }
 }

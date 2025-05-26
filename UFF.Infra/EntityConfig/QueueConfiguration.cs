@@ -50,8 +50,11 @@ namespace UFF.Infra.EntityConfig
 
             builder.Property(q => q.PauseReason)
                .HasColumnName("pause_reason")
-               .HasColumnType("varchar(40)");              
-            
+               .HasColumnType("varchar(40)");
+
+            builder.Property(q => q.CloseReson)
+           .HasColumnName("close_reason")
+           .HasColumnType("varchar(40)");
 
             builder.HasOne(q => q.Store)
                 .WithMany(s => s.Queues)

@@ -20,6 +20,8 @@ namespace UFF.Domain.Entity
         public DateTime? ClosingDate { get; private set; }
         public QueueStatusEnum Status { get; private set; }
         public string PauseReason { get; private set; }
+
+        public string CloseReson { get; private set; }
         public virtual ICollection<Customer> Customers { get; private set; } = new List<Customer>();
 
         public Queue(string description, int storeId, int employeeId)
@@ -31,10 +33,11 @@ namespace UFF.Domain.Entity
             Status = QueueStatusEnum.Open;
         }
 
-        public void Close()
+        public void Close(string closeReason = "")
         {
             ClosingDate = DateTime.UtcNow;
             Status= QueueStatusEnum.Closed;
+            CloseReson = closeReason;
         }
 
         public void Pause(string pauseReason)
@@ -42,6 +45,7 @@ namespace UFF.Domain.Entity
             PauseReason = pauseReason;
             Status = QueueStatusEnum.Paused;
         }
+
 
         public void Unpause()
         {

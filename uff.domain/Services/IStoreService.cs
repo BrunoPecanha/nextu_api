@@ -16,6 +16,7 @@ namespace UFF.Domain.Services
         public Task<CommandResult> GetByEmployeeId(int id);
         public Task<CommandResult> GetStoreWithProfessionalsAndWaitInfoAsync(int storeId);
         public Task<CommandResult> GetProfessionalsOfStoreAsync(int storeId);
+        public Task<CommandResult> GetAllStoresUserIsInByUserId(int userId);
         public Task LikeProfessional(LikeStoreProfessionalCommand command);
     }
 }
