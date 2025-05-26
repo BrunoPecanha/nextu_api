@@ -30,6 +30,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
+                  .ForMember(dest => dest.IsPaused, opt => opt.MapFrom(src => src.Queue.Status == QueueStatusEnum.Paused))
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
                   .ForMember(dest => dest.InService, opt => opt.MapFrom(src => src.Status == CustomerStatusEnum.InService));
 
@@ -40,6 +41,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
                   .ForMember(dest => dest.StoreId, opt => opt.MapFrom(src => src.Queue.Store.Id))
+                  .ForMember(dest => dest.IsPaused, opt => opt.MapFrom(src => src.Queue.Status == QueueStatusEnum.Paused))
                   .ForMember(dest => dest.StoreIcon, opt => opt.MapFrom(src => src.Queue.Store.Category.Icon))
                   .ForMember(dest => dest.LogoPath, opt => opt.MapFrom(src => src.Queue.Store.LogoPath));
 
@@ -106,7 +108,7 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
             CreateMap<HighLightDto, HighLight>();
-            CreateMap<HighLight, HighLightDto>();
+            CreateMap<HighLight, HighLightDto>();      
 
             CreateMap<QueueReportDto, Customer>();
             CreateMap<Customer, QueueReportDto>()
