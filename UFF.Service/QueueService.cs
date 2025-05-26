@@ -325,21 +325,25 @@ namespace UFF.Service
             return new CommandResult(true, _mapper.Map<QueueDto[]>(queue));
         }
 
-        public async Task<CommandResult> CloseQueueAsync(int queueId)
+        public async Task<CommandResult> CloseQueueAsync(QueueCloseCommand command)
         {
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                var queue = await _queueRepository.GetByIdAsync(queueId);
+                var queue = await _queueRepository.GetByIdAsync(command.Id);
 
                 if (queue == null)
                     return new CommandResult(false, "Fila não encontrada.");
 
-                queue.Close();
+                await RemoveAllCustomersInQueueBeforeClose(command.Id, command.CloseReason);
+
+                queue.Close(command.CloseReason);
                 _queueRepository.Update(queue);
 
                 await _unitOfWork.CommitAsync();
+
+                await SendUpdateNotificationToGroup(queue);
                 return new CommandResult(true, $"Fila ${queue.Name} fechada às {DateTime.UtcNow}");
             }
             catch (Exception ex)
@@ -432,8 +436,32 @@ namespace UFF.Service
                 return new CommandResult(false, $"Erro ao remover fila: {ex.Message}");
             }
         }
+        public async Task<bool> ExistCustuomerInQueueWaiting(int queueId)
+           => await _queueRepository.ExistCustuomerInQueueWaiting(queueId);
 
         #region Método auxiliares
+        private async Task RemoveAllCustomersInQueueBeforeClose(int queueId, string closeReason)
+        {
+            var customersWaiting = await _queueRepository.GetCustomersByQueueId(queueId);
+
+            if (customersWaiting == null || !customersWaiting.Any())
+                return;
+
+            try
+            {
+                foreach (var customer in customersWaiting)
+                {
+                    customer.RemoveMissingCustomer(closeReason);
+                    _customerRepository.Update(customer);
+                }               
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new Exception($"Não foi possível remover os clientes da fila: ${ex.Message}");
+            }           
+        }
+
         private async Task UpdateValuesEstimates(CustomerInQueueCardDetailsDto dto, Customer customer)
         {
             if (dto == null)
@@ -495,9 +523,14 @@ namespace UFF.Service
                 _customerRepository.Update(customer);
             }
         }
-        private async Task SendUpdateNotificationToGroup(Queue queue)
+        private async Task SendUpdateNotificationToGroup(Queue queue, int storeId = default)
         {
-            var groupName = $"company-{queue.StoreId}";
+            string groupName = string.Empty;
+
+            if (queue != null)
+                groupName = $"company-{queue.StoreId}";
+            else
+                groupName = $"company-{storeId}";
 
             Console.WriteLine($"Enviando atualização para grupo: {groupName}");
             await _hubContext.Clients

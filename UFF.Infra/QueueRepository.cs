@@ -54,8 +54,15 @@ namespace UFF.Infra
 
         public async Task<Queue> GetByIdAsync(int id)
            => await _dbContext.Queue
+                              .Include(x => x.Store)
                               .AsNoTracking()
                               .FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<Customer[]> GetCustomersByQueueId(int id)
+           => await _dbContext.Customer
+                              .AsNoTracking()
+                              .Where(x => x.QueueId == id)
+                              .ToArrayAsync();
 
         public async Task<Queue[]> GetByDateAsync(DateTime date, int storeId)
             => await _dbContext.Queue
@@ -187,6 +194,13 @@ namespace UFF.Infra
               .Where(x => x.QueueId == id)
               .OrderBy(x => x.ServiceStartTime)
               .ToArrayAsync();
+
+        public async Task<bool> ExistCustuomerInQueueWaiting(int id)
+            => await _dbContext.Queue
+                              .Include(c => c.Customers
+                                    .Where(x => x.Status == CustomerStatusEnum.Waiting || x.Status == CustomerStatusEnum.Absent))
+                              .AsNoTracking()
+                              .AnyAsync(x => x.Id == id);
         
     }
 }
