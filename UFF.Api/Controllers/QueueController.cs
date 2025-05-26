@@ -240,11 +240,11 @@ namespace WeApi.Controllers
         /// <summary>
         /// Encerra a fila
         /// </summary>  
-        [HttpDelete("{queueId}/close")]
+        [HttpPut("close")]
         //[Authorize]
-        public async Task<IActionResult> CloseQueue([FromRoute] int queueId)
+        public async Task<IActionResult> CloseQueue([FromBody] QueueCloseCommand command)
         {
-            var result = await _service.CloseQueueAsync(queueId);
+            var result = await _service.CloseQueueAsync(command);
 
             if (!result.Valid)
                 return BadRequest(new CommandResult(false, result.Data));
@@ -264,6 +264,17 @@ namespace WeApi.Controllers
             if (!result.Valid)
                 return BadRequest(new CommandResult(false, result.Data));
 
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Pausar a fila
+        /// </summary>  
+        [HttpGet("{queueId}/waiting")]
+        //[Authorize]
+        public async Task<IActionResult> ExistCustuomerInQueueWaiting([FromRoute] int queueId)
+        {
+            var result = await _service.ExistCustuomerInQueueWaiting(queueId);
             return Ok(result);
         }
 
