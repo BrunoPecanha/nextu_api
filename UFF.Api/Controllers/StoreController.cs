@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Store;
+using UFF.Domain.Enum;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -53,14 +54,14 @@ namespace WeApi.Controllers
         }
 
 
-        [HttpGet("employee/{id}")]
+        [HttpGet("employee")]
         //[Authorize]
-        public async Task<IActionResult> GetByEmployeeId([FromRoute] int id)
+        public async Task<IActionResult> GetByEmployeeId([FromQuery] int id, ProfileEnum profile)
         {
-            var stores = await _service.GetByEmployeeId(id);
+            var stores = await _service.GetByEmployeeId(id, profile);
 
             if (!stores.Valid)
-                BadRequest(stores.Data);
+                return BadRequest(stores.Data);
 
             return Ok(stores);
         }

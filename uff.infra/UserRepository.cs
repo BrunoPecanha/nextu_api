@@ -33,5 +33,10 @@ namespace UFF.Infra
            => await _dbContext.User
                .AsNoTracking()
                .FirstOrDefaultAsync(u => u.Email == userName);
+
+        public async Task<User> GetUserByCpf(string cpf)
+           => await _dbContext.User
+               .AsNoTracking()
+               .FirstOrDefaultAsync(u => u.Cpf == cpf);
     }
 }

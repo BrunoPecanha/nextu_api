@@ -8,7 +8,6 @@ using UFF.Domain.Repository;
 
 namespace UFF.Infra
 {
-
     public class EmployeeStoreRepository : RepositoryBase<EmployeeStore>, IEmployeeStoreRepository
     {
         private readonly IUffContext _dbContext;
@@ -25,9 +24,34 @@ namespace UFF.Infra
                              .AsNoTracking()
                              .ToArrayAsync();
 
-        public async Task<EmployeeStore> GetByIdAsync(int id)
+        public async Task<EmployeeStore> GetByIdsAsync(int employeeId, int storeId)
+            => await _dbContext.EmployeeStore
+                               .Include(x => x.Store)
+                               .Include(x => x.Employee)
+                               .AsNoTracking()
+                               .FirstOrDefaultAsync(x => x.EmployeeId == employeeId && x.StoreId == storeId);
+
+        public async Task<EmployeeStore> GetByEmployeeAndStoreAndActivatedIds(int employeeId, int storeId)
             => await _dbContext.EmployeeStore
                                .AsNoTracking()
-                               .FirstOrDefaultAsync(x => x.Id == id);
+                               .FirstOrDefaultAsync(x => x.EmployeeId == employeeId && x.StoreId == storeId);
+
+        public async Task<IEnumerable<EmployeeStore>> GetPendingAndAcceptedInvitesByUser(int id)
+            => await _dbContext.EmployeeStore
+                               .Include(x => x.Store)
+                               .Include(x => x.Employee)
+                                .AsNoTracking()
+                                .Where(x => x.EmployeeId == id &&
+                                            (!x.RequestAnswered || (x.RequestAnswered && x.IsActive)))
+                                .ToListAsync();
+
+        public async Task<IEnumerable<EmployeeStore>> GetPendingAndAcceptedInvitesByStore(int id)
+           => await _dbContext.EmployeeStore
+                               .Include(x => x.Store)
+                               .Include(x => x.Employee)
+                               .AsNoTracking()
+                               .Where(x => x.StoreId == id &&
+                                            (!x.RequestAnswered || (x.RequestAnswered && x.IsActive)))
+                                .ToListAsync();
     }
 }

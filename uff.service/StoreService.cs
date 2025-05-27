@@ -10,6 +10,7 @@ using UFF.Domain.Commands.Store;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
 using UFF.Service.Properties;
+using UFF.Domain.Enum;
 
 namespace UFF.Service
 {
@@ -69,9 +70,9 @@ namespace UFF.Service
 
             return new CommandResult(true, _mapper.Map<StoreDto[]>(stores));
         }
-        public async Task<CommandResult> GetByEmployeeId(int id)
+        public async Task<CommandResult> GetByEmployeeId(int id, ProfileEnum profile)
         {
-            var stores = await _storeRepository.GetByEmployeeId(id);
+            var stores = await _storeRepository.GetByEmployeeId(id, profile);
 
             if (stores is null)
                 return new CommandResult(false, stores);
@@ -198,7 +199,7 @@ namespace UFF.Service
 
                 store.SetOwner(owner);
 
-                var employeeXStore = new EmployeeStore(owner.Id, store.Id, store);
+                var employeeXStore = new EmployeeStore(owner.Id, store.Id);
 
                 var category = await _categoryRepository.GetByIdAsync(command.CategoryId);
 
