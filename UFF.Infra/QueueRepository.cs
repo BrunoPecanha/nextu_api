@@ -42,7 +42,7 @@ namespace UFF.Infra
             if (queueStatus.HasValue)
                 query = query.Where(x => x.Status == queueStatus);
 
-            return await query.OrderByDescending(x => x.Status).ToArrayAsync();
+            return await query.OrderByDescending(x => x.Date).ThenBy(x => x.Status).ToArrayAsync();
         }
 
 

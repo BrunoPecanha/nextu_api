@@ -92,14 +92,23 @@ namespace UFF.Infra
                            .AsNoTracking()
                            .ToArrayAsync();
 
-        public async Task<Store[]> GetByEmployeeId(int id)
-          => await _dbContext.EmployeeStore
-                         .Include(x => x.Store)
-                         .ThenInclude(y => y.Category)
-                         .Where(x => x.EmployeeId == id)
-                         .AsNoTracking()
-                         .Select(x => x.Store)
-                         .ToArrayAsync();
+        public async Task<Store[]> GetByEmployeeId(int id, ProfileEnum profile)
+        {
+            var query = _dbContext.EmployeeStore
+                        .Include(x => x.Store)
+                        .ThenInclude(y => y.Category)
+                        .Where(x => x.IsActive)
+                        .AsNoTracking();
+
+            if (profile == ProfileEnum.Owner)
+                query = query.Where(x => x.Store.OwnerId == id);
+            else
+                query = query.Where(x => x.EmployeeId == id);
+
+
+             return await query.Select(x => x.Store).ToArrayAsync();
+        }
+
 
         public async Task<Store> GetStoreWithEmployeesAndQueuesAsync(int storeId)
         {
@@ -127,7 +136,6 @@ namespace UFF.Infra
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
-
 
         public async Task<Store[]> GetAllStoresUserIsInByUserId(int userId)
         {

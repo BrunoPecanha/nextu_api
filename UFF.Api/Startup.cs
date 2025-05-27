@@ -54,7 +54,7 @@ namespace WeApi
                                      "capacitor://localhost")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowCredentials(); //SignalR
+                        .AllowCredentials();
                 });
             });
 

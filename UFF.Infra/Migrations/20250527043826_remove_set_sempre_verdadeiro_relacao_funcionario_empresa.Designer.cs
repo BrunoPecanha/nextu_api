@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250527043826_remove_set_sempre_verdadeiro_relacao_funcionario_empresa")]
+    partial class remove_set_sempre_verdadeiro_relacao_funcionario_empresa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,13 +261,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("store_id");
 
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
@@ -280,10 +276,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
-
-                    b.Property<bool>("RequestAnswered")
-                        .HasColumnType("boolean")
-                        .HasColumnName("request_answered");
 
                     b.HasKey("EmployeeId", "StoreId")
                         .HasName("pk_employee_stores");
