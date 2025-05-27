@@ -14,6 +14,7 @@ namespace UFF.Domain.Commands.Service
         public string Description { get; set; }
         public int CategoryId { get; set; }
         public int StoreId { get; set; }
+
         public decimal Price { get; set; }
         public TimeSpan Duration { get; set; }
         public bool Activated { get; set; }
