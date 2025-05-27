@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Collections.Generic;
 using System.Linq;
 using UFF.Domain;
 using UFF.Domain.Dto;
@@ -61,6 +62,24 @@ namespace WeApi.AutoMapper
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                  .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Icon));
 
+            CreateMap<EmployeeStore, EmployeeStoreItemDto>()
+                .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.EmployeeId))
+                .ForMember(dest => dest.StoreId, opt => opt.MapFrom(src => src.StoreId))
+                .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => string.Join(" ", src.Employee.Name, src.Employee.LastName)))
+                .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
+                .ForMember(dest => dest.InviteIsPending, opt => opt.MapFrom(src => !src.IsActive && !src.RequestAnswered))
+                .ForMember(dest => dest.AssociatedSince, opt => opt.MapFrom(src =>
+                    src.IsActive && src.RequestAnswered ? src.LastUpdate.ToString("dd/MM/yyyy") : src.RegisteringDate.ToString("dd/MM/yyyy")));
+
+            CreateMap<EmployeeStoreItemDto, EmployeeStore>()
+                .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.EmployeeId))
+                .ForMember(dest => dest.StoreId, opt => opt.MapFrom(src => src.StoreId))
+                .ForMember(dest => dest.RegisteringDate, opt => opt.Ignore())
+                .ForMember(dest => dest.LastUpdate, opt => opt.Ignore());
+
+            CreateMap<List<EmployeeStore>, EmployeeStoreDto>()
+                .ForMember(dest => dest.EmployeeStoreAssociations, opt => opt.MapFrom(src => src));
+
             CreateMap<CustomerDto, Customer>();
             CreateMap<Customer, CustomerDto>()
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.Join(" ", src.User.Name, src.User.LastName)))
@@ -108,7 +127,7 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
 
             CreateMap<HighLightDto, HighLight>();
-            CreateMap<HighLight, HighLightDto>();      
+            CreateMap<HighLight, HighLightDto>();
 
             CreateMap<QueueReportDto, Customer>();
             CreateMap<Customer, QueueReportDto>()

@@ -17,7 +17,11 @@ namespace UFF.Infra.EntityConfig
                    .HasColumnType("integer")
                    .IsRequired();
 
-            builder.Ignore(x => x.Id);
+            builder.Property(x => x.Id)
+                   .HasColumnName("id")
+                   .HasColumnType("integer")
+                   .IsRequired()
+                   .ValueGeneratedOnAdd();
 
             builder.Property(es => es.StoreId)
                    .HasColumnName("store_id")
@@ -40,8 +44,7 @@ namespace UFF.Infra.EntityConfig
             builder.Property(es => es.IsActive)
                    .HasColumnName("is_active")
                    .HasColumnType("boolean")
-                   .IsRequired()
-                   .HasDefaultValue(true);
+                   .IsRequired();
                         
             builder.HasOne(es => es.Employee)
                    .WithMany(u => u.EmployeeStore)

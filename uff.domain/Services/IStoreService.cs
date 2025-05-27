@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Store;
+using UFF.Domain.Enum;
 
 namespace UFF.Domain.Services
 {
@@ -13,7 +14,7 @@ namespace UFF.Domain.Services
         public Task<CommandResult> GetByCategoryIdAsync(int id);
         public Task<CommandResult> DeleteAsync(int id);
         public Task<CommandResult> GetByOwnerIdAsync(int id);
-        public Task<CommandResult> GetByEmployeeId(int id);
+        public Task<CommandResult> GetByEmployeeId(int id, ProfileEnum profile);
         public Task<CommandResult> GetStoreWithProfessionalsAndWaitInfoAsync(int storeId);
         public Task<CommandResult> GetProfessionalsOfStoreAsync(int storeId);
         public Task<CommandResult> GetAllStoresUserIsInByUserId(int userId);

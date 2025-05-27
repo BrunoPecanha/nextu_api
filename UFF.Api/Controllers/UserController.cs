@@ -13,7 +13,6 @@ namespace WeApi.Controllers
     {
         private readonly IUserService _service;
 
-
         public UserController(IUserService service)
         {
             _service = service;
