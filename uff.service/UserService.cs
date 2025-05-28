@@ -3,15 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UFF.Domain.Repository;
-using UFF.Domain.Services;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.User;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
+using UFF.Domain.Repository;
+using UFF.Domain.Services;
 using UFF.Service.Properties;
-using System.Reflection;
-using System.IO;
 
 namespace UFF.Service
 {

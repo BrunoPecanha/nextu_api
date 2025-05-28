@@ -13,6 +13,7 @@ namespace WeApi.AutoMapper
         {
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
+                
 
             CreateMap<ServiceCategoryDto, ServiceCategory>();
             CreateMap<ServiceCategory, ServiceCategoryDto>()
