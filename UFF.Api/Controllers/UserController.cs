@@ -28,9 +28,9 @@ namespace WeApi.Controllers
             return Ok(response);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
        // [Authorize]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var costumer = await _service.GetByIdAsync(id);
 
@@ -55,7 +55,7 @@ namespace WeApi.Controllers
 
         [HttpPut]
       //  [Authorize]
-        public async Task<IActionResult> UpdateAsync([FromBody] UserEditCommand command)
+        public async Task<IActionResult> UpdateAsync([FromForm] UserEditCommand command)
         {
             var costumer = await _service.UpdateAsync(command);
 

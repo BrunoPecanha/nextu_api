@@ -3,15 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UFF.Domain.Repository;
-using UFF.Domain.Services;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.User;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
+using UFF.Domain.Repository;
+using UFF.Domain.Services;
 using UFF.Service.Properties;
-using System.Reflection;
-using System.IO;
 
 namespace UFF.Service
 {
@@ -25,7 +23,7 @@ namespace UFF.Service
         {
             _costumerRepository = repository;
             _mapper = mapper;
-            _authService = authService; 
+            _authService = authService;
         }
 
         public async Task<CommandResult> GetAllAsync()
@@ -43,15 +41,15 @@ namespace UFF.Service
             var user = await _costumerRepository.GetByIdAsync(id);
 
             if (user is null)
-                return new CommandResult(false, user);            
+                return new CommandResult(false, user);
 
             return new CommandResult(true, _mapper.Map<UserDto>(user));
-        }      
+        }
 
         public async Task<CommandResult> CreateAsync(UserCreateCommand command)
         {
             try
-            {             
+            {
                 var costumer = new User(command);
                 var hashedPassword = _authService.HashPassword(costumer, command.Password);
                 costumer.UpdatePassWord(hashedPassword);
@@ -85,20 +83,20 @@ namespace UFF.Service
                 //    var imageBytes = memoryStream.ToArray();                    
                 //}
 
-                var costumer = await _costumerRepository.GetByIdAsync(command.Id);
+                var user = await _costumerRepository.GetByIdAsync(command.Id);
 
-                if (costumer is null)
+                if (user is null)
                     return new CommandResult(false, Resources.NotFound);
 
-                costumer.UpdateAllUserInfo(command);
+                user.UpdateAllUserInfo(command);
 
-                var hashedPassword = _authService.HashPassword(costumer, command.Password);
-                costumer.UpdatePassWord(hashedPassword);
+                var hashedPassword = _authService.HashPassword(user, command.Password);
+                user.UpdatePassWord(hashedPassword);
 
-                _costumerRepository.Update(costumer);
+                _costumerRepository.Update(user);
                 await _costumerRepository.SaveChangesAsync();
 
-                return new CommandResult(true, _mapper.Map<UserDto>(costumer));
+                return new CommandResult(true, _mapper.Map<UserDto>(user));
             }
             catch (Exception ex)
             {

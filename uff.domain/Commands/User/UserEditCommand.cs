@@ -16,7 +16,7 @@ namespace UFF.Domain.Commands.User
         public string City { get; set; }
         public string StateId { get; set; }
         public string Email { get; set; }
-        public string Subtittle { get; set; }
+        public string Subtitle { get; set; }
         public string ServicesProvided { get; set; }
         public bool AcceptAwaysMinorQueue { get; set; }
         public bool DeleteAccount { get; set; }

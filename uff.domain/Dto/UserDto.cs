@@ -14,11 +14,11 @@ namespace UFF.Domain.Dto
         public string Number { get; set; }
         public string City { get; set; }
         public string StateId { get; set; }
+        public ProfileEnum Profile { get; set; }
         public StatusEnum Status { get; set; }  
         public string Email { get;  set; }
-        public string Subtittle { get; set; }
+        public string Subtitle { get; set; }
         public string ServicesProvided { get; set; }
-        public IFormFile ProfileImage { get; set; }
         public string ImageUrl { get; set; }
         public bool AcceptAwaysMinorQueue { get; set; }
     }
