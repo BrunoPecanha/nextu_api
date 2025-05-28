@@ -25,7 +25,8 @@ namespace UFF.Domain.Entity
         public ProfileEnum Profile { get; private set; }
         public string Subtitle { get; set; }
         public string ServicesProvided { get; set; }
-        public bool LookForMinorQueue { get; set; }
+        public bool AcceptAwaysMinorQueue { get; set; }
+        public string ImageUrl { get; set; }
         public ICollection<Customer> CustomerInstances { get; private set; } = new List<Customer>();
         public ICollection<Store> Stores { get; private set; } = new List<Store>();
         public virtual ICollection<EmployeeStore> EmployeeStore { get; private set; } = new List<EmployeeStore>();

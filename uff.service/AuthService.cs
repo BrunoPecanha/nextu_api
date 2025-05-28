@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -7,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
+using UFF.Domain.Dto;
 using UFF.Domain.Entity;
 using UFF.Domain.Repository;
 
@@ -17,12 +19,14 @@ namespace UFF.Service
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IMapper _mapper;
 
-        public AuthService(IConfiguration configuration, IUserRepository userRepository, IPasswordHasher<User> passwordHasher)
+        public AuthService(IConfiguration configuration, IMapper mapper, IUserRepository userRepository, IPasswordHasher<User> passwordHasher)
         {
             _configuration = configuration;
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
+            _mapper = mapper;
         }
 
         public async Task<CommandResult> AuthSync(string userName, string password)
@@ -54,7 +58,7 @@ namespace UFF.Service
                 signingCredentials: creds
             );
 
-            return new CommandResult(true, new { Token = new JwtSecurityTokenHandler().WriteToken(token), User = user });
+            return new CommandResult(true, new { Token = new JwtSecurityTokenHandler().WriteToken(token), User = _mapper.Map<UserDto>(user) });
         }
 
         public string HashPassword(User user, string password)
