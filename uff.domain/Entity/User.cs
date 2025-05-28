@@ -71,7 +71,14 @@ namespace UFF.Domain.Entity
                 || string.IsNullOrEmpty(Phone)
                 || string.IsNullOrEmpty(Password));
              
-        }  
+        }
+
+        public void ChageUserToCustomer()
+            => Profile = ProfileEnum.Customer;
+
+
+        public void ChageUserToProfessional()
+            => Profile = ProfileEnum.Employee;
 
         public void ChageUserToOwner()
             => Profile= ProfileEnum.Owner;

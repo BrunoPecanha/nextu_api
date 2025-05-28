@@ -106,7 +106,10 @@ namespace UFF.Infra
                 query = query.Where(x => x.EmployeeId == id);
 
 
-             return await query.Select(x => x.Store).ToArrayAsync();
+            return await query
+                        .GroupBy(x => x.Store.Id)
+                        .Select(g => g.First().Store)
+                        .ToArrayAsync();
         }
 
 

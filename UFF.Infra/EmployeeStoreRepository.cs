@@ -28,6 +28,7 @@ namespace UFF.Infra
             => await _dbContext.EmployeeStore
                                .Include(x => x.Store)
                                .Include(x => x.Employee)
+                               .ThenInclude(x => x.Stores)
                                .AsNoTracking()
                                .FirstOrDefaultAsync(x => x.EmployeeId == employeeId && x.StoreId == storeId);
 
