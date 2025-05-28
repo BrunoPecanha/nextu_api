@@ -29,7 +29,7 @@ namespace UFF.Service
         {
             var user = await _userRepository.GetUserByLogin(userName);
 
-            if (user is null)
+            if (user is null || user.Status == Domain.Enum.StatusEnum.Disabled)
                 return new CommandResult(false, "Usuário não encontrado");
 
             var logged = VerifyPassword(user, password);
@@ -37,7 +37,6 @@ namespace UFF.Service
             if (!logged)
                 return new CommandResult(false, "Senha incorreta");
 
-            // Claims básicos para o token
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userName),

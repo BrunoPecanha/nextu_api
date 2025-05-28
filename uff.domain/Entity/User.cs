@@ -54,10 +54,10 @@ namespace UFF.Domain.Entity
             Name = !string.IsNullOrWhiteSpace(user.Name) ? user.Name : this.Name;
             LastName = !string.IsNullOrWhiteSpace(user.LastName) ? user.LastName : this.LastName;
             Phone = !string.IsNullOrWhiteSpace(user.Phone) ? user.Phone : this.Phone;
-            Address = !string.IsNullOrWhiteSpace(user.Street) ? user.Street : this.Address;
+            Address = !string.IsNullOrWhiteSpace(user.Address) ? user.Address : this.Address;
             Number = !string.IsNullOrWhiteSpace(user.Number) ? user.Number : this.Number;
             City = !string.IsNullOrWhiteSpace(user.City) ? user.City : this.City;
-            Status = user.Status;
+            Status = user.DeleteAccount ? StatusEnum.Disabled : StatusEnum.Enabled;
             LastUpdate = DateTime.UtcNow;
 
             UpdateCpf(user.Cpf);
