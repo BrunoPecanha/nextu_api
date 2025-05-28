@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using UFF.Domain.Services;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.User;
+using UFF.Domain.Services;
 
 namespace WeApi.Controllers
 {
@@ -30,7 +29,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("id")]
-        [Authorize]
+       // [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var costumer = await _service.GetByIdAsync(id);
@@ -43,7 +42,7 @@ namespace WeApi.Controllers
 
         //TODO - Implementar paginação - User
         [HttpGet("all")]
-        [Authorize]
+       // [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var costumers = await _service.GetAllAsync();
@@ -55,7 +54,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPut]
-        [Authorize]
+      //  [Authorize]
         public async Task<IActionResult> UpdateAsync([FromBody] UserEditCommand command)
         {
             var costumer = await _service.UpdateAsync(command);
@@ -67,7 +66,7 @@ namespace WeApi.Controllers
         }
 
         [HttpDelete]
-        [Authorize]
+       // [Authorize]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var result = await _service.DeleteAsync(id);
