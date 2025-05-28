@@ -11,9 +11,9 @@ namespace WeApi.AutoMapper
     {
         public MapperConfigProfile()
         {
-            CreateMap<UserDto, User>();
-            CreateMap<User, UserDto>();
-                
+            CreateMap<User, UserDto>()
+                  .ForMember(dest => dest.DDD, opt => opt.MapFrom(src => src.Phone.Substring(0, 2)))
+                  .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone.Substring(2)));
 
             CreateMap<ServiceCategoryDto, ServiceCategory>();
             CreateMap<ServiceCategory, ServiceCategoryDto>()
