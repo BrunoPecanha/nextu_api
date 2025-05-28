@@ -268,7 +268,6 @@ namespace UFF.Service
 
             return new CommandResult(true, dto);
         }
-
         public async Task<CommandResult> GetCustomerInQueueCardByCustomerId(int customerId)
         {
             var queueUserIsIn = await _queueRepository.GetCustomerInQueueCardByUserId(customerId);

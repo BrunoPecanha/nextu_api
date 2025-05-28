@@ -88,42 +88,45 @@ namespace UFF.Service
 
             var dto = new StoreProfessionalsDto(store.Id, store.Name, store.LogoPath, store.StoreSubtitle, store.Verified);
 
-            if (store.Queues.Count <= 0)
+            if (store.Queues == null || store.Queues.Count == 0)
                 return new CommandResult(false, dto);
 
             foreach (var employeeStore in store.EmployeeStore)
             {
-                var employeeTodayQueues = store.Queues
-                    .FirstOrDefault(q => q.EmployeeId == employeeStore.EmployeeId);
+                var employee = employeeStore.Employee;
+                if (employee == null)
+                    continue;
 
-                int waitingCustomers = employeeTodayQueues.Customers
-                    .Count(qc => qc.Status == Domain.Enum.CustomerStatusEnum.Waiting);
+                var employeeQueue = employee.Queues
+                    .FirstOrDefault(q => q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused);
 
-                TimeSpan averageWaitingTime = default;
-                TimeSpan averageServiceTime = default;
+                if (employeeQueue == null)
+                    continue;
+
+                int waitingCustomers = employeeQueue.Customers?.Count(c => c.Status == CustomerStatusEnum.Waiting) ?? 0;
+
+                TimeSpan averageWaitingTime = TimeSpan.Zero;
+                TimeSpan averageServiceTime = TimeSpan.Zero;
 
                 if (waitingCustomers > 0)
                 {
-                    (averageWaitingTime, averageServiceTime) = await CalculateAverageWaitingTime(employeeStore.Employee.Id);
+                    (averageWaitingTime, averageServiceTime) = await CalculateAverageWaitingTime(employee.Id);
                 }
-
-                var queueStatus = employeeStore.Employee.Queues.FirstOrDefault(x => x.Status == Domain.Enum.QueueStatusEnum.Paused || x.Status == Domain.Enum.QueueStatusEnum.Open);
 
                 dto.Professionals.Add(new ProfessionalDto
                 {
-                    QueueId = employeeTodayQueues.Id,
-                    Name = employeeStore.Employee.Name,
+                    QueueId = employeeQueue.Id,
+                    Name = employee.Name,
                     Liked = true,
-                    QueueName = employeeTodayQueues.Name,
-                    Status = queueStatus.Status,
-                    PauseReason = queueStatus.Status == Domain.Enum.QueueStatusEnum.Paused ? queueStatus.PauseReason : string.Empty,
-                    Subtitle = employeeStore.Employee.Subtitle,
+                    QueueName = employeeQueue.Name,
+                    Status = employeeQueue.Status,
+                    PauseReason = employeeQueue.Status == QueueStatusEnum.Paused ? employeeQueue.PauseReason : string.Empty,
+                    Subtitle = employee.Subtitle,
                     CustomersWaiting = waitingCustomers,
                     AverageWaitingTime = averageWaitingTime,
                     AverageServiceTime = averageServiceTime,
-
-                    ServicesProvided = employeeStore.Employee.ServicesProvided
-                }); 
+                    ServicesProvided = employee.ServicesProvided
+                });
             }
 
             return new CommandResult(true, dto);
@@ -138,12 +141,12 @@ namespace UFF.Service
             var dto = new List<ProfessionalDto>();
 
             foreach (var professional in professionals)
-            {                
+            {
 
                 dto.Add(new ProfessionalDto
                 {
                     Id = professional.Id,
-                    Name = professional.Name                    
+                    Name = professional.Name
                 });
             }
 
@@ -157,7 +160,7 @@ namespace UFF.Service
                 return new CommandResult(false, stores);
 
 
-            return new CommandResult(true, _mapper.Map<StoreDto[]>(stores));          
+            return new CommandResult(true, _mapper.Map<StoreDto[]>(stores));
         }
         private async Task<(TimeSpan, TimeSpan)> CalculateAverageWaitingTime(int professionalId)
         {

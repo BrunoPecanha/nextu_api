@@ -62,9 +62,11 @@ namespace UFF.Service
                 }
                 else
                 {
+                    user.ChageUserToProfessional();
+
                     var employeeXStore = new EmployeeStore(user.Id, store.Id);
                     await _employeeStoreRepository.AddAsync(employeeXStore);
-                    // Mudar o perfil do usuário para "Professional"
+                    _userRepository.Update(user);
                 }
 
                 await _unitOfWork.CommitAsync();
@@ -99,7 +101,12 @@ namespace UFF.Service
                 {
                     invite.InactivateRelation();
                     invite.MarkAsAnswered();
-                }       
+
+                    if (invite.Employee.Stores.Count == 0)
+                    {
+                        invite.Employee.ChageUserToCustomer();
+                    }
+                }
 
                 _employeeStoreRepository.Update(invite);
                 await _unitOfWork.CommitAsync();
