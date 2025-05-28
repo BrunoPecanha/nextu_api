@@ -74,16 +74,16 @@ namespace UFF.Service
         {
             try
             {
-                if (command.DeleteAccount)
-                {                    
-                }
+                //if (command.DeleteAccount)
+                //{                    
+                //}
 
-                if (command.ProfileImage != null)
-                {
-                    using var memoryStream = new MemoryStream();
-                    await command.ProfileImage.CopyToAsync(memoryStream);
-                    var imageBytes = memoryStream.ToArray();                    
-                }
+                //if (command.ProfileImage != null)
+                //{
+                //    using var memoryStream = new MemoryStream();
+                //    await command.ProfileImage.CopyToAsync(memoryStream);
+                //    var imageBytes = memoryStream.ToArray();                    
+                //}
 
                 var costumer = await _costumerRepository.GetByIdAsync(command.Id);
 
