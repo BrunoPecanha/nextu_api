@@ -10,6 +10,8 @@ using UFF.Domain.Commands.User;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
 using UFF.Service.Properties;
+using System.Reflection;
+using System.IO;
 
 namespace UFF.Service
 {
@@ -72,6 +74,17 @@ namespace UFF.Service
         {
             try
             {
+                if (command.DeleteAccount)
+                {                    
+                }
+
+                if (command.ProfileImage != null)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await command.ProfileImage.CopyToAsync(memoryStream);
+                    var imageBytes = memoryStream.ToArray();                    
+                }
+
                 var costumer = await _costumerRepository.GetByIdAsync(command.Id);
 
                 if (costumer is null)
