@@ -39,6 +39,11 @@ namespace UFF.Infra.EntityConfig
                    .HasMaxLength(100)
                    .IsRequired();
 
+            builder.Property(s => s.LookForMinorQueue)
+                   .HasColumnName("look_for_minor_queue")
+                   .IsRequired()
+                   .HasDefaultValue(false);
+
             builder.Property(u => u.Cpf)
                    .HasColumnName("cpf")
                    .HasColumnType("varchar(11)")

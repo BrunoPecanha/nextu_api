@@ -30,7 +30,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("id")]
-        [Authorize]
+       // [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var costumer = await _service.GetByIdAsync(id);
@@ -43,7 +43,7 @@ namespace WeApi.Controllers
 
         //TODO - Implementar paginação - User
         [HttpGet("all")]
-        [Authorize]
+       // [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var costumers = await _service.GetAllAsync();
@@ -55,7 +55,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPut]
-        [Authorize]
+      //  [Authorize]
         public async Task<IActionResult> UpdateAsync([FromBody] UserEditCommand command)
         {
             var costumer = await _service.UpdateAsync(command);
@@ -67,7 +67,7 @@ namespace WeApi.Controllers
         }
 
         [HttpDelete]
-        [Authorize]
+       // [Authorize]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var result = await _service.DeleteAsync(id);
