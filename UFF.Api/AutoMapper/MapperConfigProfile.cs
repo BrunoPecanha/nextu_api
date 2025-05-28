@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
-using UFF.Domain;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
 using UFF.Domain.Enum;
