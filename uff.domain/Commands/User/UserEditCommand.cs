@@ -21,6 +21,7 @@ namespace UFF.Domain.Commands.User
         public bool AcceptAwaysMinorQueue { get; set; }
         public bool DeleteAccount { get; set; }
         public IFormFile ProfileImage { get; set; }
+        public bool RemoveProfileImage { get; set; } = false;
         public string Password { get; set; }
         [JsonIgnore]
         public string PasswordHashed { get; set; }

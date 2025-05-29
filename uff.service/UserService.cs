@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
@@ -18,12 +19,14 @@ namespace UFF.Service
         private readonly IUserRepository _costumerRepository;
         private readonly IAuthService _authService;
         private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
 
-        public UserService(IUserRepository repository, IMapper mapper, IAuthService authService)
+        public UserService(IUserRepository repository, IMapper mapper, IAuthService authService, IFileService fileService)
         {
             _costumerRepository = repository;
             _mapper = mapper;
             _authService = authService;
+            _fileService = fileService;
         }
 
         public async Task<CommandResult> GetAllAsync()
@@ -72,31 +75,46 @@ namespace UFF.Service
         {
             try
             {
-                //if (command.DeleteAccount)
-                //{                    
-                //}
-
-                //if (command.ProfileImage != null)
-                //{
-                //    using var memoryStream = new MemoryStream();
-                //    await command.ProfileImage.CopyToAsync(memoryStream);
-                //    var imageBytes = memoryStream.ToArray();                    
-                //}
-
                 var user = await _costumerRepository.GetByIdAsync(command.Id);
 
                 if (user is null)
                     return new CommandResult(false, Resources.NotFound);
 
-                user.UpdateAllUserInfo(command);
+                if (command.DeleteAccount)
+                {
+                    user.Disable();
+                    return new CommandResult(true, null);
+                }
+                else
+                {
+                    if (command.RemoveProfileImage)
+                    {
+                        if (!string.IsNullOrEmpty(user.ImageUrl))
+                        {
+                            await _fileService.DeleteFileAsync(user.ImageUrl);
+                            user.ImageUrl = null;
+                        }
+                    }
+                    else if (command.ProfileImage != null && command.ProfileImage.Length > 0)
+                    {
+                        var relativePath = await _fileService.SaveFileAsync(command.ProfileImage, Domain.Enum.FileEnum.Profile);
 
-                var hashedPassword = _authService.HashPassword(user, command.Password);
-                user.UpdatePassWord(hashedPassword);
+                        user.ImageUrl = relativePath;
+                    }
 
-                _costumerRepository.Update(user);
-                await _costumerRepository.SaveChangesAsync();
+                    user.UpdateAllUserInfo(command);
 
-                return new CommandResult(true, _mapper.Map<UserDto>(user));
+                    if (command.Password != null)
+                    {
+                        var hashedPassword = _authService.HashPassword(user, command.Password);
+                        user.UpdatePassWord(hashedPassword);
+                    }
+
+                    _costumerRepository.Update(user);
+                    await _costumerRepository.SaveChangesAsync();
+
+                    return new CommandResult(true, _mapper.Map<UserDto>(user));
+                }
             }
             catch (Exception ex)
             {
