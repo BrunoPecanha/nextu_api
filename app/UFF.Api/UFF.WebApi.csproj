@@ -20,5 +20,11 @@
     <ProjectReference Include="..\UFF.Infra\UFF.Infra.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 
 </Project>

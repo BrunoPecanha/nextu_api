@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Text;
 using UFF.Infra.Context;
 using UFF.Infra.dependecyInjection;
@@ -61,7 +62,8 @@ namespace WeApi
 
             services.AddSignalR();
 
-            var key = Encoding.ASCII.GetBytes(Configuration["Jwt:Key"]);
+            var jwtKey = Configuration["Jwt:Key"] ?? throw new ArgumentNullException("Jwt:Key não configurado no appsettings.json ou variáveis de ambiente.");
+            var key = Encoding.ASCII.GetBytes(jwtKey);
 
             services.AddAuthentication(x =>
             {
