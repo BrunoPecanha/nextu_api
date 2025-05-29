@@ -48,7 +48,7 @@ namespace UFF.Infra.EntityConfig
                    .HasColumnName("cpf")
                    .HasColumnType("varchar(11)")
                    .HasMaxLength(11)
-                   .IsRequired();
+                   .IsRequired(false);
 
 
             builder.Property(u => u.Email)
