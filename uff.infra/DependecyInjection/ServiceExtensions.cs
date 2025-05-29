@@ -33,6 +33,7 @@ namespace UFF.Infra.dependecyInjection
             services.AddTransient<IEmployeeStoreService, EmployeeStoreService>();
             services.AddTransient<IQueueRepository, QueueRepository>();
             services.AddTransient<IQueueService, QueueService>();
+            services.AddTransient<IFileService, FileService>();
 
             services.AddTransient<ICustomerService,  Service.CustomerService>();           
 
