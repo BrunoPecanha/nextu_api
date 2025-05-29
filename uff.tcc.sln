@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.Domain", "UFF.Domain\UFF.Domain.csproj", "{3A098058-EA05-42B1-819A-EA5A7FC964E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.Domain", "app\UFF.Domain\UFF.Domain.csproj", "{3A098058-EA05-42B1-819A-EA5A7FC964E1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.Service", "UFF.Service\UFF.Service.csproj", "{D0A9515E-2B2D-4EDB-98E6-09AC56431C7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.Service", "app\UFF.Service\UFF.Service.csproj", "{D0A9515E-2B2D-4EDB-98E6-09AC56431C7F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.Test", "UFF.Test\UFF.Test.csproj", "{A5009CB4-B2D3-4C76-8B67-DBE1D4660FC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.Test", "app\UFF.Test\UFF.Test.csproj", "{A5009CB4-B2D3-4C76-8B67-DBE1D4660FC4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.Infra", "UFF.Infra\UFF.Infra.csproj", "{7E9EE45D-3C2A-4CB7-AD3A-5F52ECE40CA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.Infra", "app\UFF.Infra\UFF.Infra.csproj", "{7E9EE45D-3C2A-4CB7-AD3A-5F52ECE40CA4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.WebApi", "UFF.Api\UFF.WebApi.csproj", "{D5AA7213-C80C-43D2-81A7-33ACCCD6FC90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UFF.WebApi", "app\UFF.Api\UFF.WebApi.csproj", "{D5AA7213-C80C-43D2-81A7-33ACCCD6FC90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
