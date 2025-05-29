@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UFF.Domain.Commands.User;
 using UFF.Domain.Enum;
-using UFF.Domain.Repository;
 
 namespace UFF.Domain.Entity
 {
@@ -63,22 +62,22 @@ namespace UFF.Domain.Entity
             StateId = user.StateId;
             Subtitle = user.Subtitle;
             ServicesProvided = user.ServicesProvided;
-            AcceptAwaysMinorQueue = user.AcceptAwaysMinorQueue;   
+            AcceptAwaysMinorQueue = user.AcceptAwaysMinorQueue;
             Phone = string.Concat(user.DDD, user.Phone);
         }
 
         public void UpdatePassWord(string passWord)
         {
-             Password = passWord;
+            Password = passWord;
         }
-           
+
 
         public bool IsValid()
         {
             return !(string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(LastName)
                 || string.IsNullOrEmpty(Phone)
                 || string.IsNullOrEmpty(Password));
-             
+
         }
 
         public void ChageUserToCustomer()
@@ -88,10 +87,23 @@ namespace UFF.Domain.Entity
             => Profile = ProfileEnum.Employee;
 
         public void ChageUserToOwner()
-            => Profile= ProfileEnum.Owner;
+            => Profile = ProfileEnum.Owner;
 
         public void Disable()
-            => Status = StatusEnum.Disabled;
+        {
+            Status = StatusEnum.Disabled;
+            Cpf = null;
+
+            foreach (var es in EmployeeStore)
+            {
+                es.InactivateRelation();
+            }
+
+            foreach (var store in Stores)
+            {
+                store.Disable();
+            }
+        }
 
         public void Enable()
             => Status = StatusEnum.Enabled;
