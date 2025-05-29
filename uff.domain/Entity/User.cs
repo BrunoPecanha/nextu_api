@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UFF.Domain.Commands.User;
 using UFF.Domain.Enum;
+using UFF.Domain.Repository;
 
 namespace UFF.Domain.Entity
 {
@@ -59,13 +60,18 @@ namespace UFF.Domain.Entity
             Number = !string.IsNullOrWhiteSpace(user.Number) ? user.Number : this.Number;
             City = !string.IsNullOrWhiteSpace(user.City) ? user.City : this.City;
             Status = user.DeleteAccount ? StatusEnum.Disabled : StatusEnum.Enabled;
-            LastUpdate = DateTime.UtcNow;
-
-            UpdateCpf(user.Cpf);
+            StateId = user.StateId;
+            Subtitle = user.Subtitle;
+            ServicesProvided = user.ServicesProvided;
+            AcceptAwaysMinorQueue = user.AcceptAwaysMinorQueue;   
+            Phone = string.Concat(user.DDD, user.Phone);
         }
 
         public void UpdatePassWord(string passWord)
-            => Password = passWord;
+        {
+             Password = passWord;
+        }
+           
 
         public bool IsValid()
         {
