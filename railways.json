@@ -1,0 +1,8 @@
+{
+  "build": {
+    "command": "cd api && dotnet publish UFF.Api/UFF.WebApi.csproj -c Release -o out"
+  },
+  "start": {
+    "command": "dotnet api/out/UFF.WebApi.dll"
+  }
+}
