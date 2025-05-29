@@ -12,6 +12,7 @@ namespace WeApi.AutoMapper
         public MapperConfigProfile()
         {
             CreateMap<User, UserDto>()
+                  .ForMember(dest => dest.AcceptAwaysMinorQueue, opt => opt.MapFrom(src => src.AcceptAwaysMinorQueue))
                   .ForMember(dest => dest.DDD, opt => opt.MapFrom(src => src.Phone.Substring(0, 2)))
                   .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone.Substring(2)));
 
