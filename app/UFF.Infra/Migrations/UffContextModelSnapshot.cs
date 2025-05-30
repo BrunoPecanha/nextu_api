@@ -742,6 +742,11 @@ namespace UFF.Infra.Migrations
                         .HasColumnName("last_update")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
 
+                    b.Property<string>("LogoHash")
+                        .HasMaxLength(44)
+                        .HasColumnType("varchar(44)")
+                        .HasColumnName("logo_hash");
+
                     b.Property<string>("LogoPath")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)")
@@ -820,6 +825,11 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
                         .HasColumnName("votes");
+
+                    b.Property<string>("WallPaperHash")
+                        .HasMaxLength(44)
+                        .HasColumnType("varchar(44)")
+                        .HasColumnName("wallpaper_hash");
 
                     b.Property<string>("WallPaperPath")
                         .HasMaxLength(255)

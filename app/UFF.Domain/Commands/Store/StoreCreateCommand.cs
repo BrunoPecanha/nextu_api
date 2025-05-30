@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace UFF.Domain.Commands.Store
 {
@@ -20,8 +21,8 @@ namespace UFF.Domain.Commands.Store
         public bool AnswerScheduledTime { get; set; }
         public int? TimeRemoval { get; set; }
         public bool WhatsAppNotice { get; set; }
-        public string LogoPath { get; set; }
-        public string WallPaperPath { get; set; }
+        public IFormFile Logo { get; set; }
+        public IFormFile WallPaper { get; set; }
         public int CategoryId { get; set; }
         public string Instagram { get;  set; }
         public string Facebook { get;  set; }

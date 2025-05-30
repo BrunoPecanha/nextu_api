@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 
-namespace UFF.Domain.Enum {
+namespace UFF.Domain.Enum
+{
     public enum FileEnum
     {
         [Description("Profile")]
@@ -8,6 +9,10 @@ namespace UFF.Domain.Enum {
         [Description("Product")]
         Product,
         [Description("Service")]
-        Service
+        Service,
+        [Description("Logo")]
+        Logo,
+        [Description("WallPaper")]
+        WallPaper
     }
 }
