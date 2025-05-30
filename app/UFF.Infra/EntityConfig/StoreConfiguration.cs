@@ -7,11 +7,11 @@ namespace UFF.Infra.EntityConfig
     public class StoreConfiguration : IEntityTypeConfiguration<Store>
     {
         public void Configure(EntityTypeBuilder<Store> builder)
-        {            
+        {
             builder.ToTable("stores")
                    .HasKey(x => x.Id)
                    .HasName("pk_stores");
-            
+
             builder.Property(s => s.RegisteringDate)
                    .HasColumnName("registering_date")
                    .HasColumnType("timestamp with time zone")
@@ -24,7 +24,7 @@ namespace UFF.Infra.EntityConfig
                    .IsRequired()
                    .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                    .ValueGeneratedOnAddOrUpdate();
-            
+
             builder.Property(s => s.Name)
                    .HasColumnName("name")
                    .HasColumnType("varchar(100)")
@@ -37,7 +37,16 @@ namespace UFF.Infra.EntityConfig
                    .HasMaxLength(14)
                    .IsRequired();
 
-            
+            builder.Property(s => s.LogoHash)
+                   .HasColumnName("logo_hash")
+                   .HasColumnType("varchar(44)")
+                   .HasMaxLength(44);
+
+            builder.Property(s => s.WallPaperHash)
+                  .HasColumnName("wallpaper_hash")
+                  .HasColumnType("varchar(44)")
+                  .HasMaxLength(44);
+
             builder.Property(s => s.Address)
                    .HasColumnName("address")
                    .HasColumnType("varchar(200)")
@@ -62,7 +71,7 @@ namespace UFF.Infra.EntityConfig
                    .HasMaxLength(2)
                    .IsRequired();
 
-            
+
             builder.Property(s => s.OpenAutomatic)
                    .HasColumnName("open_automatic")
                    .IsRequired()
@@ -107,7 +116,7 @@ namespace UFF.Infra.EntityConfig
                    .IsRequired()
                    .HasDefaultValue(false);
 
-            
+
             builder.Property(s => s.LogoPath)
                    .HasColumnName("logo_path")
                    .HasColumnType("varchar(255)")
@@ -118,7 +127,7 @@ namespace UFF.Infra.EntityConfig
                    .HasColumnType("varchar(255)")
                    .HasMaxLength(255);
 
-            
+
             builder.Property(s => s.Rating)
                    .HasColumnName("rating")
                    .HasColumnType("numeric(3,2)")
@@ -128,29 +137,29 @@ namespace UFF.Infra.EntityConfig
                    .HasColumnName("votes")
                    .HasDefaultValue(0);
 
-            
+
             builder.Property(s => s.Status)
                    .HasColumnName("status")
                    .HasColumnType("varchar(20)")
                    .HasConversion<string>()
                    .IsRequired();
 
-            
+
             builder.HasOne(s => s.Owner)
                    .WithMany(u => u.Stores)
                    .HasForeignKey(s => s.OwnerId)
                    .HasConstraintName("fk_stores_owner")
-                   .OnDelete(DeleteBehavior.Restrict); 
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(s => s.Category)
                    .WithMany(c => c.Stores)
                    .HasForeignKey(s => s.CategoryId)
                    .HasConstraintName("fk_stores_category")
-                   .OnDelete(DeleteBehavior.Restrict); 
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(s => s.OpeningHours)
                    .WithOne(oh => oh.Store)
-                   .HasForeignKey(oh => oh.StoreId)                  
+                   .HasForeignKey(oh => oh.StoreId)
                    .HasConstraintName("fk_opening_hours_store")
                    .OnDelete(DeleteBehavior.Cascade);
 
@@ -176,7 +185,7 @@ namespace UFF.Infra.EntityConfig
 
             builder.HasIndex(s => s.Status)
                    .HasDatabaseName("ix_stores_status");
-                        
+
             builder.HasIndex(s => new { s.State, s.City })
                    .HasDatabaseName("ix_stores_location");
         }

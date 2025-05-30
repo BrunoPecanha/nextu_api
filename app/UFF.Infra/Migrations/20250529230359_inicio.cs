@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace UFF.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class script_inicial : Migration
+    public partial class inicio : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,6 +30,24 @@ namespace UFF.Infra.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "payment",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: true),
+                    img_path = table.Column<string>(type: "text", nullable: true),
+                    notes = table.Column<string>(type: "text", nullable: true),
+                    icon = table.Column<string>(type: "text", nullable: true),
+                    registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_payment", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "service_categories",
                 columns: table => new
                 {
@@ -37,6 +55,7 @@ namespace UFF.Infra.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     img_path = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true),
+                    icon = table.Column<string>(type: "varchar(15)", maxLength: 255, nullable: true),
                     registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
                     last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
@@ -58,12 +77,15 @@ namespace UFF.Infra.Migrations
                     number = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: true),
                     city = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true),
                     state_id = table.Column<string>(type: "char(2)", maxLength: 2, nullable: true),
-                    cpf = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false),
+                    cpf = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: true),
                     status = table.Column<string>(type: "varchar(20)", nullable: false),
                     email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     password = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
-                    store_id = table.Column<int>(type: "integer", nullable: true),
                     profile = table.Column<int>(type: "integer", nullable: false),
+                    subtitle = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true),
+                    services_provided = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true),
+                    accept_aways_minor_queue = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    image_url = table.Column<string>(type: "text", nullable: true),
                     registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
                     last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
@@ -82,9 +104,11 @@ namespace UFF.Infra.Migrations
                     name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     address = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false),
                     number = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    phone_number = table.Column<string>(type: "text", nullable: true),
                     city = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     state = table.Column<string>(type: "char(2)", maxLength: 2, nullable: false),
                     open_automatic = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    attend_simultaneously = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     store_subtitle = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true),
                     accept_other_queues = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     answer_out_of_order = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
@@ -96,7 +120,12 @@ namespace UFF.Infra.Migrations
                     category_id = table.Column<int>(type: "integer", nullable: false),
                     rating = table.Column<decimal>(type: "numeric(3,2)", nullable: false, defaultValue: 0m),
                     votes = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    instagram = table.Column<string>(type: "text", nullable: true),
+                    facebook = table.Column<string>(type: "text", nullable: true),
+                    youtube = table.Column<string>(type: "text", nullable: true),
+                    site = table.Column<string>(type: "text", nullable: true),
                     owner_id = table.Column<int>(type: "integer", nullable: false),
+                    verified = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     status = table.Column<string>(type: "varchar(20)", nullable: false),
                     registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
                     last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
@@ -124,7 +153,10 @@ namespace UFF.Infra.Migrations
                 {
                     user_id = table.Column<int>(type: "integer", nullable: false),
                     store_id = table.Column<int>(type: "integer", nullable: false),
-                    is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false),
+                    request_answered = table.Column<bool>(type: "boolean", nullable: false),
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
                     last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
@@ -201,11 +233,15 @@ namespace UFF.Infra.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     store_id = table.Column<int>(type: "integer", nullable: false),
+                    employee_id = table.Column<int>(type: "integer", nullable: false),
                     name = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    closing_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     status = table.Column<string>(type: "varchar(20)", nullable: false),
-                    registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    pause_reason = table.Column<string>(type: "varchar(40)", nullable: true),
+                    close_reason = table.Column<string>(type: "varchar(40)", nullable: true),
+                    registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
                 constraints: table =>
                 {
@@ -214,6 +250,12 @@ namespace UFF.Infra.Migrations
                         name: "fk_queues_stores",
                         column: x => x.store_id,
                         principalTable: "stores",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_queues_users",
+                        column: x => x.employee_id,
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -262,16 +304,33 @@ namespace UFF.Infra.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     queue_id = table.Column<int>(type: "integer", nullable: false),
                     user_id = table.Column<int>(type: "integer", nullable: false),
+                    payment_id = table.Column<int>(type: "integer", nullable: false),
                     notes = table.Column<string>(type: "text", nullable: true),
                     rating = table.Column<int>(type: "integer", nullable: true),
                     review = table.Column<string>(type: "text", nullable: true),
+                    position = table.Column<int>(type: "integer", nullable: false),
+                    estimated_start_time = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    time_entered_queue = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
+                    time_called_in_queue = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    missing_customer_removal_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    service_start_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    service_end_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     status = table.Column<string>(type: "varchar(30)", nullable: false),
+                    random_customer_name = table.Column<string>(type: "varchar(30)", nullable: true),
+                    is_priority = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    remove_reason = table.Column<string>(type: "text", nullable: true),
                     registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
                     last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_customers", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_customers_payments",
+                        column: x => x.payment_id,
+                        principalTable: "payment",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "fk_customers_queues",
                         column: x => x.queue_id,
@@ -293,8 +352,9 @@ namespace UFF.Infra.Migrations
                     customer_id = table.Column<int>(type: "integer", nullable: false),
                     service_id = table.Column<int>(type: "integer", nullable: false),
                     queue_id = table.Column<int>(type: "integer", nullable: false),
-                    final_price = table.Column<decimal>(type: "numeric(18,2)", nullable: true),
-                    duration = table.Column<TimeSpan>(type: "interval", nullable: true),
+                    quantity = table.Column<int>(type: "integer", nullable: false),
+                    final_price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    duration = table.Column<TimeSpan>(type: "interval", nullable: false),
                     id = table.Column<int>(type: "integer", nullable: false),
                     registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -322,40 +382,6 @@ namespace UFF.Infra.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "queue_customers",
-                columns: table => new
-                {
-                    queue_id = table.Column<int>(type: "integer", nullable: false),
-                    customer_id = table.Column<int>(type: "integer", nullable: false),
-                    position = table.Column<int>(type: "integer", nullable: false),
-                    time_entered_queue = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'"),
-                    time_called_in_queue = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    service_start_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    service_end_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    status = table.Column<string>(type: "varchar(30)", nullable: false),
-                    is_priority = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    id = table.Column<int>(type: "integer", nullable: false),
-                    registering_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    last_update = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_queue_customers", x => new { x.queue_id, x.customer_id });
-                    table.ForeignKey(
-                        name: "fk_queue_customers_customers",
-                        column: x => x.customer_id,
-                        principalTable: "customers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "fk_queue_customers_queues",
-                        column: x => x.queue_id,
-                        principalTable: "queues",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "ix_categories_name",
                 table: "categories",
@@ -378,6 +404,11 @@ namespace UFF.Infra.Migrations
                 column: "service_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_customers_payment_id",
+                table: "customers",
+                column: "payment_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_customers_queue_id",
                 table: "customers",
                 column: "queue_id");
@@ -389,14 +420,30 @@ namespace UFF.Infra.Migrations
                 filter: "rating IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_customers_status",
+                name: "ix_customers_user_id",
+                table: "customers",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_queue_customers_position",
+                table: "customers",
+                column: "position");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_queue_customers_queue_position",
+                table: "customers",
+                columns: new[] { "queue_id", "position" },
+                descending: new[] { false, true });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_queue_customers_status",
                 table: "customers",
                 column: "status");
 
             migrationBuilder.CreateIndex(
-                name: "ix_customers_user_id",
+                name: "ix_queue_customers_time_entered",
                 table: "customers",
-                column: "user_id");
+                column: "time_entered_queue");
 
             migrationBuilder.CreateIndex(
                 name: "ix_employee_stores_is_active",
@@ -444,40 +491,14 @@ namespace UFF.Infra.Migrations
                 columns: new[] { "week_day", "start_time", "end_time" });
 
             migrationBuilder.CreateIndex(
-                name: "ix_queue_customers_customer_id",
-                table: "queue_customers",
-                column: "customer_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_queue_customers_position",
-                table: "queue_customers",
-                column: "position");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_queue_customers_queue_id",
-                table: "queue_customers",
-                column: "queue_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_queue_customers_queue_position",
-                table: "queue_customers",
-                columns: new[] { "queue_id", "position" },
-                descending: new[] { false, true });
-
-            migrationBuilder.CreateIndex(
-                name: "ix_queue_customers_status",
-                table: "queue_customers",
-                column: "status");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_queue_customers_time_entered",
-                table: "queue_customers",
-                column: "time_entered_queue");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_queues_date",
                 table: "queues",
                 column: "date");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_queues_employee_id",
+                table: "queues",
+                column: "employee_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_queues_status",
@@ -601,19 +622,19 @@ namespace UFF.Infra.Migrations
                 name: "opening_hours");
 
             migrationBuilder.DropTable(
-                name: "queue_customers");
+                name: "customers");
 
             migrationBuilder.DropTable(
                 name: "services");
 
             migrationBuilder.DropTable(
-                name: "customers");
-
-            migrationBuilder.DropTable(
-                name: "service_categories");
+                name: "payment");
 
             migrationBuilder.DropTable(
                 name: "queues");
+
+            migrationBuilder.DropTable(
+                name: "service_categories");
 
             migrationBuilder.DropTable(
                 name: "stores");
