@@ -12,8 +12,8 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    [Migration("20250527043826_remove_set_sempre_verdadeiro_relacao_funcionario_empresa")]
-    partial class remove_set_sempre_verdadeiro_relacao_funcionario_empresa
+    [Migration("20250529230359_inicio")]
+    partial class inicio
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -261,6 +261,13 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("store_id");
 
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
@@ -276,6 +283,10 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+
+                    b.Property<bool>("RequestAnswered")
+                        .HasColumnType("boolean")
+                        .HasColumnName("request_answered");
 
                     b.HasKey("EmployeeId", "StoreId")
                         .HasName("pk_employee_stores");
@@ -862,6 +873,12 @@ namespace UFF.Infra.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AcceptAwaysMinorQueue")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("accept_aways_minor_queue");
+
                     b.Property<string>("Address")
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)")
@@ -873,7 +890,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnName("city");
 
                     b.Property<string>("Cpf")
-                        .IsRequired()
                         .HasMaxLength(11)
                         .HasColumnType("varchar(11)")
                         .HasColumnName("cpf");
@@ -883,6 +899,10 @@ namespace UFF.Infra.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("email");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text")
+                        .HasColumnName("image_url");
 
                     b.Property<string>("LastName")
                         .IsRequired()

@@ -11,6 +11,9 @@ using UFF.Domain.Dto;
 using UFF.Domain.Entity;
 using UFF.Service.Properties;
 using UFF.Domain.Enum;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace UFF.Service
 {
@@ -22,9 +25,10 @@ namespace UFF.Service
         private readonly IEmployeeStoreRepository _employeeStoreRepository;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileService _fileService;
 
         public StoreService(IStoreRepository repository, IMapper mapper, IUserRepository userRepository, ICategoryRepository categoryRepository,
-            IEmployeeStoreRepository employeeStoreRepository, IUnitOfWork unitOfWork)
+            IEmployeeStoreRepository employeeStoreRepository, IUnitOfWork unitOfWork, IFileService fileService)
         {
             _storeRepository = repository;
             _mapper = mapper;
@@ -32,6 +36,7 @@ namespace UFF.Service
             _categoryRepository = categoryRepository;
             _employeeStoreRepository = employeeStoreRepository;
             _unitOfWork = unitOfWork;
+            _fileService = fileService;
         }
 
         public async Task<CommandResult> GetAllAsync()
@@ -176,7 +181,7 @@ namespace UFF.Service
 
             return (TimeSpan.FromMinutes(totalWaitTime), TimeSpan.FromMinutes(averageWaitTime));
         }
-        public async Task LikeProfessional(LikeStoreProfessionalCommand command)
+        public Task LikeProfessional(LikeStoreProfessionalCommand command)
         {
             throw new NotImplementedException();
         }
@@ -186,33 +191,29 @@ namespace UFF.Service
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                // Adicionar validações
-                //CNPJ EXISTENTE NAO GRAVAR
-                var store = new Store(command);
-
-                if (!store.IsValid())
-                    return new CommandResult(false, Resources.MissingInfo);
-
                 var owner = await _userRepository.GetByIdAsync(command.OwnerId);
-
                 if (owner is null)
                     return new CommandResult(false, Resources.OwnerNotFound);
 
-                owner.ChageUserToOwner();
-
-                store.SetOwner(owner);
-
-                var employeeXStore = new EmployeeStore(owner.Id, store.Id);
-
                 var category = await _categoryRepository.GetByIdAsync(command.CategoryId);
-
                 if (category is null)
-                    return new CommandResult(false, Resources.OwnerNotFound);
+                    return new CommandResult(false, Resources.NotFound);
 
+                var store = new Store(command);
+                if (!store.IsValid())
+                    return new CommandResult(false, Resources.MissingInfo);
+
+                owner.ChageUserToOwner();
+                store.SetOwner(owner);
                 store.SetCategory(category);
 
-                _userRepository.Update(owner);
                 await _storeRepository.AddAsync(store);
+                await _unitOfWork.SaveChangesAsync();
+
+                var employeeXStore = new EmployeeStore(owner.Id, store.Id);
+                employeeXStore.ActivateRelation();
+
+                _userRepository.Update(owner);
                 await _employeeStoreRepository.AddAsync(employeeXStore);
 
                 await _unitOfWork.CommitAsync();
@@ -221,6 +222,7 @@ namespace UFF.Service
             }
             catch (Exception ex)
             {
+                await _unitOfWork.RollbackAsync();
                 return new CommandResult(false, ex, ex.Message);
             }
         }
@@ -240,6 +242,30 @@ namespace UFF.Service
                 if (category is null)
                     return new CommandResult(false, Resources.NotFound);
 
+                if (command.Logo != null && command.Logo.Length > 0)
+                {
+                    var logoBytes = await GetFileBytesAsync(command.Logo);
+                    var newLogoHash = CalculateHash(logoBytes);
+
+                    if (store.LogoHash != newLogoHash)
+                    {
+                        var relativePath = await _fileService.SaveFileAsync(command.Logo, FileEnum.Logo);
+                        store.UpdateLogo(relativePath, newLogoHash);
+                    }
+                }
+
+                if (command.WallPaper != null && command.WallPaper.Length > 0)
+                {
+                    var wallPaperBytes = await GetFileBytesAsync(command.WallPaper);
+                    var newWallPaperHash = CalculateHash(wallPaperBytes);
+
+                    if (store.WallPaperHash != newWallPaperHash)
+                    {
+                        var relativePath = await _fileService.SaveFileAsync(command.WallPaper, FileEnum.WallPaper);
+                        store.UpdateWallPaper(relativePath, newWallPaperHash);
+                    }
+                }
+
                 store.UpdateStoreInfo(command);
 
                 _storeRepository.Update(store);
@@ -253,6 +279,21 @@ namespace UFF.Service
                 return new CommandResult(false, ex.Message);
             }
         }
+
+        private async Task<byte[]> GetFileBytesAsync(IFormFile file)
+        {
+            using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
+        }
+
+        private string CalculateHash(byte[] fileBytes)
+        {
+            using var sha256 = SHA256.Create();
+            var hashBytes = sha256.ComputeHash(fileBytes);
+            return Convert.ToBase64String(hashBytes);
+        }
+
         public async Task<CommandResult> DeleteAsync(int id)
         {
             try

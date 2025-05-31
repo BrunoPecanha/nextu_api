@@ -19,7 +19,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] StoreCreateCommand command)
+        public async Task<IActionResult> CreateAsync([FromForm] StoreCreateCommand command)
         {
             var response = await _service.CreateAsync(command);
 
@@ -136,7 +136,7 @@ namespace WeApi.Controllers
 
         [HttpPut("{storeId}")]
         // [Authorize]
-        public async Task<IActionResult> UpdateAsync([FromRoute] int storeId, [FromBody] StoreEditCommand command)
+        public async Task<IActionResult> UpdateAsync([FromForm] StoreEditCommand command, [FromRoute] int storeId)
         {
             var store = await _service.UpdateAsync(command, storeId);
 
