@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using UFF.Domain.Enum;
 using UFF.Domain.Services;
@@ -13,72 +13,63 @@ namespace UFF.Service
     public class FileService : IFileService
     {
         private readonly IConfiguration _configuration;
-        private readonly string _basePath;
+        private readonly HttpClient _httpClient;
+        private readonly string _supabaseUrl;
+        private readonly string _supabaseKey;
+        private readonly string _bucketName;
 
         public FileService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _basePath = _configuration["FileDirectory:Profile"]
-                ?? throw new ArgumentNullException("FileDirectory:Profile não configurado");
-
-            _basePath = _basePath.Replace("\\uploads\\profile-images", "");
+            _httpClient = new HttpClient();
+            _supabaseUrl = _configuration["Supabase:Url"] ?? throw new ArgumentNullException("Supabase:Url não configurado");
+            _supabaseUrl = _configuration["Supabase:Url"] ?? throw new ArgumentNullException("Supabase:Url não configurado");
+            _supabaseKey = _configuration["Supabase:ApiKey"] ?? throw new ArgumentNullException("Supabase:ApiKey não configurado");
+            _bucketName = _configuration["Supabase:Bucket"] ?? throw new ArgumentNullException("Supabase:Bucket não configurado");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _supabaseKey);
         }
 
         public async Task<string> SaveFileAsync(IFormFile file, FileEnum fileType)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Arquivo inválido.");
-
-            var folderPath = GetFolderPath(fileType);
-            Directory.CreateDirectory(folderPath);
-
-            var fileExtension = Path.GetExtension(file.FileName);
-            var fileName = $"{Guid.NewGuid()}{fileExtension}";
-            var absolutePath = Path.Combine(folderPath, fileName);
-
-            using (var stream = new FileStream(absolutePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
                         
-            var relativePath = GetRelativePathWithAssets(absolutePath);
+            var extension = Path.GetExtension(file.FileName);
+            var uniqueFileName = $"{Guid.NewGuid()}{extension}";
 
-            return relativePath;
+            var requestUrl = $"{_supabaseUrl}/object/{_bucketName}/{fileType.ToString().ToLower()}/{uniqueFileName}";
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUrl)
+            {
+                Content = new StreamContent(file.OpenReadStream())
+            };
+
+            request.Headers.Add("Authorization", $"Bearer {_supabaseKey}");
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Erro no upload: {response.StatusCode} - {content}");
+            }
+
+            var publicUrl = $"{_supabaseUrl}/object/public/{_bucketName}/{fileType.ToString().ToLower()}/{uniqueFileName}";
+            return publicUrl;
         }
-
+       
         public async Task DeleteFileAsync(string filePath)
         {
-            if (File.Exists(filePath))
+            var relativePath = filePath.Replace($"{_supabaseUrl}/storage/v1/object/public/{_bucketName}/", "");
+            var response = await _httpClient.DeleteAsync(
+                $"{_supabaseUrl}/storage/v1/object/{_bucketName}/{relativePath}");
+
+            if (!response.IsSuccessStatusCode)
             {
-                File.Delete(filePath);
-                await Task.CompletedTask;
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Erro ao deletar o arquivo: {response.StatusCode} - {error}");
             }
-        }
-
-        private string GetRelativePathWithAssets(string absolutePath)
-        {            
-            int uploadsIndex = absolutePath.IndexOf("uploads\\", StringComparison.OrdinalIgnoreCase);
-
-            if (uploadsIndex == -1)
-            {                
-                return Path.GetRelativePath(_basePath, absolutePath).Replace("\\", "/");
-            }
-                        
-            string uploadsPath = absolutePath.Substring(uploadsIndex).Replace("\\", "/");
-            return $"assets/images/{uploadsPath}";
-        }       
-
-        private string GetFolderPath(FileEnum fileType)
-        {
-            var fieldInfo = fileType.GetType().GetField(fileType.ToString());
-            var descriptionAttribute = fieldInfo.GetCustomAttributes(
-                typeof(DescriptionAttribute), false) as DescriptionAttribute[];
-            var description = descriptionAttribute?.FirstOrDefault()?.Description ?? fileType.ToString();
-
-            var path = _configuration[$"FileDirectory:{description}"]
-                ?? throw new ArgumentException($"Caminho não configurado para {fileType}");
-
-            return path;
         }
     }
 }

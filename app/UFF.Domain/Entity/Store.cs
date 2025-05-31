@@ -25,8 +25,10 @@ namespace UFF.Domain.Entity
         public bool AnswerScheduledTime { get; private set; }
         public int? TimeRemoval { get; private set; }
         public bool WhatsAppNotice { get; private set; }
-        public string LogoPath { get; set; }
+        public string LogoPath { get; private set; }
+        public string LogoHash { get; private set; }
         public string WallPaperPath { get; private set; }
+        public string WallPaperHash { get; private set; }
         public Category Category { get; private set; }
         public int CategoryId { get; private set; }
         public decimal Rating { get; private set; }
@@ -65,7 +67,6 @@ namespace UFF.Domain.Entity
             AnswerScheduledTime = command.AnswerScheduledTime;
             TimeRemoval = command.TimeRemoval;
             WhatsAppNotice = command.WhatsAppNotice;
-            LogoPath = command.LogoPath;
 
             foreach (var hour in command.OpeningHours)
             {
@@ -85,9 +86,7 @@ namespace UFF.Domain.Entity
             Number = !string.IsNullOrWhiteSpace(command.Number) ? command.Number : Number;
             City = !string.IsNullOrWhiteSpace(command.City) ? command.City : City;
             State = !string.IsNullOrWhiteSpace(command.State) ? command.State : State;
-            StoreSubtitle = !string.IsNullOrWhiteSpace(command.StoreSubtitle) ? command.StoreSubtitle : StoreSubtitle;
-            LogoPath = !string.IsNullOrWhiteSpace(command.LogoPath) ? command.LogoPath : LogoPath;
-            WallPaperPath = !string.IsNullOrWhiteSpace(command.WallPaperPath) ? command.WallPaperPath : WallPaperPath;
+            StoreSubtitle = !string.IsNullOrWhiteSpace(command.StoreSubtitle) ? command.StoreSubtitle : StoreSubtitle;           
             CategoryId = command.CategoryId;
             Facebook = command.Facebook;
             Instagram = command.Instagram;
@@ -103,10 +102,23 @@ namespace UFF.Domain.Entity
             TimeRemoval = command.TimeRemoval;
             AttendSimultaneously = command.AttendSimultaneously;
             CategoryId = command.CategoryId;
-           
+
             UpdateOpeningHours(command.OpeningHours);
             UpdateHighLights(command.HighLights);
         }
+
+        public void UpdateLogo(string logoPath, string logoHash)
+        {
+            LogoPath = logoPath;
+            LogoHash = logoHash;
+        }
+
+        public void UpdateWallPaper(string wallPaperPath, string wallPaperHash)
+        {
+            WallPaperPath = wallPaperPath;
+            WallPaperHash = wallPaperHash;
+        }
+
 
         private void UpdateOpeningHours(ICollection<OpeningHoursCreateCommand> newOpeningHours)
         {
@@ -135,7 +147,7 @@ namespace UFF.Domain.Entity
                     ));
                 }
             }
-        }      
+        }
 
         public void SetSmallestQueue(List<Queue> queues)
         {
@@ -144,7 +156,7 @@ namespace UFF.Domain.Entity
 
         private void UpdateHighLights(ICollection<HighLightCreateCommand> newHighLights)
         {
-            HighLights.Clear(); 
+            HighLights.Clear();
 
             foreach (var highlightCommand in newHighLights)
             {
