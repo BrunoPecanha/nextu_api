@@ -16,6 +16,7 @@ namespace UFF.Domain.Entity
         public Store Store { get; set; }
         public int StoreId { get; set; }
         public decimal Price { get; private set; }
+        public string ImageHash { get; private set; }
         public TimeSpan Duration { get; private set; }
         public string ImgPath { get; private set; }
         public bool VariableTime { get; private set; }
@@ -33,10 +34,10 @@ namespace UFF.Domain.Entity
             Duration = command.Duration;
             VariableTime = command.VariableTime;
             VariablePrice = command.VariablePrice;
-            ImgPath= imgPath;
+            ImgPath = imgPath;
         }
 
-        public void UpdateServiceDetails(ServiceEditCommand command, string imgPath)
+        public void UpdateServiceDetails(ServiceEditCommand command)
         {
             Name = command.Name;
             Description = command.Description;
@@ -47,7 +48,18 @@ namespace UFF.Domain.Entity
             Duration = command.Duration;
             VariableTime = command.VariableTime;
             VariablePrice = command.VariablePrice;
-            ImgPath = imgPath;
         }
+
+        public void Disable()
+        {
+            Activated = false;
+        }
+
+        public void UpdateImage(string imgPath, string imageHash)
+        {
+            ImgPath = imgPath;
+            ImageHash = imageHash;
+        }
+           
     }
 }
