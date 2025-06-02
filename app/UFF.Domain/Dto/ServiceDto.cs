@@ -22,6 +22,7 @@ namespace UFF.Domain.Dto
         public decimal Price { get; set; }
         public TimeSpan Duration { get; set; }
         public string ImgPath { get; set; }
+        public string ImageHash { get; set; }
         public bool Activated { get; set; }
         public bool VariableTime { get; set; }
         public bool VariablePrice { get; set; }
