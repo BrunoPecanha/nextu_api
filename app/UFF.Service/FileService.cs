@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using UFF.Domain.Enum;
 using UFF.Domain.Services;
@@ -22,7 +23,6 @@ namespace UFF.Service
         {
             _configuration = configuration;
             _httpClient = new HttpClient();
-            _supabaseUrl = _configuration["Supabase:Url"] ?? throw new ArgumentNullException("Supabase:Url não configurado");
             _supabaseUrl = _configuration["Supabase:Url"] ?? throw new ArgumentNullException("Supabase:Url não configurado");
             _supabaseKey = _configuration["Supabase:ApiKey"] ?? throw new ArgumentNullException("Supabase:ApiKey não configurado");
             _bucketName = _configuration["Supabase:Bucket"] ?? throw new ArgumentNullException("Supabase:Bucket não configurado");
@@ -70,6 +70,20 @@ namespace UFF.Service
                 var error = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Erro ao deletar o arquivo: {response.StatusCode} - {error}");
             }
+        }
+
+        public async Task<byte[]> GetFileBytesAsync(IFormFile file)
+        {
+            using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
+        }
+
+        public string CalculateHash(byte[] fileBytes)
+        {
+            using var sha256 = SHA256.Create();
+            var hashBytes = sha256.ComputeHash(fileBytes);
+            return Convert.ToBase64String(hashBytes);
         }
     }
 }
