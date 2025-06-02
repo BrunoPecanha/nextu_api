@@ -46,7 +46,6 @@ namespace UFF.Infra.dependecyInjection
             services.AddTransient<IServiceCategoryRepository, ServiceCategoryRepository>();
 
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-            services.AddScoped<ImageService>();
 
             return services;
         }

@@ -8,5 +8,7 @@ namespace UFF.Domain.Services
     {
         Task<string> SaveFileAsync(IFormFile file, FileEnum fileType);
         Task DeleteFileAsync(string filePath);
+        string CalculateHash(byte[] fileBytes);
+        Task<byte[]> GetFileBytesAsync(IFormFile file);
     }
 }

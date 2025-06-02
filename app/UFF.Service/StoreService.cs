@@ -244,8 +244,8 @@ namespace UFF.Service
 
                 if (command.Logo != null && command.Logo.Length > 0)
                 {
-                    var logoBytes = await GetFileBytesAsync(command.Logo);
-                    var newLogoHash = CalculateHash(logoBytes);
+                    var logoBytes = await _fileService.GetFileBytesAsync(command.Logo);
+                    var newLogoHash = _fileService.CalculateHash(logoBytes);
 
                     if (store.LogoHash != newLogoHash)
                     {
@@ -256,8 +256,8 @@ namespace UFF.Service
 
                 if (command.WallPaper != null && command.WallPaper.Length > 0)
                 {
-                    var wallPaperBytes = await GetFileBytesAsync(command.WallPaper);
-                    var newWallPaperHash = CalculateHash(wallPaperBytes);
+                    var wallPaperBytes = await _fileService.GetFileBytesAsync(command.WallPaper);
+                    var newWallPaperHash = _fileService.CalculateHash(wallPaperBytes);
 
                     if (store.WallPaperHash != newWallPaperHash)
                     {
@@ -278,21 +278,7 @@ namespace UFF.Service
             {
                 return new CommandResult(false, ex.Message);
             }
-        }
-
-        private async Task<byte[]> GetFileBytesAsync(IFormFile file)
-        {
-            using var memoryStream = new MemoryStream();
-            await file.CopyToAsync(memoryStream);
-            return memoryStream.ToArray();
-        }
-
-        private string CalculateHash(byte[] fileBytes)
-        {
-            using var sha256 = SHA256.Create();
-            var hashBytes = sha256.ComputeHash(fileBytes);
-            return Convert.ToBase64String(hashBytes);
-        }
+        }     
 
         public async Task<CommandResult> DeleteAsync(int id)
         {

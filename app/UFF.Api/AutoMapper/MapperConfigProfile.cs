@@ -110,6 +110,7 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))
                   .ForMember(dest => dest.Activated, opt => opt.MapFrom(src => src.Activated))
                   .ForMember(dest => dest.VariableTime, opt => opt.MapFrom(src => src.VariableTime))
+                  .ForMember(dest => dest.ImageHash, opt => opt.MapFrom(src => src.ImageHash))
                   .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))
                   .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon));
 

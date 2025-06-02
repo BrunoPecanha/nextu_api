@@ -9,6 +9,8 @@ using UFF.Domain.Commands;
 using UFF.Domain.Dto;
 using UFF.Service.Properties;
 using UFF.Domain.Commands.Service;
+using UFF.Domain.Enum;
+using UFF.Domain.Entity;
 
 namespace UFF.Service
 {
@@ -18,15 +20,15 @@ namespace UFF.Service
         private readonly IMapper _mapper;
         private readonly IServiceCategoryRepository _category;
         private readonly IStoreRepository _store;
-        private readonly ImageService _imageService;
+        private readonly IFileService _fileService;
 
-        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, IServiceCategoryRepository category, IStoreRepository store, ImageService imageService)
+        public ServiceService(IServiceRepository serviceRepository, IMapper mapper, IServiceCategoryRepository category, IStoreRepository store, IFileService fileService)
         {
             _serviceRepository = serviceRepository;
             _mapper = mapper;
             _category = category;
             _store = store;
-            _imageService = imageService;
+            _fileService = fileService;
         }
 
         public async Task<CommandResult> GetAllAsync(int storeId, bool onlyActivated = true)
@@ -63,9 +65,10 @@ namespace UFF.Service
         {
             try
             {
-                string saveDirectory = "C:\\Estudos\\app\\www\\assets\\images\\services";
-        
-                string imagePath = await _imageService.SaveImageAndGetPath(command.ImageFile, saveDirectory);
+                string imagePath = string.Empty;
+
+                if (command.ImageFile != null)
+                    imagePath = await _fileService.SaveFileAsync(command.ImageFile, FileEnum.Service);
 
                 var category = await _category.GetByIdAsync(command.CategoryId);
 
@@ -94,14 +97,40 @@ namespace UFF.Service
         {
             try
             {
-                string _imagePath = await SaveImage(command);
+                string imagePath = string.Empty;
 
                 var service = await _serviceRepository.GetByIdAsync(command.Id);
 
                 if (service is null)
                     return new CommandResult(false, Resources.NotFound);
 
-                service.UpdateServiceDetails(command, _imagePath);
+                service.UpdateServiceDetails(command);
+
+                if (command.ImageFile == null)
+                {
+                    service.UpdateImage(null, null);
+                }
+                else
+                {
+                    var logoBytes = await _fileService.GetFileBytesAsync(command.ImageFile);
+                    var newImgHash = _fileService.CalculateHash(logoBytes);
+
+                    if (service.ImageHash != newImgHash)
+                    {
+                        var relativePath = await _fileService.SaveFileAsync(command.ImageFile, FileEnum.Service);
+                        service.UpdateImage(relativePath, newImgHash);
+                    }
+                }
+
+                var category = await _category.GetByIdAsync(command.CategoryId);
+
+                if (category is null)
+                    return new CommandResult(false, "Categoria não encontrada");
+
+                var store = await _store.GetByIdAsync(command.StoreId);
+
+                if (!store.IsValid())
+                    return new CommandResult(false, Resources.MissingInfo);
 
                 _serviceRepository.Update(service);
                 await _serviceRepository.SaveChangesAsync();
@@ -114,20 +143,6 @@ namespace UFF.Service
             }
         }
 
-        private async Task<string> SaveImage(ServiceEditCommand command)
-        {
-            if (command.ImageFile != null)
-            {
-                string saveDirectory = "C:\\Estudos\\app\\www\\assets\\images\\services";
-
-                string imagePath = await _imageService.SaveImageAndGetPath(command.ImageFile, saveDirectory);
-
-               return _imageService.GetImageUrl(imagePath);
-            }
-
-            return string.Empty;
-        }
-
         public async Task<CommandResult> DeleteAsync(int id)
         {
             try
@@ -135,7 +150,7 @@ namespace UFF.Service
                 var store = await _serviceRepository.GetByIdAsync(id);
                 if (store is not null)
                 {
-                    //store.Disable();
+                    store.Disable();
                     _serviceRepository.Update(store);
                     await _serviceRepository.SaveChangesAsync();
                 }
