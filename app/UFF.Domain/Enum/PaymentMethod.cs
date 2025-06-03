@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel;
 
-namespace UFF.Domain.Enum {
+namespace UFF.Domain.Enum
+{
     public enum PaymentMethod
     {
         [Description("Pix")]
-        Pix,
+        Pix = 3,
         [Description("Cartão")]
-        Card,
+        Card = 1,
         [Description("Dinheiro")]
-        Cash
+        Cash = 2
     }
 }
