@@ -59,7 +59,10 @@ namespace WeApi
             });
 
             services.AddSignalR()
-                    .AddAzureSignalR(Configuration["Azure:SignalR:ConnectionString"]);
+                    .AddAzureSignalR(options =>
+                    {
+                        options.ConnectionString = Configuration.GetConnectionString("AzureSignalR");
+                    });
 
             var jwtKey = Configuration["Jwt:Key"] ?? throw new ArgumentNullException("Jwt:Key não configurado no appsettings.json ou variáveis de ambiente.");
             var key = Encoding.ASCII.GetBytes(jwtKey);
