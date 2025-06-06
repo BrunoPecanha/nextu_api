@@ -22,7 +22,7 @@ namespace UFF.Service
         public FileService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _httpClient = new HttpClient();
+            _httpClient = new HttpClient();            
             _supabaseUrl = _configuration["Supabase:Url"] ?? throw new ArgumentNullException("Supabase:Url não configurado");
             _supabaseKey = _configuration["Supabase:ApiKey"] ?? throw new ArgumentNullException("Supabase:ApiKey não configurado");
             _bucketName = _configuration["Supabase:Bucket"] ?? throw new ArgumentNullException("Supabase:Bucket não configurado");
@@ -33,32 +33,55 @@ namespace UFF.Service
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("Arquivo inválido.");
-                        
+
             var extension = Path.GetExtension(file.FileName);
             var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+            var filePathInBucket = $"{fileType.ToString().ToLower()}/{uniqueFileName}";
 
-            var requestUrl = $"{_supabaseUrl}/object/{_bucketName}/{fileType.ToString().ToLower()}/{uniqueFileName}";
+            var isLocal = !_supabaseUrl.Contains("supabase.co/storage/v1");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUrl)
+            if (isLocal)
             {
-                Content = new StreamContent(file.OpenReadStream())
-            };
+                var localRootPath = _supabaseUrl;
+                var localFilePath = Path.Combine(localRootPath, "uploads", filePathInBucket);
 
-            request.Headers.Add("Authorization", $"Bearer {_supabaseKey}");
-            request.Content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                var directory = Path.GetDirectoryName(localFilePath);
+                if (!Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
 
-            var response = await _httpClient.SendAsync(request);
+                using (var stream = new FileStream(localFilePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
 
-            if (!response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Erro no upload: {response.StatusCode} - {content}");
+                return localFilePath; 
             }
+            else
+            {
+                var requestUrl = $"{_supabaseUrl}/object/{_bucketName}/{filePathInBucket}";
 
-            var publicUrl = $"{_supabaseUrl}/object/public/{_bucketName}/{fileType.ToString().ToLower()}/{uniqueFileName}";
-            return publicUrl;
+                var request = new HttpRequestMessage(HttpMethod.Post, requestUrl)
+                {
+                    Content = new StreamContent(file.OpenReadStream())
+                };
+
+                request.Headers.Add("Authorization", $"Bearer {_supabaseKey}");
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+                var response = await _httpClient.SendAsync(request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Erro no upload: {response.StatusCode} - {content}");
+                }
+
+                var publicUrl = $"{_supabaseUrl}/object/public/{_bucketName}/{filePathInBucket}";
+                return publicUrl;
+            }
         }
-       
+
+
         public async Task DeleteFileAsync(string filePath)
         {
             var relativePath = filePath.Replace($"{_supabaseUrl}/storage/v1/object/public/{_bucketName}/", "");
