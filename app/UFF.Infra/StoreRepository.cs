@@ -39,14 +39,55 @@ namespace UFF.Infra
 
             return stores;
         }
+        public async Task<Store[]> GetFilteredStoresAsync(int? categoryId, string quickFilter, int? userId, int page = 1, int pageSize = 10)
+        {
+            var today = DateTime.UtcNow.Date;
+
+            var query = _dbContext.Store
+                .Include(s => s.Category)
+                .Include(s => s.Favorites)
+                .Include(s => s.Queues.Where(q => q.RegisteringDate.Date == today))
+                    .ThenInclude(q => q.Customers)
+                .Include(s => s.Rating)
+                .AsQueryable();
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(s => s.CategoryId == categoryId.Value);
+            }
+
+            if (quickFilter == "recent")
+            {
+                var sevenDaysAgo = DateTime.UtcNow.AddDays(-7);
+                query = query.Where(s => s.RegisteringDate >= sevenDaysAgo);
+            }
+            else if (quickFilter == "favorites" && userId.HasValue)
+            {
+                query = query.Where(s => s.Favorites.Any(f => f.UserId == userId));
+            }
+
+            var stores = await query.ToListAsync();
+
+            if (quickFilter == "minorQueue")
+            {
+                stores = stores
+                    .OrderBy(s => s.Queues.Sum(q => q.Customers.Count))
+                    .ToList();
+            }
+
+            return stores
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToArray();
+        }
 
         public async Task<Store> GetByIdAsync(int id)
-            => await _dbContext.Store
-                .Include(x => x.HighLights)
-                .Include(o => o.OpeningHours)
-                .Include(x => x.Owner)
-                .Include(x => x.Category)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                    => await _dbContext.Store
+                        .Include(x => x.HighLights)
+                        .Include(o => o.OpeningHours)
+                        .Include(x => x.Owner)
+                        .Include(x => x.Category)
+                        .FirstOrDefaultAsync(x => x.Id == id);
 
         private async Task<Queue> GetSmallestQueueAsync(int storeId)
         {
@@ -111,7 +152,6 @@ namespace UFF.Infra
                         .Select(g => g.First().Store)
                         .ToArrayAsync();
         }
-
 
         public async Task<Store> GetStoreWithEmployeesAndQueuesAsync(int storeId)
         {

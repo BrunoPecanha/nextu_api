@@ -16,12 +16,31 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.DDD, opt => opt.MapFrom(src => src.Phone.Substring(0, 2)))
                   .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone.Substring(2)));
 
+            CreateMap<StoreRatingDto, StoreRating>();
+            CreateMap<StoreRating, StoreRatingDto>()
+                  .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                  .ForMember(dest => dest.Comment, opt => opt.MapFrom(src => src.Comment))
+                  .ForMember(dest => dest.Store, opt => opt.MapFrom(src => src.Store.Name))
+                  .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score));
+
             CreateMap<ServiceCategoryDto, ServiceCategory>();
             CreateMap<ServiceCategory, ServiceCategoryDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                   .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                   .ForMember(dest => dest.ImgPath, opt => opt.MapFrom(src => src.ImgPath))
                   .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Icon));
+
+            CreateMap<FavoriteProfessionalDto, FavoriteProfessional>();
+            CreateMap<FavoriteProfessional, FavoriteProfessionalDto>()
+                  .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Name))
+                  .ForMember(dest => dest.Professional, opt => opt.MapFrom(src => src.Professional.Name))
+                  .ForMember(dest => dest.Liked, opt => opt.MapFrom(src => src.Professional.Favorites.Any(x => x.UserId == src.UserId)));
+
+            CreateMap<FavoriteStoreDto, FavoriteStore>();
+            CreateMap<FavoriteStore, FavoriteStoreDto>()
+                  .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User.Name))
+                  .ForMember(dest => dest.Store, opt => opt.MapFrom(src => src.Store.Name))
+                  .ForMember(dest => dest.Liked, opt => opt.MapFrom(src => src.Store.Favorites.Any(x => x.UserId == src.UserId)));
 
             CreateMap<CustomerInQueueForEmployeeDto, Customer>();
             CreateMap<Customer, CustomerInQueueForEmployeeDto>()

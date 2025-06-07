@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250607174032_adiciona_sistema_de_likes")]
+    partial class adiciona_sistema_de_likes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -943,57 +946,6 @@ namespace UFF.Infra.Migrations
                     b.ToTable("stores", (string)null);
                 });
 
-            modelBuilder.Entity("UFF.Domain.Entity.StoreRating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("comment");
-
-                    b.Property<DateTime>("LastUpdate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_update");
-
-                    b.Property<int?>("ProfessionalId")
-                        .HasColumnType("integer")
-                        .HasColumnName("professional_id");
-
-                    b.Property<DateTime>("RegisteringDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("registering_date");
-
-                    b.Property<decimal>("Score")
-                        .HasColumnType("decimal(3,2)")
-                        .HasColumnName("score");
-
-                    b.Property<int>("StoreId")
-                        .HasColumnType("integer")
-                        .HasColumnName("store_id");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProfessionalId");
-
-                    b.HasIndex("StoreId")
-                        .HasDatabaseName("idx_store_rating_store_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("idx_store_rating_user_id");
-
-                    b.ToTable("store_rating", (string)null);
-                });
-
             modelBuilder.Entity("UFF.Domain.Entity.User", b =>
                 {
                     b.Property<int>("Id")
@@ -1329,35 +1281,6 @@ namespace UFF.Infra.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("UFF.Domain.Entity.StoreRating", b =>
-                {
-                    b.HasOne("UFF.Domain.Entity.User", "Professional")
-                        .WithMany()
-                        .HasForeignKey("ProfessionalId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("f_k_store_rating__user_professional_id");
-
-                    b.HasOne("UFF.Domain.Entity.Store", "Store")
-                        .WithMany("Ratings")
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("f_k_store_rating_store_store_id");
-
-                    b.HasOne("UFF.Domain.Entity.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("f_k_store_rating__user_user_id");
-
-                    b.Navigation("Professional");
-
-                    b.Navigation("Store");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("UFF.Domain.Entity.Category", b =>
                 {
                     b.Navigation("Stores");
@@ -1389,8 +1312,6 @@ namespace UFF.Infra.Migrations
                     b.Navigation("OpeningHours");
 
                     b.Navigation("Queues");
-
-                    b.Navigation("Ratings");
 
                     b.Navigation("Services");
                 });

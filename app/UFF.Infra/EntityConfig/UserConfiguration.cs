@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 using UFF.Domain.Entity;
 
 namespace UFF.Infra.EntityConfig
@@ -25,7 +26,6 @@ namespace UFF.Infra.EntityConfig
                    .IsRequired()
                    .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                    .ValueGeneratedOnAddOrUpdate();
-
 
             builder.Property(u => u.Name)
                    .HasColumnName("name")

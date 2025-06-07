@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250607201325_adiciona_tabela_de_avaliação")]
+    partial class adiciona_tabela_de_avaliação
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -953,8 +956,7 @@ namespace UFF.Infra.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comment")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasColumnType("text")
                         .HasColumnName("comment");
 
                     b.Property<DateTime>("LastUpdate")
@@ -969,8 +971,8 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date");
 
-                    b.Property<decimal>("Score")
-                        .HasColumnType("decimal(3,2)")
+                    b.Property<int>("Score")
+                        .HasColumnType("integer")
                         .HasColumnName("score");
 
                     b.Property<int>("StoreId")
@@ -983,15 +985,11 @@ namespace UFF.Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfessionalId");
+                    b.HasIndex("StoreId");
 
-                    b.HasIndex("StoreId")
-                        .HasDatabaseName("idx_store_rating_store_id");
+                    b.HasIndex("UserId");
 
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("idx_store_rating_user_id");
-
-                    b.ToTable("store_rating", (string)null);
+                    b.ToTable("store_rating");
                 });
 
             modelBuilder.Entity("UFF.Domain.Entity.User", b =>
@@ -1331,27 +1329,19 @@ namespace UFF.Infra.Migrations
 
             modelBuilder.Entity("UFF.Domain.Entity.StoreRating", b =>
                 {
-                    b.HasOne("UFF.Domain.Entity.User", "Professional")
-                        .WithMany()
-                        .HasForeignKey("ProfessionalId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("f_k_store_rating__user_professional_id");
-
                     b.HasOne("UFF.Domain.Entity.Store", "Store")
                         .WithMany("Ratings")
                         .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("f_k_store_rating_store_store_id");
 
                     b.HasOne("UFF.Domain.Entity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("f_k_store_rating__user_user_id");
-
-                    b.Navigation("Professional");
 
                     b.Navigation("Store");
 

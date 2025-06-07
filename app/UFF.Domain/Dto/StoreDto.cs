@@ -10,11 +10,15 @@ namespace UFF.Domain.Dto
         public string Name { get;  set; }
         public string Address { get;  set; }
         public string Number { get; set; }
+        public bool Liked { get; set; }
         public string City { get; set; }
         public int MinorQueue { get; set; }
+        public double AverageRating { get; set; }
+        public int RatingCount { get; set; }
+        public bool IsFavorite { get; set; }
         public string Category { get; set; }
         public string Icon { get; set; }
-        public decimal Rating { get; set; }
+        public double Rating { get; set; }
         public int Votes { get; set; }
         public string State { get; set; }
         public bool OpenAutomatic { get; set; }

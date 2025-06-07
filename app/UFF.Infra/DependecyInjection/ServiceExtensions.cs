@@ -27,18 +27,23 @@ namespace UFF.Infra.dependecyInjection
             services.AddTransient<IStoreRepository, StoreRepository>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<IFavoriteStoreRepository, FavoriteStoreRepository>();
+            services.AddTransient<IFavoriteProfessionalRepository, FavoriteProfessionalRepository>();
 
-            
             services.AddTransient<IEmployeeStoreRepository, EmployeeStoreRepository>();
             services.AddTransient<IEmployeeStoreService, EmployeeStoreService>();
             services.AddTransient<IQueueRepository, QueueRepository>();
             services.AddTransient<IQueueService, QueueService>();
             services.AddTransient<IFileService, FileService>();
 
-            services.AddTransient<ICustomerService,  Service.CustomerService>();           
+            services.AddTransient<ICustomerService,  Service.CustomerService>();
+            services.AddTransient<IFavoriteService, FavoriteService>();
 
+            services.AddTransient<IStoreRatingRepository, StoreRatingRepository>();
             services.AddTransient<IServiceService, ServiceService>();
-            services.AddTransient<IServiceRepository, ServiceRepository>();            
+            services.AddTransient<IServiceRepository, ServiceRepository>();
+            services.AddTransient<IStoreRatingService, StoreRatingService>();
+            services.AddTransient<IServiceRepository, ServiceRepository>();
 
             services.AddTransient<ICustomerServiceRepository, CustomerServiceRepository>();
             services.AddTransient<ICustomerRepository, CustomerRepository>();

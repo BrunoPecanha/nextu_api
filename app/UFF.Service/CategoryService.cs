@@ -34,12 +34,12 @@ namespace UFF.Service
 
         public async Task<CommandResult> GetByIdAsync(int id)
         {
-            var store = await _categoryRepository.GetByIdAsync(id);
+            var category = await _categoryRepository.GetByIdAsync(id);
 
-            if (store is null)
-                return new CommandResult(false, store);            
+            if (category is null)
+                return new CommandResult(false, category);            
 
-            return new CommandResult(true, _mapper.Map<CategoryDto>(store));
+            return new CommandResult(true, category);
         }
 
         public async Task<CommandResult> CreateAsync(object command)
