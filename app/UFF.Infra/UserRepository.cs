@@ -12,7 +12,7 @@ namespace UFF.Infra
     {
         private readonly IUffContext _dbContext;
 
-        public UserRepository(UffContext dbContext) 
+        public UserRepository(UffContext dbContext)
             : base(dbContext)
         {
             _dbContext = dbContext;
@@ -24,10 +24,17 @@ namespace UFF.Infra
                              .AsNoTracking()
                              .ToArrayAsync();
 
-        public async Task<User> GetByIdAsync(int id)
-            => await _dbContext.User
-                               .AsNoTracking()
-                               .FirstOrDefaultAsync(x => x.Id == id);
+        public async Task<User> GetByIdAsync(int id, params string[] includeProperties)
+        {
+            var query = _dbContext.User.AsNoTracking();
+
+            foreach (var property in includeProperties)
+            {
+                query = query.Include(property);
+            }
+
+            return await query.FirstOrDefaultAsync(x => x.Id == id);
+        }       
 
         public async Task<User> GetUserByLogin(string userName)
            => await _dbContext.User
