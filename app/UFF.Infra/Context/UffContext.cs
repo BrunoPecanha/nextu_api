@@ -32,7 +32,10 @@ namespace UFF.Infra.Context
         public DbSet<Domain.Entity.Service> Service { get; set; }
         public DbSet<Store> Store { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<StoreRating> StoreRating { get; set; }
         public DbSet<EmployeeStore> EmployeeStore { get; set; }
+        public DbSet<FavoriteProfessional> FavoriteProfessional { get; set; }
+        public DbSet<FavoriteStore> FavoriteStore { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

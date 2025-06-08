@@ -17,5 +17,6 @@ namespace UFF.Domain.Repository
         public Task<Store> GetByIdWithProfessionalsAsync(int id);
         public Task<Store[]> GetAllStoresUserIsInByUserId(int userId);
         public Task<IList<User>> GetProfessionalsOfStoreAsync(int storeId);
+        public Task<Store[]> GetFilteredStoresAsync(int? categoryId, string quickFilter, int? userId, int page = 1, int pageSize = 10);
     }
 }
