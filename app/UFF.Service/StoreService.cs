@@ -3,17 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UFF.Domain.Repository;
-using UFF.Domain.Services;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Store;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
-using UFF.Service.Properties;
 using UFF.Domain.Enum;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Http;
-using System.IO;
+using UFF.Domain.Repository;
+using UFF.Domain.Services;
+using UFF.Service.Properties;
 
 namespace UFF.Service
 {
@@ -181,10 +178,6 @@ namespace UFF.Service
 
             return (TimeSpan.FromMinutes(totalWaitTime), TimeSpan.FromMinutes(averageWaitTime));
         }
-        public Task LikeProfessional(LikeStoreProfessionalCommand command)
-        {
-            throw new NotImplementedException();
-        }
         public async Task<CommandResult> CreateAsync(StoreCreateCommand command)
         {
             try
@@ -278,8 +271,7 @@ namespace UFF.Service
             {
                 return new CommandResult(false, ex.Message);
             }
-        }     
-
+        }
         public async Task<CommandResult> DeleteAsync(int id)
         {
             try
@@ -299,5 +291,40 @@ namespace UFF.Service
 
             return new CommandResult(true, null);
         }
+        public async Task<CommandResult> GetFilteredStoresAsync(int? categoryId, string quickFilter, int? userId)
+        {
+            var stores = await _storeRepository.GetFilteredStoresAsync(categoryId, quickFilter, userId);
+
+            var today = DateTime.UtcNow.Date;
+
+            var result = stores
+                .Select(s => new StoreDto
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Category = s.Category.Name,
+                    LogoPath = s.LogoPath,
+                    CreatedAt = s.RegisteringDate,
+
+                    Votes = s.Ratings?.Count ?? 0,                  
+                    Rating = s.Ratings != null && s.Ratings.Any()
+                        ? s.Ratings.Average(r => r.Score) 
+                        : 0,
+                    IsFavorite = userId.HasValue && s.Favorites.Any(x => x.UserId == userId),
+                    IsVerified = s.Verified,
+
+                    MinorQueue = s.EmployeeStore
+                        .Select(es => es.Employee.Queues
+                            .FirstOrDefault(q => q.Date.Date == today)?.Customers.Count ?? 0)
+                        .DefaultIfEmpty(0)
+                        .Min(),
+
+                    Liked = userId.HasValue && s.Favorites.Any(f => f.UserId == userId)
+                })
+                .ToArray();
+
+            return new CommandResult(true, result);
+        }
+
     }
 }

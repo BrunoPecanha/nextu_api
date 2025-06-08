@@ -66,6 +66,17 @@ namespace WeApi.Controllers
             return Ok(stores);
         }
 
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetFilteredStores([FromQuery] int? categoryId, [FromQuery] string? quickFilter, int? userId)
+        {
+            var stores = await _service.GetFilteredStoresAsync(categoryId, quickFilter, userId);
+
+            if (!stores.Valid)
+                return BadRequest(stores.Data);
+
+            return Ok(stores);        
+        }
+
         [HttpGet("{categoryId}/stores")]
 
         public async Task<IActionResult> GetByCategoryId([FromRoute] int categoryId)
@@ -125,15 +136,7 @@ namespace WeApi.Controllers
 
             return Ok(stores);
         }
-
-        [HttpPatch]
-        //   [Authorize]
-        public async Task<IActionResult> LikeProfessional([FromBody] LikeStoreProfessionalCommand command)
-        {
-            await _service.LikeProfessional(command);
-            return Ok();
-        }
-
+      
         [HttpPut("{storeId}")]
         // [Authorize]
         public async Task<IActionResult> UpdateAsync([FromForm] StoreEditCommand command, [FromRoute] int storeId)

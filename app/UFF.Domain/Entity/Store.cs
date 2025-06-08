@@ -37,6 +37,8 @@ namespace UFF.Domain.Entity
         public string Facebook { get; private set; }
         public string Youtube { get; private set; }
         public string Site { get; private set; }
+        public ICollection<StoreRating> Ratings { get; set; } = new List<StoreRating>();
+        public ICollection<FavoriteStore> Favorites { get; set; } = new List<FavoriteStore>();
         public virtual ICollection<OpeningHours> OpeningHours { get; private set; } = new List<OpeningHours>();
         public virtual ICollection<HighLight> HighLights { get; private set; } = new List<HighLight>();
         public virtual ICollection<Queue> Queues { get; private set; } = new List<Queue>();

@@ -27,6 +27,7 @@ namespace UFF.Domain.Entity
         public string ServicesProvided { get; set; }
         public bool AcceptAwaysMinorQueue { get; set; }
         public string ImageUrl { get; set; }
+        public ICollection<FavoriteProfessional> Favorites { get; set; } = new List<FavoriteProfessional>();
         public ICollection<Customer> CustomerInstances { get; private set; } = new List<Customer>();
         public ICollection<Store> Stores { get; private set; } = new List<Store>();
         public virtual ICollection<EmployeeStore> EmployeeStore { get; private set; } = new List<EmployeeStore>();

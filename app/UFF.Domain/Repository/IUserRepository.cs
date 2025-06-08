@@ -6,7 +6,7 @@ namespace UFF.Domain.Repository
 {
     public interface IUserRepository : IRepositoryBase<User>
     {
-        public Task<User> GetByIdAsync(int id);
+        public Task<User> GetByIdAsync(int id, params string[] includeProperties);
         public Task<IEnumerable<User>> GetAllAsync();
         public Task<User> GetUserByLogin(string userName);
         public Task<User> GetUserByCpf(string cpf);
