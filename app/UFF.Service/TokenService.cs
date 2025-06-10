@@ -31,7 +31,7 @@ namespace UFF.Service
         };
 
             var token = new JwtSecurityToken(
-                issuer: "sua-vez",
+                issuer: "nextu",
                 audience: "frontend",
                 claims: claims,
                 signingCredentials: creds

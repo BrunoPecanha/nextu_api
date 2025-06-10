@@ -7,5 +7,6 @@ namespace UFF.Domain.Repository
         public Task<Customer> GetByIdReducedAsync(int id);
         public Task<int> GetLastPositionInQueueByStoreAndEmployeeIdAsync(int store, int employee);
         public Task<Customer> GetByIdAsync(int id);
+        public Task<Customer> GetOnlyCustomerByIdAsync(int id);
     }
 }

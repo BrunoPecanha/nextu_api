@@ -17,17 +17,27 @@ namespace UFF.Domain.Entity
             FinalPrice = command.FinalPrice;
         }
 
-        public CustomerService(Customer customer, Service service, Queue queue, int quantity, decimal price, TimeSpan duration)
+        public CustomerService(Customer customer, Service service, Queue queue, int quantity)
         {
             Quantity = quantity;
             CustomerId = customer.Id;
             Customer = customer;
             ServiceId = service.Id;
             QueueId = queue.Id;
-            FinalPrice = quantity * price;
-            Duration = quantity * duration;
+            FinalPrice = service.VariablePrice ? 0 : quantity * service.Price;
+            Duration = service.VariableTime ? TimeSpan.Zero : quantity * service.Duration;
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
+        }
+
+        public void OverridePrice(decimal finalPrice, int quantity)
+        {
+            FinalPrice = quantity * finalPrice;
+        }
+
+        public void OverrideDuration(TimeSpan duration)
+        {
+            Duration = duration;
         }
 
         public void SetQuantity(int quantity)
@@ -37,7 +47,7 @@ namespace UFF.Domain.Entity
 
         public void SetQueuId(int queueId)
         {
-            QueueId= queueId;
+            QueueId = queueId;
         }
 
         public void SetFinalPrice(decimal finalPrice)

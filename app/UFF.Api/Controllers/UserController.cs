@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.User;
+using UFF.Domain.Enum;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -33,6 +34,24 @@ namespace WeApi.Controllers
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var costumer = await _service.GetByIdAsync(id);
+
+            if (costumer is null)
+                BadRequest(costumer);
+
+            return Ok(costumer);
+        }
+
+        /// <summary>
+        /// Recupera os dados do usuário (quantas filas ele esta), colaborador (clientes aguardando) , proprietário (quantas filas abertas)
+        /// </summary>
+        /// <param name="id">Id do usuário</param>
+        /// <param name="profile">Perfil que quer verificar</param>
+        /// <returns></returns>
+        [HttpGet("info/{id}/{profile}")]
+        // [Authorize]
+        public async Task<IActionResult> GetUserInfoByIdAsync([FromRoute] int id, ProfileEnum profile)
+        {
+            var costumer = await _service.GetUserInfoByIdAsync(id, profile);
 
             if (costumer is null)
                 BadRequest(costumer);

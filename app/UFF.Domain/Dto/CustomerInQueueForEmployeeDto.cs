@@ -1,4 +1,6 @@
-﻿namespace UFF.Domain.Dto
+﻿using System;
+
+namespace UFF.Domain.Dto
 {
     public class CustomerInQueueForEmployeeDto
     {
@@ -12,5 +14,7 @@
         public string TimeCalledInQueue { get; set; }        
         public bool InService { get; set; }
         public bool IsPaused { get; set; }
+        public bool CanEditName { get; set; }
+        public bool PricePending { get; set; }
     }
 }

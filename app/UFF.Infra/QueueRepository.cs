@@ -148,7 +148,7 @@ namespace UFF.Infra
                             c.Status,
                             c.Position,
                             c.ServiceStartTime,
-                            Services = c.CustomerServices.Select(cs => cs.Service.Duration.TotalMinutes)
+                            Services = c.CustomerServices.Select(cs => cs.Service.VariableTime ? cs.Duration.TotalMinutes : cs.Service.Duration.TotalMinutes)
                         }).ToList()
                 })
                 .FirstOrDefaultAsync();
