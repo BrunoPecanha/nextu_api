@@ -93,7 +93,7 @@ namespace UFF.Service
             if (store.Queues == null || store.Queues.Count == 0)
                 return new CommandResult(false, dto);
 
-            foreach (var employeeStore in store.EmployeeStore)
+            foreach (var employeeStore in store.Queues)
             {
                 var employee = employeeStore.Employee;
                 if (employee == null)
@@ -294,37 +294,39 @@ namespace UFF.Service
         public async Task<CommandResult> GetFilteredStoresAsync(int? categoryId, string quickFilter, int? userId)
         {
             var stores = await _storeRepository.GetFilteredStoresAsync(categoryId, quickFilter, userId);
-
             var today = DateTime.UtcNow.Date;
 
             var result = stores
-                .Select(s => new StoreDto
+                .Select(s =>
                 {
-                    Id = s.Id,
-                    Name = s.Name,
-                    Category = s.Category.Name,
-                    LogoPath = s.LogoPath,
-                    CreatedAt = s.RegisteringDate,
+                    var todayQueue = s.Queues
+                        ?.FirstOrDefault(q => q.RegisteringDate.Date == today);
 
-                    Votes = s.Ratings?.Count ?? 0,                  
-                    Rating = s.Ratings != null && s.Ratings.Any()
-                        ? s.Ratings.Average(r => r.Score) 
-                        : 0,
-                    IsFavorite = userId.HasValue && s.Favorites.Any(x => x.UserId == userId),
-                    IsVerified = s.Verified,
+                    var customersCount = todayQueue?.Customers?.Count ?? -1;
 
-                    MinorQueue = s.EmployeeStore
-                        .Select(es => es.Employee.Queues
-                            .FirstOrDefault(q => q.Date.Date == today)?.Customers.Count ?? 0)
-                        .DefaultIfEmpty(0)
-                        .Min(),
+                    return new StoreDto
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        Category = s.Category?.Name,
+                        LogoPath = s.LogoPath,
+                        CreatedAt = s.RegisteringDate,
 
-                    Liked = userId.HasValue && s.Favorites.Any(f => f.UserId == userId)
+                        Votes = s.Ratings?.Count ?? 0,
+                        Rating = (s.Ratings != null && s.Ratings.Any())
+                            ? Math.Round(s.Ratings.Average(r => r.Score), 1)
+                            : 0,
+
+                        IsFavorite = userId.HasValue && s.Favorites.Any(f => f.UserId == userId),
+                        IsVerified = s.Verified,
+
+                        MinorQueue = customersCount,
+                        Liked = userId.HasValue && s.Favorites.Any(f => f.UserId == userId)
+                    };
                 })
                 .ToArray();
 
             return new CommandResult(true, result);
         }
-
     }
 }

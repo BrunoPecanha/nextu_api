@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.User;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
+using UFF.Domain.Enum;
 using UFF.Domain.Repository;
 using UFF.Domain.Services;
 using UFF.Service.Properties;
@@ -47,6 +47,12 @@ namespace UFF.Service
                 return new CommandResult(false, user);
 
             return new CommandResult(true, _mapper.Map<UserDto>(user));
+        }
+
+        public async Task<CommandResult> GetUserInfoByIdAsync(int id, ProfileEnum profile)
+        {
+            var numberIterations = await _costumerRepository.GetUserInfoByIdAsync(id, profile);
+            return new CommandResult(true, numberIterations);
         }
 
         public async Task<CommandResult> CreateAsync(UserCreateCommand command)

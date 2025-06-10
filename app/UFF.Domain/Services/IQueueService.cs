@@ -27,5 +27,6 @@ namespace UFF.Domain.Services
         public Task<bool> ExistCustuomerInQueueWaiting(int queueId);
         public Task<CommandResult> PauseQueueAsync(QueuePauseCommand command);
         public Task<CommandResult> Delete(int queueId);
+        public Task<CommandResult> UpdateCustomerName(int customerId, string name);
     }
 }

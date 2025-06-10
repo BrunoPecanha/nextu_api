@@ -22,6 +22,11 @@ namespace UFF.Infra
                           .Include(x => x.Queue)
                           .FirstOrDefaultAsync(x => x.Id == id);
 
+        public async Task<Customer> GetOnlyCustomerByIdAsync(int id)
+            => await _dbContext.Customer
+                          .AsNoTracking()
+                          .FirstOrDefaultAsync(x => x.Id == id);
+
         public async Task<Customer> GetByIdAsync(int id)
            => await _dbContext.Customer
                          .Include(x => x.User)
