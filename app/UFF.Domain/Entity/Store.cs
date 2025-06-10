@@ -105,8 +105,8 @@ namespace UFF.Domain.Entity
             AttendSimultaneously = command.AttendSimultaneously;
             CategoryId = command.CategoryId;
 
-            UpdateOpeningHours(command.OpeningHours);
-            UpdateHighLights(command.HighLights);
+            UpdateOpeningHours(command.OpeningHoursList);
+            UpdateHighLights(command.HighLightsList);
         }
 
         public void UpdateLogo(string logoPath, string logoHash)
@@ -130,7 +130,7 @@ namespace UFF.Domain.Entity
             {
                 if (!newOpeningHours.Any(h => h.WeekDay == existing.WeekDay))
                 {
-                    OpeningHours.Remove(existing);
+                    existing.SetInactivated();
                 }
             }
 
@@ -141,6 +141,7 @@ namespace UFF.Domain.Entity
                 {
                     existing.SetStart(newHours.Start);
                     existing.SetEnd(newHours.End);
+                    existing.SetActivated();
                 }
                 else
                 {

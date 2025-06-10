@@ -101,6 +101,17 @@ namespace WeApi.Controllers
             return Ok(customer);
         }
 
+        [HttpPatch("{customerId}/name")]
+        public async Task<IActionResult> UpdateCustomerName([FromRoute] int customerId, [FromBody] CustomerEditNameCommand command)
+        {
+            var customer = await _service.UpdateCustomerName(customerId, command.Name);
+
+            if (!customer.Valid)
+                return BadRequest(customer);
+
+            return Ok(customer);
+        }
+
         /// <summary>
         /// Recupera as filas de um determinado dia para uma determinada loja
         /// </summary>  

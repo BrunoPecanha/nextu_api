@@ -20,12 +20,24 @@ namespace UFF.Domain.Entity
             WeekDay = command.WeekDay;
             Start = command.Start;
             End = command.End;
+            Activated = command.Activated;
         }
 
         public void SetStart(TimeSpan? start)
         {
-            if (start != null) 
+            if (start != null)
                 Start = start;
+        }
+
+
+        public void SetInactivated()
+        {
+            Activated = false;
+        }
+
+        public void SetActivated()
+        {
+            Activated = true;
         }
 
         public void SetEnd(TimeSpan? end)
