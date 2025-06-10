@@ -7,5 +7,6 @@
         public int PaymentMethod { get; set; }
         public int QueueId { get; set; }
         public int UserId { get; set; }
+        public bool LooseCustomer { get; set; } = false;
     }
 }

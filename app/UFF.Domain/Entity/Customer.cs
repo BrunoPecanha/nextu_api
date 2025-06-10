@@ -19,7 +19,7 @@ namespace UFF.Domain.Entity
         public int PaymentId { get; private set; }
         public string? Notes { get; private set; }
         public int? Rating { get; private set; }
-        public string? Review { get; private set; }
+        public string Review { get; private set; }
         public int Position { get; private set; }
         public TimeSpan EstimatedWaitingTime { get; set; }
         public DateTime TimeEnteredQueue { get; private set; } = DateTime.UtcNow;
@@ -40,7 +40,7 @@ namespace UFF.Domain.Entity
             Notes = command.Notes;
         }
 
-        public Customer(User user, Queue queue, int paymentMethod, string notes, int position)
+        public Customer(User user, Queue queue, int paymentMethod, string notes, int position, bool looseCustomer)
         {
             QueueId = queue.Id;
             UserId = user.Id;
@@ -49,6 +49,7 @@ namespace UFF.Domain.Entity
             PaymentId = paymentMethod;
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
+            RandomCustomerName = looseCustomer ? user.Name : null;
         }
 
         public void UpdateCustomer(CustomerEditServicesPaymentCommand command, int queueId)
@@ -112,11 +113,15 @@ namespace UFF.Domain.Entity
             Status = CustomerStatusEnum.Absent;
             Position = 0;
         }
-
         public void SetStartTime()
         {
             ServiceStartTime = DateTime.UtcNow;
             Status = CustomerStatusEnum.InService;
+        }
+
+        public void UpdateName(string name)
+        {
+           RandomCustomerName = name;
         }
 
         public void SetEndTime()
@@ -130,7 +135,5 @@ namespace UFF.Domain.Entity
 
         public void AddRating(int rating)
             => Rating = rating;
-
-
     }
 }

@@ -21,5 +21,6 @@ namespace UFF.Domain.Dto
         public string ServicesProvided { get; set; }
         public string ImageUrl { get; set; }
         public bool AcceptAwaysMinorQueue { get; set; }
+        public bool LooseCustomer { get; set; }
     }
 }

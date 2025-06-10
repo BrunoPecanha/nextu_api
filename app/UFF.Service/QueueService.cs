@@ -49,14 +49,23 @@ namespace UFF.Service
                 await _unitOfWork.BeginTransactionAsync();
 
                 var queue = await _queueRepository.GetByIdAsync(command.QueueId);
+
                 if (queue == null)
                     return new CommandResult(false, "Fila não encontrada");
 
-                var user = await _userRepository.GetByIdAsync(command.UserId);
+                User user;
+
+                if (!command.LooseCustomer)
+                    user = await _userRepository.GetByIdAsync(command.UserId);
+                else
+                    user = await _userRepository.GetLooseCustomer();
+
+                if (queue == null)
+                    return new CommandResult(false, "Usuário não encontrado");
 
                 int nextPositionInQueue = await _customerRepository.GetLastPositionInQueueByStoreAndEmployeeIdAsync(queue.StoreId, queue.EmployeeId);
 
-                var customer = new Customer(user, queue, command.PaymentMethod, command.Notes, nextPositionInQueue);
+                var customer = new Customer(user, queue, command.PaymentMethod, command.Notes, nextPositionInQueue, command.LooseCustomer);
 
                 await _customerRepository.AddAsync(customer);
                 await _unitOfWork.SaveChangesAsync();
@@ -64,10 +73,11 @@ namespace UFF.Service
                 foreach (var selectedService in command.SelectedServices)
                 {
                     var service = await _serviceRepository.GetByIdAsync(selectedService.ServiceId);
+
                     if (service == null)
                         continue;
 
-                    var customerServiceSeleted = new Domain.Entity.CustomerService(customer, service, queue, selectedService.Quantity, service.Price, service.Duration);
+                    var customerServiceSeleted = new Domain.Entity.CustomerService(customer, service, queue, selectedService.Quantity);
                     await _customerServiceRepository.AddAsync(customerServiceSeleted);
                 }
 
@@ -192,6 +202,30 @@ namespace UFF.Service
                 await SendUpdateNotificationToGroup(customer.Queue);
 
                 return new CommandResult(true, $"Cliente {customer.Id} finalizado às {DateTime.UtcNow}");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return new CommandResult(false, $"Erro ao finalizar atendimento: {ex.Message}");
+            }
+        }
+
+        public async Task<CommandResult> UpdateCustomerName(int customerId, string name)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var customer = await _customerRepository.GetOnlyCustomerByIdAsync(customerId);
+                if (customer == null)
+                    return new CommandResult(false, "Cliente não encontrado");
+
+                customer.UpdateName(name);
+
+                _customerRepository.Update(customer);
+                await _unitOfWork.CommitAsync();
+
+                return new CommandResult(true, $"Cliente {customer.RandomCustomerName} atualizado às {DateTime.UtcNow}");
             }
             catch (Exception ex)
             {
@@ -452,15 +486,14 @@ namespace UFF.Service
                 {
                     customer.RemoveMissingCustomer(closeReason);
                     _customerRepository.Update(customer);
-                }               
+                }
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
                 throw new Exception($"Não foi possível remover os clientes da fila: ${ex.Message}");
-            }           
+            }
         }
-
         private async Task UpdateValuesEstimates(CustomerInQueueCardDetailsDto dto, Customer customer)
         {
             if (dto == null)
@@ -524,6 +557,8 @@ namespace UFF.Service
         }
         private async Task SendUpdateNotificationToGroup(Queue queue, int storeId = default)
         {
+            return;
+
             string groupName = string.Empty;
 
             if (queue != null)

@@ -20,7 +20,7 @@ namespace UFF.Infra
             _dbContext = dbContext;
         }
 
-        //TODO - REFATORAR ESSE MÉTODO, POIS VAI FICAR PESADO
+        //TODO - REFATORAR ESSE MÉTODO, POIS VAI FICAR PESADO // PAGINAR
         public async Task<IEnumerable<Store>> GetAllAsync()
         {
             var stores = await _dbContext.Store
@@ -39,6 +39,8 @@ namespace UFF.Infra
 
             return stores;
         }
+
+        // PAGINAR
         public async Task<Store[]> GetFilteredStoresAsync(int? categoryId, string quickFilter, int? userId, int page = 1, int pageSize = 10)
         {
             var today = DateTime.UtcNow.Date;
@@ -48,7 +50,7 @@ namespace UFF.Infra
                 .Include(s => s.Favorites)
                 .Include(s => s.Queues.Where(q => q.RegisteringDate.Date == today))
                     .ThenInclude(q => q.Customers)
-                .Include(s => s.Rating)
+                .Include(s => s.Ratings)
                 .AsQueryable();
 
             if (categoryId.HasValue)
@@ -71,8 +73,14 @@ namespace UFF.Infra
             if (quickFilter == "minorQueue")
             {
                 stores = stores
-                    .OrderBy(s => s.Queues.Sum(q => q.Customers.Count))
+                    .OrderByDescending(s => s.Queues.Sum(q => q.Customers.Count))
                     .ToList();
+            }
+
+            foreach (var store in stores)
+            {
+                var smallestQueue = await GetSmallestQueueAsync(store.Id);
+                store.SetSmallestQueue(smallestQueue != null ? new List<Queue> { smallestQueue } : new List<Queue>());
             }
 
             return stores
@@ -92,7 +100,7 @@ namespace UFF.Infra
         private async Task<Queue> GetSmallestQueueAsync(int storeId)
         {
             return await _dbContext.Queue
-                .Where(q => q.StoreId == storeId)
+                .Where(q => q.StoreId == storeId && q.Status == QueueStatusEnum.Open)
                 .Include(q => q.Customers.Where(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
                 .OrderBy(q => q.Customers.Count(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
                 .AsNoTracking()
