@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Customer;
@@ -15,14 +16,16 @@ namespace UFF.Service
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
+        private readonly ICustomerServiceRepository _customerServiceRepository;
         private readonly IMapper _mapper;
         private readonly IHubContext<QueueHub> _hubContext;
 
-        public CustomerService(ICustomerRepository customerRepository, IMapper mapper, IHubContext<QueueHub> hubContext)
+        public CustomerService(ICustomerRepository customerRepository, IMapper mapper, IHubContext<QueueHub> hubContext, ICustomerServiceRepository customerServiceRepository)
         {
             _customerRepository = customerRepository;
             _mapper = mapper;
             _hubContext = hubContext;
+            _customerServiceRepository = customerServiceRepository;
         }
 
         public async Task<CommandResult> GetByIdAsync(int id)
@@ -30,7 +33,7 @@ namespace UFF.Service
             var customer = await _customerRepository.GetByIdAsync(id);
 
             if (customer is null)
-                return new CommandResult(false, customer);            
+                return new CommandResult(false, customer);
 
             return new CommandResult(true, _mapper.Map<CustomerDto>(customer));
         }
@@ -56,6 +59,35 @@ namespace UFF.Service
             catch (Exception ex)
             {
                 return new CommandResult(false, ex.Message);
+            }
+        }
+
+        public async Task UpdatePriceAndTimeForVariableServiceAsync(CustomerVariablesCommand command)
+        {
+            try
+            {
+                var customerServices = await _customerServiceRepository.GetCustomersSelectedServices(command.CustomerId);
+
+                foreach (var service in customerServices)
+                {
+                    var updatedService = command.CustomerServices
+                        .FirstOrDefault(s => s.ServiceId == service.ServiceId);
+
+                    if (updatedService != null)
+                    {
+                        service.OverridePrice(updatedService.Price);
+                        service.OverrideDuration(updatedService.Duration);
+
+                        _customerServiceRepository.Update(service);
+                    }
+                }
+
+                await _customerServiceRepository.SaveChangesAsync();
+                await this.SendUpdateNotificationToGroup(customerServices.FirstOrDefault().Queue);
+            }
+            catch (Exception ex)
+            {
+                // Logar o erro
             }
         }
 

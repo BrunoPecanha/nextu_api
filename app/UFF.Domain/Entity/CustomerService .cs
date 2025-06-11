@@ -30,14 +30,14 @@ namespace UFF.Domain.Entity
             LastUpdate = DateTime.UtcNow;
         }
 
-        public void OverridePrice(decimal finalPrice, int quantity)
+        public void OverridePrice(decimal finalPrice)
         {
-            FinalPrice = quantity * finalPrice;
+            FinalPrice = finalPrice;
         }
 
-        public void OverrideDuration(TimeSpan duration)
+        public void OverrideDuration(int durationInMinutes)
         {
-            Duration = duration;
+            Duration = TimeSpan.FromMinutes(durationInMinutes);
         }
 
         public void SetQuantity(int quantity)

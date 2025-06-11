@@ -47,7 +47,7 @@ namespace WeApi.AutoMapper
             CreateMap<Customer, CustomerInQueueForEmployeeDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                   .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.RandomCustomerName) ? string.Join(" ", src.User.Name, src.User.LastName) : src.RandomCustomerName))
-                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => string.Join(", ", src.CustomerServices.Select(o => o.Service.Name).ToList())))
+                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices))
                   .ForMember(dest => dest.TimeGotInQueue, opt => opt.MapFrom(src => src.TimeEnteredQueue.ToLocalTime().ToString("HH:mm")))
                   .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
