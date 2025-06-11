@@ -17,7 +17,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{id}")]
-      //  [Authorize]
+        //  [Authorize]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var customer = await _service.GetByIdAsync(id);
@@ -39,5 +39,11 @@ namespace WeApi.Controllers
             return Ok(response);
         }
 
+        [HttpPatch]
+        public async Task<IActionResult> UpdatePriceAndTimeForVariableServiceAsync([FromBody] CustomerVariablesCommand command)
+        {
+            await _service.UpdatePriceAndTimeForVariableServiceAsync(command);
+            return Ok();
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace UFF.Infra
     {
         private readonly IUffContext _dbContext;
 
-        public CustomerRepository(UffContext dbContext) 
+        public CustomerRepository(UffContext dbContext)
             : base(dbContext)
         {
             _dbContext = dbContext;
@@ -48,6 +48,6 @@ namespace UFF.Infra
                 .LastOrDefaultAsync();
 
             return lastCustomer?.Position + 1 ?? 1;
-        }
+        }      
     }
 }
