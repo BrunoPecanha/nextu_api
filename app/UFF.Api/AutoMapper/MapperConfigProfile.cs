@@ -128,7 +128,8 @@ namespace WeApi.AutoMapper
                  .ForMember(dest => dest.VariableTime, opt => opt.MapFrom(src => src.Service.VariableTime))
                  .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Service.Category.Icon))
                  .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Service.Price))
-                 .ForMember(dest => dest.FinalPrice, opt => opt.MapFrom(src => src.FinalPrice));
+                 .ForMember(dest => dest.FinalPrice, opt => opt.MapFrom(src => src.FinalPrice))
+                 .ForMember(dest => dest.FinalDuration, opt => opt.MapFrom(src => src.Duration.TotalMinutes));
 
             CreateMap<ServiceDto, Service>();
             CreateMap<Service, ServiceDto>()
@@ -189,13 +190,14 @@ namespace WeApi.AutoMapper
             CreateMap<QueueDto, Queue>();
             CreateMap<Queue, QueueDto>()
                         .ForMember(dest => dest.QueueDescription, opt => opt.MapFrom(src => src.Name))
+                        .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.Id))
                         .ForMember(dest => dest.ResponsibleId, opt => opt.MapFrom(src => src.EmployeeId))
-                        .ForMember(dest => dest.ResponsibleName, opt => opt.MapFrom(src => src.Employee.Name))
+                        .ForMember(dest => dest.ResponsibleName, opt => opt.MapFrom(src => $"{src.Employee.Name} {src.Employee.LastName}"))
                          .ForMember(dest => dest.TotalCount, opt => opt.MapFrom(src => src.Customers.Count()))
                         .ForMember(dest => dest.CurrentCount, opt => opt.MapFrom(src =>
                                                      (src.Status == QueueStatusEnum.Open || src.Status == QueueStatusEnum.Paused)
-                                                         ? src.Customers.Count(x => x.Status == CustomerStatusEnum.Waiting || x.Status == CustomerStatusEnum.InService)
-                                                         : src.Customers.Count(x => x.Status == CustomerStatusEnum.Absent || x.Status == CustomerStatusEnum.Removed || x.Status == CustomerStatusEnum.Done)));
+                                                         ? src.Customers.Count(x => x.Status == CustomerStatusEnum.Waiting || x.Status == CustomerStatusEnum.InService || x.Status == CustomerStatusEnum.Absent)
+                                                         : src.Customers.Count(x => x.Status == CustomerStatusEnum.Canceled || x.Status == CustomerStatusEnum.Removed || x.Status == CustomerStatusEnum.Done)));
 
             CreateMap<StoreProfessionalsDto, Store>();
             CreateMap<Store, StoreProfessionalsDto>()

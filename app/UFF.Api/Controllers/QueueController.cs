@@ -115,11 +115,11 @@ namespace WeApi.Controllers
         /// <summary>
         /// Recupera as filas de um determinado dia para uma determinada loja
         /// </summary>  
-        [HttpPost("date")]
+        [HttpGet("store/owners-queue/{storeId}")]
         //[Authorize]
-        public async Task<IActionResult> GetByDateAsync([FromBody] QueueRequestCommand command)
+        public async Task<IActionResult> GetllQueuesOfStoreForOwner([FromRoute] int storeId)
         {
-            var queues = await _service.GetByDateAsync(command.StoreId, command.Date);
+            var queues = await _service.GetllQueuesOfStoreForOwner(storeId);
 
             if (queues == null)
                 BadRequest(queues);
