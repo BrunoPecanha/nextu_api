@@ -8,5 +8,6 @@ namespace UFF.Domain.Services
     {
         public Task<CommandResult> GetByIdAsync(int id);
         public Task<CommandResult> UpdateAsync(CustomerEditServicesPaymentCommand command);
+        public Task UpdatePriceAndTimeForVariableServiceAsync(CustomerVariablesCommand command);
     }
 }

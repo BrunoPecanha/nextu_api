@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace UFF.Domain.Dto
 {
@@ -8,7 +9,7 @@ namespace UFF.Domain.Dto
         public string Payment { get; set; }
         public string PaymentIcon { get; set; }
         public string Name { get; set; }
-        public string Services { get; set; }
+        public ICollection<CustomerServiceDto> Services { get; set; }
         public int QueueId { get; set; }
         public string TimeGotInQueue { get; set; }
         public string TimeCalledInQueue { get; set; }        
