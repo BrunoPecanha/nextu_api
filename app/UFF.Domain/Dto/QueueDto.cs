@@ -14,5 +14,6 @@ namespace UFF.Domain.Dto
         public int ResponsibleId { get; set; }
         public string ResponsibleName { get; set; }
         public string QueueDescription { get; set; }
+        public int QueueId { get; set; }
     }
 }

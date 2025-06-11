@@ -302,6 +302,7 @@ namespace UFF.Service
 
             return new CommandResult(true, dto);
         }
+
         public async Task<CommandResult> GetCustomerInQueueCardByCustomerId(int customerId)
         {
             var queueUserIsIn = await _queueRepository.GetCustomerInQueueCardByUserId(customerId);
@@ -348,9 +349,9 @@ namespace UFF.Service
             return new CommandResult(true, dto);
         }
 
-        public async Task<CommandResult> GetByDateAsync(int idStore, DateTime date)
+        public async Task<CommandResult> GetllQueuesOfStoreForOwner(int storeId)
         {
-            var queue = await _queueRepository.GetByDateAsync(date, idStore);
+            var queue = await _queueRepository.GetAllQueuesOfStoreForOwner(storeId);
 
             if (queue == null)
                 return new CommandResult(false, queue);
@@ -469,10 +470,12 @@ namespace UFF.Service
                 return new CommandResult(false, $"Erro ao remover fila: {ex.Message}");
             }
         }
+
         public async Task<bool> ExistCustuomerInQueueWaiting(int queueId)
            => await _queueRepository.ExistCustuomerInQueueWaiting(queueId);
 
         #region Método auxiliares
+
         private async Task RemoveAllCustomersInQueueBeforeClose(int queueId, string closeReason)
         {
             var customersWaiting = await _queueRepository.GetCustomersByQueueId(queueId);

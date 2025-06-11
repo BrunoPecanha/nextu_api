@@ -13,7 +13,7 @@ namespace UFF.Domain.Repository
         public Task<Queue[]> GetOpenedQueueByEmployeeId(int id);
         public Task<Queue> GetByIdAsync(int id);
         public Task<bool> ExistCustuomerInQueueWaiting(int id);
-        public Task<Queue[]> GetByDateAsync(DateTime date, int storeId);        
+        public Task<Queue[]> GetAllQueuesOfStoreForOwner(int storeId);        
         public Task<Customer[]> GetAllCustomersInQueueByEmployeeAndStoreId(int storeId, int employeeId);
         public Task<Customer[]> GetQueueReport(int id);
         public Task<Customer[]> GetCustomersByQueueId(int queueId);

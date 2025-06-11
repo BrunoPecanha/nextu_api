@@ -64,12 +64,18 @@ namespace UFF.Infra
                               .Where(x => x.QueueId == id)
                               .ToArrayAsync();
 
-        public async Task<Queue[]> GetByDateAsync(DateTime date, int storeId)
-            => await _dbContext.Queue
-                           .Where(x => x.StoreId == storeId
-                            && x.Date.Date == date.Date)
+        public async Task<Queue[]> GetAllQueuesOfStoreForOwner(int storeId)
+        {
+            var today = DateTime.UtcNow.Date;
+            return await _dbContext.Queue
+                           .Include(x => x.Employee)
+                           .Include(x => x.Customers)
+                           .Where(x => x.StoreId == storeId &&
+                                       x.Date >= today &&
+                                       x.Date < today.AddDays(1))
                            .AsNoTracking()
                            .ToArrayAsync();
+        }
 
         public async Task<Queue[]> GetOpenedQueueByEmployeeId(int id)
              => await _dbContext.Queue
@@ -200,7 +206,6 @@ namespace UFF.Infra
                               .Include(c => c.Customers
                                     .Where(x => x.Status == CustomerStatusEnum.Waiting || x.Status == CustomerStatusEnum.Absent))
                               .AsNoTracking()
-                              .AnyAsync(x => x.Id == id);
-        
+                              .AnyAsync(x => x.Id == id);        
     }
 }
