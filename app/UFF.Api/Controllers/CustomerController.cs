@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands.Customer;
+using UFF.Domain.Commands.Queue;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -23,7 +24,7 @@ namespace WeApi.Controllers
             var customer = await _service.GetByIdAsync(id);
 
             if (customer is null)
-                BadRequest(customer);
+                BadRequest();
 
             return Ok(customer);
         }
@@ -37,6 +38,21 @@ namespace WeApi.Controllers
                 return BadRequest(response);
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Recupera todas as filas de um estabelecimento
+        /// </summary>  
+        [HttpPost("{userId}/period")]
+        //[Authorize]
+        public async Task<IActionResult> GetCustomerHistory([FromRoute] int userId, [FromBody] CustomerHistoryFilterCommand command)
+        {
+            var customerHistory = await _service.GetCustomerHistory(userId, command);
+
+            if (customerHistory is null)
+                BadRequest();
+
+            return Ok(customerHistory);
         }
 
         [HttpPatch]
