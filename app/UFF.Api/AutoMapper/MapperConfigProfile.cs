@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UFF.Domain.Commands.Queue;
 using UFF.Domain.Dto;
 using UFF.Domain.Entity;
 using UFF.Domain.Enum;
@@ -215,6 +217,23 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Subtitle, opt => opt.MapFrom(src => src.Subtitle))
                 .ForMember(dest => dest.ServicesProvided, opt => opt.MapFrom(src => src.ServicesProvided))
                 .ForMember(dest => dest.Liked, opt => opt.MapFrom(src => true));
+
+
+            CreateMap<CustomerHistoryDto, Customer>();
+            CreateMap<Customer, CustomerHistoryDto>()
+                 .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.Payment.Name))
+                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.CustomerServices.Sum(x => x.FinalPrice * x.Quantity)))
+                 .ForMember(dest => dest.EstablishmentName, opt => opt.MapFrom(src => src.Queue.Store.Name))
+                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                 .ForMember(dest => dest.StatusReason, opt => opt.MapFrom(src => src.RemoveReason))
+                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.RegisteringDate.Date.ToString("dd/MM/yyyy")))
+                 .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src =>
+                     src.ServiceStartTime.HasValue ? src.ServiceStartTime.Value.ToString("HH:mm") : string.Empty))
+                 .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src =>
+                     src.ServiceEndTime.HasValue ? src.ServiceEndTime.Value.ToString("HH:mm") : string.Empty))
+                 .ForMember(dest => dest.Services, opt => opt.MapFrom(src =>
+                     string.Join(", ", src.CustomerServices.Select(x => x.Service.Name))));
+
         }
     }
 }
