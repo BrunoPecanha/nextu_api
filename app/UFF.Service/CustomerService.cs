@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Customer;
+using UFF.Domain.Commands.Queue;
 using UFF.Domain.Dto;
 using UFF.Domain.Repository;
 using UFF.Domain.Services;
@@ -36,6 +37,16 @@ namespace UFF.Service
                 return new CommandResult(false, customer);
 
             return new CommandResult(true, _mapper.Map<CustomerDto>(customer));
+        }
+
+        public async Task<CommandResult> GetCustomerHistory(int userId, CustomerHistoryFilterCommand command)
+        {
+            var customerHistory = await _customerRepository.GetCustomerHistoryAsync(userId, command.StartDate, command.EndDate);
+
+            if (customerHistory == null)
+                return new CommandResult(false, customerHistory);
+
+            return new CommandResult(true, _mapper.Map<CustomerHistoryDto[]>(customerHistory));
         }
 
         public async Task<CommandResult> UpdateAsync(CustomerEditServicesPaymentCommand command)

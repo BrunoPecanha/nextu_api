@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UFF.Domain.Entity;
@@ -48,6 +50,23 @@ namespace UFF.Infra
                 .LastOrDefaultAsync();
 
             return lastCustomer?.Position + 1 ?? 1;
-        }      
+        }
+
+        public async Task<List<Customer>> GetCustomerHistoryAsync(int id, DateTime startDate, DateTime endDate)
+        {
+            return await _dbContext.Customer
+                .Include(x => x.Queue)
+                    .ThenInclude(x => x.Store)
+                .Include(x => x.Payment)
+                .Include(x => x.CustomerServices) 
+                    .ThenInclude(x => x.Service)
+                .Where(c => c.UserId == id)
+                .Where(c =>
+                    (c.ServiceStartTime ?? DateTime.MinValue).Date >= startDate.Date &&
+                    (c.ServiceEndTime ?? DateTime.MaxValue).Date <= endDate.Date
+                )
+                .AsNoTracking()
+                .ToListAsync();
+        }
     }
 }
