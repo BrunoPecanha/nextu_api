@@ -18,6 +18,10 @@ namespace UFF.Domain.Commands.Store
         public bool AcceptOtherQueues { get; set; }
         public string PhoneNumber { get; set; }
         public bool AnswerOutOfOrder { get; set; }
+        public bool ReleaseOrderBeforeGetsQueued { get; set; }
+        public bool StartServiceWithQRCode { get; set; }
+        public bool ShareQueue { get;  set; }
+        public bool EndServiceWithQRCode { get; set; }        
         public bool AnswerScheduledTime { get; set; }
         public int? TimeRemoval { get; set; }
         public bool WhatsAppNotice { get; set; }
