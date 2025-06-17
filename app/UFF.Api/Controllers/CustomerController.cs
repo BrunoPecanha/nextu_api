@@ -29,6 +29,18 @@ namespace WeApi.Controllers
             return Ok(customer);
         }
 
+        [HttpGet("pending/{storeId}")]
+        //  [Authorize]
+        public async Task<IActionResult> GetPendingOrdersCount([FromRoute] int storeId)
+        {
+            var pendingCount = await _service.GetPendingOrdersCount(storeId);
+
+            if (pendingCount is null)
+                BadRequest();
+
+            return Ok(pendingCount);
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdateAsyncAsync([FromBody] CustomerEditServicesPaymentCommand command)
         {

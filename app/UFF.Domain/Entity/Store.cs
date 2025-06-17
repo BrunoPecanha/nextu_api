@@ -113,6 +113,10 @@ namespace UFF.Domain.Entity
             TimeRemoval = command.TimeRemoval;
             AttendSimultaneously = command.AttendSimultaneously;
             CategoryId = command.CategoryId;
+            ReleaseOrderBeforeGetsQueued = command.ReleaseOrdersBeforeGetsQueued;
+            StartServiceWithQRCode = command.StartServiceWithQRCode;
+            EndServiceWithQRCode = command.EndServiceWithQRCode;
+            ShareQueue = command.ShareQueue;
 
             UpdateOpeningHours(command.OpeningHoursList);
             UpdateHighLights(command.HighLightsList);
