@@ -93,7 +93,7 @@ namespace UFF.Infra
                     .ThenInclude(x => x.Employee)
                 .Include(x => x.Payment)
                 .Include(x => x.User)
-                .Include(c => c.CustomerServices)
+                .Include(c => c.Items)
                     .ThenInclude(cs => cs.Service)
                 .Where(x =>
                     x.Queue.EmployeeId == employeeId &&
@@ -111,7 +111,7 @@ namespace UFF.Infra
         public async Task<Customer[]> GetCustomerInQueueCardByUserId(int userId)
               => await _dbContext.Customer
                   .Include(x => x.Payment)
-                  .Include(g => g.CustomerServices)
+                  .Include(g => g.Items)
                   .Include(x => x.Queue)
                   .ThenInclude(x => x.Store)
                   .ThenInclude(o => o.Category)
@@ -130,7 +130,7 @@ namespace UFF.Infra
                 .Include(x => x.Queue)
                 .ThenInclude(x => x.Store)
                 .ThenInclude(o => o.Category)
-                .Include(g => g.CustomerServices)
+                .Include(g => g.Items)
                 .ThenInclude(x => x.Service)
                 .ThenInclude(x => x.Category)
                 .AsNoTracking()
@@ -154,7 +154,7 @@ namespace UFF.Infra
                             c.Status,
                             c.Position,
                             c.ServiceStartTime,
-                            Services = c.CustomerServices.Select(cs => cs.Service.VariableTime ? cs.Duration.TotalMinutes : cs.Service.Duration.TotalMinutes)
+                            Services = c.Items.Select(cs => cs.Service.VariableTime ? cs.Duration.TotalMinutes : cs.Service.Duration.TotalMinutes)
                         }).ToList()
                 })
                 .FirstOrDefaultAsync();
@@ -194,7 +194,7 @@ namespace UFF.Infra
             => await _dbContext.Customer
               .Include(x => x.User)
               .Include(x => x.Payment)
-              .Include(g => g.CustomerServices)
+              .Include(g => g.Items)
               .Include(x => x.Queue)
               .AsNoTracking()
               .Where(x => x.QueueId == id)
