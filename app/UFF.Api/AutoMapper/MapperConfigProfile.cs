@@ -192,6 +192,21 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.Start))
                 .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.End));
 
+            CreateMap<Customer, OrderDto>()
+                .ForMember(dest => dest.OrderNumber, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.Name} {src.User.LastName}"))
+                .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
+                .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.Payment.Name))
+                .ForMember(dest => dest.PaymentMethodId, opt => opt.MapFrom(src => src.Payment.Id))
+                .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.ProcessedAt, opt => opt.MapFrom(src => src.ProcessedAt))
+                .ForMember(dest => dest.ProcessedByName, opt => opt.MapFrom(src => src.ProcessedBy != null ? src.ProcessedBy.Name : string.Empty))
+                .ForMember(dest => dest.RejectionReason, opt => opt.MapFrom(src => src.RejectionReason))
+                .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Items.Sum(y => y.FinalPrice * y.Quantity)));
+
+
             CreateMap<CategoryDto, Category>();
             CreateMap<Category, CategoryDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

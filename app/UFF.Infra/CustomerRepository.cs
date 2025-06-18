@@ -75,5 +75,42 @@ namespace UFF.Infra
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        /// <summary>
+        /// Recupera somente os pedidos do funcionário informado
+        /// </summary>
+        /// <param name="storeId">Id da loja</param>
+        /// <param name="employeeId">Id do funcinário</param>
+        /// <returns></returns>
+        public async Task<List<Customer>> GetOrdersWatingApprovment(int storeId, int employeeId)
+          => await _dbContext.Customer
+                    .Include(x => x.User)
+                    .Include(x => x.Payment)
+                    .Include(x => x.Items)
+                            .ThenInclude(x => x.Service)
+                            .ThenInclude(x => x.Category)
+                    .Include(x => x.Queue)
+                        .ThenInclude(x => x.Store)
+                    .AsNoTracking()
+                    .Where(x => x.Status == Domain.Enum.CustomerStatusEnum.Pending && x.Queue.StoreId == storeId && x.Queue.EmployeeId == employeeId)
+                    .ToListAsync();
+
+        /// <summary>
+        /// Recupera todos os pedidos da fila de espera pra aprovação
+        /// </summary>
+        /// <param name="storeId">Id da loja</param>
+        /// <returns></returns>
+        public async Task<List<Customer>> GetOrdersWatingApprovment(int storeId)
+         => await _dbContext.Customer
+                    .Include(x => x.User)
+                    .Include(x => x.Payment)
+                    .Include(x => x.Items)
+                            .ThenInclude(x => x.Service)
+                            .ThenInclude(x => x.Category)
+                    .Include(x => x.Queue)
+                        .ThenInclude(x => x.Store)
+                    .AsNoTracking()
+                    .Where(x => x.Status == Domain.Enum.CustomerStatusEnum.Pending && x.Queue.StoreId == storeId)
+                    .ToListAsync();
     }
 }
