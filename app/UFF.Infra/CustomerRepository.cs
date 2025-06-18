@@ -32,13 +32,20 @@ namespace UFF.Infra
         public async Task<Customer> GetByIdAsync(int id)
            => await _dbContext.Customer
                          .Include(x => x.User)
-                         .Include(x => x.CustomerServices)
+                         .Include(x => x.Items)
                             .ThenInclude(x => x.Service)
                             .ThenInclude(x => x.Category)
                          .Include(x => x.Queue)
                          .Include(x => x.Payment)
-                         .Include(x => x.CustomerServices)
+                         .Include(x => x.Items)
                          .FirstOrDefaultAsync(x => x.Id == id);
+
+        public async Task<int> GetPendingOrdersCount(int storeId)
+          => await _dbContext.Customer
+                    .Include(x => x.Queue)
+                    .ThenInclude(x => x.Store)
+                    .AsNoTracking()
+                    .CountAsync(x => x.Status == Domain.Enum.CustomerStatusEnum.Pending && x.Queue.StoreId == storeId);
 
         public async Task<int> GetLastPositionInQueueByStoreAndEmployeeIdAsync(int store, int employee)
         {
@@ -58,7 +65,7 @@ namespace UFF.Infra
                 .Include(x => x.Queue)
                     .ThenInclude(x => x.Store)
                 .Include(x => x.Payment)
-                .Include(x => x.CustomerServices) 
+                .Include(x => x.Items)
                     .ThenInclude(x => x.Service)
                 .Where(c => c.UserId == id)
                 .Where(c =>

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250614173620_adiciona_flags_de_configuracao")]
+    partial class adiciona_flags_de_configuracao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,19 +113,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("position");
 
-                    b.Property<string>("Priority")
-                        .IsRequired()
-                        .HasColumnType("varchar(30)")
-                        .HasColumnName("priority");
-
-                    b.Property<DateTime?>("ProcessedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("processed_at");
-
-                    b.Property<int?>("ProcessedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("processed_by_id");
-
                     b.Property<int>("QueueId")
                         .HasColumnType("integer")
                         .HasColumnName("queue_id");
@@ -140,10 +130,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("registering_date")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
-
-                    b.Property<string>("RejectionReason")
-                        .HasColumnType("text")
-                        .HasColumnName("rejection_reason");
 
                     b.Property<string>("RemoveReason")
                         .HasColumnType("text")
@@ -188,8 +174,6 @@ namespace UFF.Infra.Migrations
 
                     b.HasIndex("Position")
                         .HasDatabaseName("ix_queue_customers_position");
-
-                    b.HasIndex("ProcessedById");
 
                     b.HasIndex("QueueId")
                         .HasDatabaseName("ix_customers_queue_id");
@@ -1167,11 +1151,6 @@ namespace UFF.Infra.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_customers_payments");
 
-                    b.HasOne("UFF.Domain.Entity.User", "ProcessedBy")
-                        .WithMany()
-                        .HasForeignKey("ProcessedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("UFF.Domain.Entity.Queue", "Queue")
                         .WithMany("Customers")
                         .HasForeignKey("QueueId")
@@ -1188,8 +1167,6 @@ namespace UFF.Infra.Migrations
 
                     b.Navigation("Payment");
 
-                    b.Navigation("ProcessedBy");
-
                     b.Navigation("Queue");
 
                     b.Navigation("User");
@@ -1198,7 +1175,7 @@ namespace UFF.Infra.Migrations
             modelBuilder.Entity("UFF.Domain.Entity.CustomerService", b =>
                 {
                     b.HasOne("UFF.Domain.Entity.Customer", "Customer")
-                        .WithMany("Items")
+                        .WithMany("CustomerServices")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
@@ -1411,7 +1388,7 @@ namespace UFF.Infra.Migrations
 
             modelBuilder.Entity("UFF.Domain.Entity.Customer", b =>
                 {
-                    b.Navigation("Items");
+                    b.Navigation("CustomerServices");
                 });
 
             modelBuilder.Entity("UFF.Domain.Entity.Queue", b =>

@@ -31,7 +31,12 @@ namespace UFF.Domain.Entity
         public string RandomCustomerName { get; set; }
         public bool IsPriority { get; private set; }
         public string RemoveReason { get; set; }
-        public virtual ICollection<CustomerService> CustomerServices { get; private set; } = new List<CustomerService>();
+        public virtual ICollection<CustomerService> Items { get; private set; } = new List<CustomerService>();
+        public PriorityEnum Priority { get; set; }
+        public DateTime? ProcessedAt { get; set; }
+        public int? ProcessedById { get; set; }
+        public User ProcessedBy { get; set; }
+        public string RejectionReason { get; set; }
 
         public Customer(CustomerCreateCommand command)
         {
@@ -40,7 +45,7 @@ namespace UFF.Domain.Entity
             Notes = command.Notes;
         }
 
-        public Customer(User user, Queue queue, int paymentMethod, string notes, int position, bool looseCustomer)
+        public Customer(User user, Queue queue, int paymentMethod, string notes, int position, bool looseCustomer, bool releaseOrdeBeforeQueued)
         {
             QueueId = queue.Id;
             UserId = user.Id;
@@ -50,23 +55,24 @@ namespace UFF.Domain.Entity
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
             RandomCustomerName = looseCustomer ? user.Name : null;
+            Status = releaseOrdeBeforeQueued ? CustomerStatusEnum.Pending : CustomerStatusEnum.Waiting;
         }
 
         public void UpdateCustomer(CustomerEditServicesPaymentCommand command, int queueId)
         {
-            var existingServices = CustomerServices.ToList();
+            var existingServices = Items.ToList();
 
             foreach (var existing in existingServices)
             {
                 if (!command.SelectedServices.Any(s => s.ServiceId == existing.ServiceId))
                 {
-                    CustomerServices.Remove(existing);
+                    Items.Remove(existing);
                 }
             }
 
             foreach (var service in command.SelectedServices)
             {
-                var existing = CustomerServices.FirstOrDefault(cs => cs.ServiceId == service.ServiceId);
+                var existing = Items.FirstOrDefault(cs => cs.ServiceId == service.ServiceId);
                 if (existing != null)
                 {
                     existing.SetFinalPrice(service.Quantity * service.Price);
@@ -75,7 +81,7 @@ namespace UFF.Domain.Entity
                 }
                 else
                 {
-                    CustomerServices.Add(new CustomerService(new CustomerServiceCreateCommand()
+                    Items.Add(new CustomerService(new CustomerServiceCreateCommand()
                     {
                         CustomerId = Id,
                         FinalPrice = service.Quantity * service.Price,
@@ -96,6 +102,14 @@ namespace UFF.Domain.Entity
             RemoveReason = removeReason;
             Status = CustomerStatusEnum.Removed;
             MissingCustomerRemovalTime = DateTime.UtcNow;
+        }
+
+        public void SetRejectInfo(string rejectReason, int UserResponsibleForRemoval)
+        {
+            RejectionReason = rejectReason;
+            Status = CustomerStatusEnum.Rejected;
+            ProcessedAt = DateTime.UtcNow;
+            ProcessedById = UserResponsibleForRemoval;
         }
 
         public void ExitQueue()

@@ -11,5 +11,6 @@ namespace UFF.Domain.Services
         public Task<CommandResult> UpdateAsync(CustomerEditServicesPaymentCommand command);
         public Task UpdatePriceAndTimeForVariableServiceAsync(CustomerVariablesCommand command);
         public Task<CommandResult> GetCustomerHistory(int userId, CustomerHistoryFilterCommand command);
+        public Task<CommandResult> GetPendingOrdersCount(int storeId);
     }
 }

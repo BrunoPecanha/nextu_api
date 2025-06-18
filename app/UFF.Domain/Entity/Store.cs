@@ -18,6 +18,9 @@ namespace UFF.Domain.Entity
         public string City { get; private set; }
         public string State { get; private set; }
         public bool OpenAutomatic { get; private set; }
+        public bool ReleaseOrderBeforeGetsQueued { get; private set; }
+        public bool ShareQueue { get; private set; }
+        public bool StartServiceWithQRCode { get; private set; }
         public bool AttendSimultaneously { get; private set; }
         public string StoreSubtitle { get; private set; }
         public bool AcceptOtherQueues { get; private set; }
@@ -46,6 +49,7 @@ namespace UFF.Domain.Entity
         public virtual ICollection<EmployeeStore> EmployeeStore { get; private set; } = new List<EmployeeStore>();
         public int OwnerId { get; private set; }
         public bool Verified { get; set; }
+        public bool EndServiceWithQRCode { get; set; }
         public User Owner { get; private set; }
         public StatusEnum Status { get; private set; }
 
@@ -70,6 +74,11 @@ namespace UFF.Domain.Entity
             TimeRemoval = command.TimeRemoval;
             WhatsAppNotice = command.WhatsAppNotice;
 
+            EndServiceWithQRCode = command.EndServiceWithQRCode;
+            StartServiceWithQRCode = command.StartServiceWithQRCode;
+            ReleaseOrderBeforeGetsQueued = command.ReleaseOrderBeforeGetsQueued;
+            ShareQueue = command.ShareQueue;
+
             foreach (var hour in command.OpeningHours)
             {
                 OpeningHours.Add(new OpeningHours(hour));
@@ -88,7 +97,7 @@ namespace UFF.Domain.Entity
             Number = !string.IsNullOrWhiteSpace(command.Number) ? command.Number : Number;
             City = !string.IsNullOrWhiteSpace(command.City) ? command.City : City;
             State = !string.IsNullOrWhiteSpace(command.State) ? command.State : State;
-            StoreSubtitle = !string.IsNullOrWhiteSpace(command.StoreSubtitle) ? command.StoreSubtitle : StoreSubtitle;           
+            StoreSubtitle = !string.IsNullOrWhiteSpace(command.StoreSubtitle) ? command.StoreSubtitle : StoreSubtitle;
             CategoryId = command.CategoryId;
             Facebook = command.Facebook;
             Instagram = command.Instagram;
@@ -104,6 +113,10 @@ namespace UFF.Domain.Entity
             TimeRemoval = command.TimeRemoval;
             AttendSimultaneously = command.AttendSimultaneously;
             CategoryId = command.CategoryId;
+            ReleaseOrderBeforeGetsQueued = command.ReleaseOrdersBeforeGetsQueued;
+            StartServiceWithQRCode = command.StartServiceWithQRCode;
+            EndServiceWithQRCode = command.EndServiceWithQRCode;
+            ShareQueue = command.ShareQueue;
 
             UpdateOpeningHours(command.OpeningHoursList);
             UpdateHighLights(command.HighLightsList);
