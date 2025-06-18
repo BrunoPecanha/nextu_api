@@ -7,8 +7,8 @@ namespace UFF.Domain.Dto
     {
         public int Id { get; set; }
         public string Cnpj { get; set; }
-        public string Name { get;  set; }
-        public string Address { get;  set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
         public string Number { get; set; }
         public bool Liked { get; set; }
         public string City { get; set; }
@@ -39,6 +39,10 @@ namespace UFF.Domain.Dto
         public string WebSite { get; set; }
         public string Whatsapp { get; set; }
         public bool IsVerified { get; set; }
+        public bool ReleaseOrdersBeforeGetsQueued { get; set; }
+        public bool ShareQueue { get; set; }
+        public bool StartServiceWithQRCode { get; set; }
+        public bool EndServiceWithQRCode { get; set; }
         public string PhoneNumber { get; set; }
         public virtual ICollection<OpeningHoursDto> OpeningHours { get; set; } = new List<OpeningHoursDto>();
         public virtual ICollection<HighLightDto> HighLights { get; set; } = new List<HighLightDto>();

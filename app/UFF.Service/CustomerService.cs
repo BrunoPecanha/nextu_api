@@ -39,6 +39,12 @@ namespace UFF.Service
             return new CommandResult(true, _mapper.Map<CustomerDto>(customer));
         }
 
+        public async Task<CommandResult> GetPendingOrdersCount(int storeId)
+        {
+            var pendingCount = await _customerRepository.GetPendingOrdersCount(storeId);
+            return new CommandResult(true, pendingCount);
+        }
+
         public async Task<CommandResult> GetCustomerHistory(int userId, CustomerHistoryFilterCommand command)
         {
             var customerHistory = await _customerRepository.GetCustomerHistoryAsync(userId, command.StartDate, command.EndDate);

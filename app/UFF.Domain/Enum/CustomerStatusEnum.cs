@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 
-namespace UFF.Domain.Enum {
+namespace UFF.Domain.Enum
+{
     public enum CustomerStatusEnum
     {
         [Description("Waiting")]
@@ -14,6 +15,12 @@ namespace UFF.Domain.Enum {
         [Description("Absent")]
         Absent,
         [Description("Canceled")]
-        Canceled
+        Canceled,
+        [Description("Pending")]
+        Pending,
+        [Description("Approved")]
+        Approved,
+        [Description("Rejected")]
+        Rejected
     }
 }

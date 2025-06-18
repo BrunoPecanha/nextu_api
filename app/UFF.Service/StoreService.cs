@@ -172,7 +172,7 @@ namespace UFF.Service
                 return (TimeSpan.Zero, TimeSpan.Zero);
 
             double totalWaitTime = queue.Customers
-                .Sum(qc => qc.CustomerServices.Sum(s => s.Duration.TotalMinutes));
+                .Sum(qc => qc.Items.Sum(s => s.Duration.TotalMinutes));
 
             double averageWaitTime = totalWaitTime / queue.Customers.Count;
 

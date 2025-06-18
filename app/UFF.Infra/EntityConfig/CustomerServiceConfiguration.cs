@@ -15,7 +15,7 @@ namespace UFF.Infra.EntityConfig
            // builder.Ignore(x => x.Id);
 
             builder.HasOne(cs => cs.Customer)
-                .WithMany(c => c.CustomerServices)
+                .WithMany(c => c.Items)
                 .HasForeignKey(cs => cs.CustomerId)
                 .HasConstraintName("fk_customer_services_customers")
                 .OnDelete(DeleteBehavior.Restrict);

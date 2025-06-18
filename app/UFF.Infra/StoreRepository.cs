@@ -216,11 +216,11 @@ namespace UFF.Infra
         public async Task<Queue> CalculateAverageWaitingTime(int professionalId)
         {
             return await _dbContext.Customer
-                .Include(c => c.CustomerServices)
+                .Include(c => c.Items)
                 .Include(q => q.Queue)
                     .ThenInclude(k => k.Customers
                          .Where(o => (o.Status == CustomerStatusEnum.Waiting || o.Status == CustomerStatusEnum.Absent)))
-                    .ThenInclude(x => x.CustomerServices)
+                    .ThenInclude(x => x.Items)
                 .Where(q => q.Queue.EmployeeId == professionalId && q.Queue.Status == QueueStatusEnum.Open && q.Status == CustomerStatusEnum.Waiting)
                 .Select(q => q.Queue)
                 .FirstOrDefaultAsync();

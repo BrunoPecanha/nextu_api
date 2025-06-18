@@ -48,6 +48,12 @@ namespace UFF.Infra.EntityConfig
                 .HasConstraintName("fk_customers_users")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(c => c.ProcessedBy)
+                .WithMany()
+                .HasForeignKey(c => c.ProcessedById)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasOne(c => c.Payment)
                 .WithMany()
                 .HasForeignKey(c => c.PaymentId)
@@ -57,7 +63,7 @@ namespace UFF.Infra.EntityConfig
             builder.Property(c => c.PaymentId)
                 .IsRequired();
 
-            builder.HasMany(c => c.CustomerServices)
+            builder.HasMany(c => c.Items)
                 .WithOne(cs => cs.Customer)
                 .HasForeignKey(cs => cs.CustomerId)
                 .HasConstraintName("fk_customer_services_customers")
@@ -84,9 +90,17 @@ namespace UFF.Infra.EntityConfig
                 .HasColumnName("remove_reason")
                 .HasColumnType("text");
 
+            builder.Property(c => c.RejectionReason)
+              .HasColumnName("rejection_reason")
+              .HasColumnType("text");
+
             builder.Property(qc => qc.TimeCalledInQueue)
                 .HasColumnName("time_called_in_queue")
                 .HasColumnType("timestamp with time zone");
+
+            builder.Property(qc => qc.ProcessedAt)
+               .HasColumnName("processed_at")
+               .HasColumnType("timestamp with time zone");
 
             builder.Property(qc => qc.ServiceStartTime)
                 .HasColumnName("service_start_time")
@@ -101,6 +115,12 @@ namespace UFF.Infra.EntityConfig
                 .IsRequired()
                 .HasConversion<string>()
                 .HasColumnType("varchar(30)");
+
+            builder.Property(qc => qc.Priority)
+               .HasColumnName("priority")
+               .IsRequired()
+               .HasConversion<string>()
+               .HasColumnType("varchar(30)");
 
             builder.Property(qc => qc.RandomCustomerName)
                 .HasColumnName("random_customer_name")

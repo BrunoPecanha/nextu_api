@@ -65,7 +65,7 @@ namespace UFF.Service
 
                 int nextPositionInQueue = await _customerRepository.GetLastPositionInQueueByStoreAndEmployeeIdAsync(queue.StoreId, queue.EmployeeId);
 
-                var customer = new Customer(user, queue, command.PaymentMethod, command.Notes, nextPositionInQueue, command.LooseCustomer);
+                var customer = new Customer(user, queue, command.PaymentMethod, command.Notes, nextPositionInQueue, command.LooseCustomer, queue.Store.ReleaseOrderBeforeGetsQueued);
 
                 await _customerRepository.AddAsync(customer);
                 await _unitOfWork.SaveChangesAsync();
@@ -522,7 +522,7 @@ namespace UFF.Service
             {
                 inService.SetPosition(0);
 
-                var totalServiceTime = TimeSpan.FromMinutes(inService.CustomerServices
+                var totalServiceTime = TimeSpan.FromMinutes(inService.Items
                     .Where(s => s.Service != null)
                     .Sum(s => s.Service.Duration.TotalMinutes));
 
@@ -548,7 +548,7 @@ namespace UFF.Service
             {
                 customer.SetPosition(position++);
 
-                var totalServiceTime = TimeSpan.FromMinutes(customer.CustomerServices
+                var totalServiceTime = TimeSpan.FromMinutes(customer.Items
                     .Where(s => s.Service != null)
                     .Sum(s => s.Service.Duration.TotalMinutes));
 

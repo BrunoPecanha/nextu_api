@@ -49,21 +49,21 @@ namespace WeApi.AutoMapper
             CreateMap<Customer, CustomerInQueueForEmployeeDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                   .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.IsNullOrWhiteSpace(src.RandomCustomerName) ? string.Join(" ", src.User.Name, src.User.LastName) : src.RandomCustomerName))
-                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices))
+                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Items))
                   .ForMember(dest => dest.TimeGotInQueue, opt => opt.MapFrom(src => src.TimeEnteredQueue.ToLocalTime().ToString("HH:mm")))
                   .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                   .ForMember(dest => dest.IsPaused, opt => opt.MapFrom(src => src.Queue.Status == QueueStatusEnum.Paused))
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
-                  .ForMember(dest => dest.PricePending, opt => opt.MapFrom(src => src.CustomerServices.Any(x => x.FinalPrice == default)))
+                  .ForMember(dest => dest.PricePending, opt => opt.MapFrom(src => src.Items.Any(x => x.FinalPrice == default)))
                   .ForMember(dest => dest.CanEditName, opt => opt.MapFrom(src => !string.IsNullOrWhiteSpace(src.RandomCustomerName)))
                   .ForMember(dest => dest.InService, opt => opt.MapFrom(src => src.Status == CustomerStatusEnum.InService));
 
             CreateMap<CustomerInQueueCardDto, Customer>();
             CreateMap<Customer, CustomerInQueueCardDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                  .ForMember(dest => dest.ServiceQtd, opt => opt.MapFrom(src => src.CustomerServices.Count()))
+                  .ForMember(dest => dest.ServiceQtd, opt => opt.MapFrom(src => src.Items.Count()))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => src.Payment.Name))
                   .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
                   .ForMember(dest => dest.StoreId, opt => opt.MapFrom(src => src.Queue.Store.Id))
@@ -78,10 +78,10 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                   .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, src.Payment.Notes)))
-                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices))
+                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Items))
                   .ForMember(dest => dest.EstimatedWaitingTime, opt => opt.MapFrom(x => x.EstimatedWaitingTime))
                   .ForMember(dest => dest.Total, opt => opt.MapFrom(src =>
-                                                                    src.CustomerServices
+                                                                    src.Items
                                                                         .Where(o =>
                                                                             (!o.Service.VariablePrice) || (o.Service.VariablePrice && o.FinalPrice > 0))
                                                                         .Sum(o =>
@@ -116,8 +116,13 @@ namespace WeApi.AutoMapper
                  .ForMember(dest => dest.PaymentMethodId, opt => opt.MapFrom(src => src.Payment.Id))
                  .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.Payment.Name))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
-                 .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.CustomerServices))
-                 .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CustomerServices
+                 .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority))
+                 .ForMember(dest => dest.ProcessedAt, opt => opt.MapFrom(src => src.ProcessedAt))
+                 .ForMember(dest => dest.ProcessedByName, opt => opt.MapFrom(src => src.ProcessedBy.Name))
+                 .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Items))
+                 .ForMember(dest => dest.ProcessedBy, opt => opt.MapFrom(src => src.ProcessedBy.Id))
+                 .ForMember(dest => dest.RejectionReason, opt => opt.MapFrom(src => src.RejectionReason))
+                 .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.Items
                                                                                 .Where(o => (!o.Service.VariablePrice) || (o.Service.VariablePrice && o.FinalPrice > 0))
                                                                                 .Sum(o => o.Service.VariablePrice ? o.FinalPrice * o.Quantity : o.Service.Price * o.Quantity)));
             CreateMap<CustomerServiceDto, CustomerService>();
@@ -149,6 +154,10 @@ namespace WeApi.AutoMapper
 
             CreateMap<StoreDto, Store>();
             CreateMap<Store, StoreDto>()
+                .ForMember(dest => dest.StartServiceWithQRCode, opt => opt.MapFrom(src => src.StartServiceWithQRCode))
+                .ForMember(dest => dest.EndServiceWithQRCode, opt => opt.MapFrom(src => src.EndServiceWithQRCode))
+                .ForMember(dest => dest.ReleaseOrdersBeforeGetsQueued, opt => opt.MapFrom(src => src.ReleaseOrderBeforeGetsQueued))
+                .ForMember(dest => dest.ShareQueue, opt => opt.MapFrom(src => src.ShareQueue))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.RegisteringDate))
@@ -171,7 +180,7 @@ namespace WeApi.AutoMapper
                 .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.ServiceEndTime))
                 .ForMember(dest => dest.QueueDate, opt => opt.MapFrom(src => src.RegisteringDate))
                 .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.Payment.Name))
-                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.CustomerServices.Sum(x => x.FinalPrice)))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Items.Sum(x => x.FinalPrice)))
                 .ForMember(dest => dest.TotalTime, opt => opt.MapFrom(src =>
                                 src.ServiceStartTime.HasValue && src.ServiceEndTime.HasValue
                                     ? (src.ServiceEndTime.Value - src.ServiceStartTime.Value).ToString(@"hh\:mm")
@@ -222,7 +231,7 @@ namespace WeApi.AutoMapper
             CreateMap<CustomerHistoryDto, Customer>();
             CreateMap<Customer, CustomerHistoryDto>()
                  .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.Payment.Name))
-                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.CustomerServices.Sum(x => x.FinalPrice * x.Quantity)))
+                 .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Items.Sum(x => x.FinalPrice * x.Quantity)))
                  .ForMember(dest => dest.EstablishmentName, opt => opt.MapFrom(src => src.Queue.Store.Name))
                  .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                  .ForMember(dest => dest.StatusReason, opt => opt.MapFrom(src => src.RemoveReason))
@@ -232,7 +241,7 @@ namespace WeApi.AutoMapper
                  .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src =>
                      src.ServiceEndTime.HasValue ? src.ServiceEndTime.Value.ToString("HH:mm") : string.Empty))
                  .ForMember(dest => dest.Services, opt => opt.MapFrom(src =>
-                     string.Join(", ", src.CustomerServices.Select(x => x.Service.Name))));
+                     string.Join(", ", src.Items.Select(x => x.Service.Name))));
 
         }
     }
