@@ -55,7 +55,7 @@ namespace UFF.Domain.Entity
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
             RandomCustomerName = looseCustomer ? user.Name : null;
-            Status = releaseOrdeBeforeQueued ? CustomerStatusEnum.Pending : CustomerStatusEnum.Waiting;
+            Status = looseCustomer || !releaseOrdeBeforeQueued ? CustomerStatusEnum.Waiting : CustomerStatusEnum.Pending;
         }
 
         public void UpdateCustomer(CustomerEditServicesPaymentCommand command, int queueId)
@@ -108,6 +108,13 @@ namespace UFF.Domain.Entity
         {
             RejectionReason = rejectReason;
             Status = CustomerStatusEnum.Rejected;
+            ProcessedAt = DateTime.UtcNow;
+            ProcessedById = UserResponsibleForRemoval;
+        }
+
+        public void Accept(int UserResponsibleForRemoval)
+        {
+            Status = CustomerStatusEnum.Waiting;
             ProcessedAt = DateTime.UtcNow;
             ProcessedById = UserResponsibleForRemoval;
         }

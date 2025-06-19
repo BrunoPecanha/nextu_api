@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using UFF.Domain.Commands.Order;
+using UFF.Domain.Commands.Service;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -37,6 +39,18 @@ namespace WeApi.Controllers
                 BadRequest(pendingOrders);
 
             return Ok(pendingOrders);
+        }
+
+        [HttpPut("{id}")]
+        //   [Authorize]
+        public async Task<IActionResult> ProcessOrder(int id, [FromForm] OrderProcessCommand command)
+        {
+            var response = await _service.ProcessOrder(id, command);
+
+            if (!response.Valid)
+                return BadRequest(response);
+
+            return Ok(response);
         }
     }
 }

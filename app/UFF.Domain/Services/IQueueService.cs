@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Customer;
@@ -28,5 +29,6 @@ namespace UFF.Domain.Services
         public Task<CommandResult> PauseQueueAsync(QueuePauseCommand command);
         public Task<CommandResult> Delete(int queueId);
         public Task<CommandResult> UpdateCustomerName(int customerId, string name);
+        public Task SendUpdateNotificationToGroup(Entity.Queue queue, int storeId = default);
     }
 }
