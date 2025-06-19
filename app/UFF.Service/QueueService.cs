@@ -558,7 +558,7 @@ namespace UFF.Service
                 _customerRepository.Update(customer);
             }
         }
-        private async Task SendUpdateNotificationToGroup(Queue queue, int storeId = default)
+        public async Task SendUpdateNotificationToGroup(Queue queue, int storeId = 0)
         {
             return;
 
@@ -592,7 +592,7 @@ namespace UFF.Service
         {
             if (dto != null && (dto.Position == 0))
                 dto.Token = _tokenService.CreateToken(dto.Id, dto.QueueId);
-        }
+        }       
         #endregion
     }
 }
