@@ -50,6 +50,7 @@ namespace UFF.Infra.dependecyInjection
             services.AddTransient<ICustomerRepository, CustomerRepository>();
 
             services.AddTransient<IServiceCategoryRepository, ServiceCategoryRepository>();
+            services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
 
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 

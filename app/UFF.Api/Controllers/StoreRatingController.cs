@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands.Store;
 using UFF.Domain.Services;
@@ -17,7 +18,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("all")]
-     //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var storeRatings = await _service.GetAllAsync();
@@ -29,7 +30,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("all/store/id")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync(int id)
         {
             var storeRatings = await _service.GetByStoreIdAsync(id);
@@ -41,7 +42,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{id}")]
-      //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var storeRating = await _service.GetByIdAsync(id);
@@ -53,6 +54,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateAsync([FromForm] StoreRatingCommand command)
         {
             var response = await _service.CreateAsync(command);
