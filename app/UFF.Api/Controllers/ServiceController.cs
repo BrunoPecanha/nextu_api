@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands.Service;
 using UFF.Domain.Services;
@@ -17,6 +18,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateAsync([FromForm] ServiceCreateCommand command)
         {
             var response = await _service.CreateAsync(command);
@@ -28,6 +30,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPut("{serviceId}")]
+        [Authorize]
         public async Task<IActionResult> UpdateAsyncAsync(int serviceId, [FromForm] ServiceEditCommand command)
         {
             var response = await _service.UpdateAsync(command);
@@ -39,7 +42,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("all/{idStore}/{onlyActivated}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync([FromRoute]int idStore, bool onlyActivated = true)
         {
             var services = await _service.GetAllAsync(idStore, onlyActivated);
@@ -51,7 +54,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var service = await _service.GetByIdAsync(id);
@@ -63,7 +66,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("categories")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllCategoriesAsync()
         {
             var store = await _service.GetAllCategoriesAsync();
