@@ -129,7 +129,7 @@ namespace UFF.Service
             }
         }
 
-        public async Task<CommandResult> StartCustomerService(int customerId)
+        public async Task<CommandResult> StartCustomerService(int customerId, int employeeAttendantId)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace UFF.Service
                 if (customer == null)
                     return new CommandResult(false, "Cliente não encontrado");
 
-                customer.SetStartTime();
+                customer.SetStartTime(employeeAttendantId);
                 _customerRepository.Update(customer);
 
                 await RecalculateQueueAsync(customer.Queue.StoreId, customer.Queue.EmployeeId, customer.Id);
@@ -592,7 +592,7 @@ namespace UFF.Service
         {
             if (dto != null && (dto.Position == 0))
                 dto.Token = _tokenService.CreateToken(dto.Id, dto.QueueId);
-        }       
+        }
         #endregion
     }
 }
