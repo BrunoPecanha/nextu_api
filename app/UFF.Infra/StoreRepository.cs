@@ -7,6 +7,7 @@ using UFF.Domain.Entity;
 using UFF.Domain.Enum;
 using UFF.Domain.Repository;
 using UFF.Infra.Context;
+using UFF.Service.Helpers;
 
 namespace UFF.Infra
 {
@@ -163,7 +164,7 @@ namespace UFF.Infra
 
         public async Task<Store> GetStoreWithEmployeesAndQueuesAsync(int storeId)
         {
-            var today = DateTime.UtcNow.Date;
+            var (startUtc, endUtc) = DateTimeHelper.GetUtcRangeForTodayInBrazil();
 
             return await _dbContext.Store
                 .Where(s => s.Id == storeId)
@@ -172,21 +173,22 @@ namespace UFF.Infra
                         .ThenInclude(e => e.Queues
                             .Where(q =>
                                 (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) &&
-                                q.Date >= today && q.Date < today.AddDays(1)))
+                                q.Date >= startUtc && q.Date < endUtc))
                 .Include(s => s.Queues
                     .Where(q =>
                         (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) &&
-                        q.Date >= today && q.Date < today.AddDays(1)))
+                        q.Date >= startUtc && q.Date < endUtc))
                     .ThenInclude(q => q.Employee)
                 .Include(s => s.Queues
                     .Where(q =>
                         (q.Status == QueueStatusEnum.Open || q.Status == QueueStatusEnum.Paused) &&
-                        q.Date >= today && q.Date < today.AddDays(1)))
+                        q.Date >= startUtc && q.Date < endUtc))
                     .ThenInclude(q => q.Customers
                         .Where(c => c.Status == CustomerStatusEnum.Waiting || c.Status == CustomerStatusEnum.Absent))
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
+
 
         public async Task<Store[]> GetAllStoresUserIsInByUserId(int userId)
         {

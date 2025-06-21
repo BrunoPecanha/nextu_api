@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UFF.Domain.Repository;
 using System;
+using UFF.Service.Helpers;
 
 namespace UFF.Infra
 {
@@ -66,13 +67,13 @@ namespace UFF.Infra
 
         public async Task<Queue[]> GetAllQueuesOfStoreForOwner(int storeId)
         {
-            var today = DateTime.UtcNow.Date;
+            var (startUtc, endUtc) = DateTimeHelper.GetUtcRangeForTodayInBrazil();
             return await _dbContext.Queue
                            .Include(x => x.Employee)
                            .Include(x => x.Customers)
                            .Where(x => x.StoreId == storeId &&
-                                       x.Date >= today &&
-                                       x.Date < today.AddDays(1))
+                                       x.Date >= startUtc &&
+                                       x.Date < endUtc)
                            .AsNoTracking()
                            .ToArrayAsync();
         }
@@ -96,17 +97,17 @@ namespace UFF.Infra
                 .Include(c => c.Items)
                     .ThenInclude(cs => cs.Service)
                 .Where(x =>
-                    x.Queue.EmployeeId == employeeId &&
                     x.Queue.Store.Id == storeId &&
                     (x.Queue.Status == QueueStatusEnum.Open || x.Queue.Status == QueueStatusEnum.Paused) &&
                     (
                         x.Status == CustomerStatusEnum.Waiting ||
                         x.Status == CustomerStatusEnum.InService ||
                         x.Status == CustomerStatusEnum.Absent
+                    ) &&
+                    (
+                        x.Queue.Store.ShareQueue == true || x.Queue.EmployeeId == employeeId
                     )
-                )
-                .OrderBy(x => x.Position)
-                .ToArrayAsync();
+                ).OrderBy(x => x.Position).ToArrayAsync();
 
         public async Task<Customer[]> GetCustomerInQueueCardByUserId(int userId)
               => await _dbContext.Customer
@@ -117,7 +118,9 @@ namespace UFF.Infra
                   .ThenInclude(o => o.Category)
                   .AsNoTracking()
                   .Where(x => (x.Status == CustomerStatusEnum.Waiting
-                  || x.Status == CustomerStatusEnum.Absent)
+                  || x.Status == CustomerStatusEnum.Absent
+                  || x.Status == CustomerStatusEnum.InService
+                  || x.Status == CustomerStatusEnum.Pending)
                   && x.User.Id == userId)
                   .ToArrayAsync();
 
@@ -133,8 +136,9 @@ namespace UFF.Infra
                 .Include(g => g.Items)
                 .ThenInclude(x => x.Service)
                 .ThenInclude(x => x.Category)
+                .Include(x => x.EmployeeAttendant)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(y => y.Id == customerId && y.QueueId == queueId && (y.Status == CustomerStatusEnum.Waiting || y.Status == CustomerStatusEnum.Absent));
+                .FirstOrDefaultAsync(y => y.Id == customerId && y.QueueId == queueId && (y.Status == CustomerStatusEnum.InService ||  y.Status == CustomerStatusEnum.Waiting || y.Status == CustomerStatusEnum.Absent || y.Status == CustomerStatusEnum.Pending));
 
         public async Task<(int TotalCustomers, TimeSpan EstimatedWaitTime)> GetQueueStatusAsync(int queueId, int currentCustomerPosition, int currentCustomerId)
         {
@@ -206,6 +210,6 @@ namespace UFF.Infra
                               .Include(c => c.Customers
                                     .Where(x => x.Status == CustomerStatusEnum.Waiting || x.Status == CustomerStatusEnum.Absent))
                               .AsNoTracking()
-                              .AnyAsync(x => x.Id == id);        
+                              .AnyAsync(x => x.Id == id);
     }
 }

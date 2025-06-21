@@ -18,6 +18,7 @@ namespace UFF.Domain.Entity
         public string City { get; private set; }
         public string State { get; private set; }
         public bool OpenAutomatic { get; private set; }
+        public bool InCaseFailureAcceptFinishWithoutQRCode { get; private set; }
         public bool ReleaseOrderBeforeGetsQueued { get; private set; }
         public bool ShareQueue { get; private set; }
         public bool StartServiceWithQRCode { get; private set; }
@@ -78,6 +79,7 @@ namespace UFF.Domain.Entity
             StartServiceWithQRCode = command.StartServiceWithQRCode;
             ReleaseOrderBeforeGetsQueued = command.ReleaseOrderBeforeGetsQueued;
             ShareQueue = command.ShareQueue;
+            InCaseFailureAcceptFinishWithoutQRCode = command.InCaseFailureAcceptFinishWithoutQRCode;
 
             foreach (var hour in command.OpeningHours)
             {

@@ -16,6 +16,8 @@ namespace UFF.Domain.Entity
         public User User { get; private set; }
         public int UserId { get; private set; }
         public Payment Payment { get; private set; }
+        public User EmployeeAttendant { get; private set; }
+        public int? EmployeeAttendantId { get; private set; }
         public int PaymentId { get; private set; }
         public string? Notes { get; private set; }
         public int? Rating { get; private set; }
@@ -55,7 +57,7 @@ namespace UFF.Domain.Entity
             RegisteringDate = DateTime.UtcNow;
             LastUpdate = DateTime.UtcNow;
             RandomCustomerName = looseCustomer ? user.Name : null;
-            Status = releaseOrdeBeforeQueued ? CustomerStatusEnum.Pending : CustomerStatusEnum.Waiting;
+            Status = looseCustomer || !releaseOrdeBeforeQueued ? CustomerStatusEnum.Waiting : CustomerStatusEnum.Pending;
         }
 
         public void UpdateCustomer(CustomerEditServicesPaymentCommand command, int queueId)
@@ -112,6 +114,13 @@ namespace UFF.Domain.Entity
             ProcessedById = UserResponsibleForRemoval;
         }
 
+        public void Accept(int UserResponsibleForRemoval)
+        {
+            Status = CustomerStatusEnum.Waiting;
+            ProcessedAt = DateTime.UtcNow;
+            ProcessedById = UserResponsibleForRemoval;
+        }
+
         public void ExitQueue()
         {
             Status = CustomerStatusEnum.Canceled;
@@ -127,10 +136,11 @@ namespace UFF.Domain.Entity
             Status = CustomerStatusEnum.Absent;
             Position = 0;
         }
-        public void SetStartTime()
+        public void SetStartTime(int employeeAttendantId)
         {
             ServiceStartTime = DateTime.UtcNow;
             Status = CustomerStatusEnum.InService;
+            EmployeeAttendantId = employeeAttendantId;
         }
 
         public void UpdateName(string name)
