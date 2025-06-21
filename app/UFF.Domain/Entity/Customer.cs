@@ -16,6 +16,8 @@ namespace UFF.Domain.Entity
         public User User { get; private set; }
         public int UserId { get; private set; }
         public Payment Payment { get; private set; }
+        public User EmployeeAttendant { get; private set; }
+        public int? EmployeeAttendantId { get; private set; }
         public int PaymentId { get; private set; }
         public string? Notes { get; private set; }
         public int? Rating { get; private set; }
@@ -134,10 +136,11 @@ namespace UFF.Domain.Entity
             Status = CustomerStatusEnum.Absent;
             Position = 0;
         }
-        public void SetStartTime()
+        public void SetStartTime(int employeeAttendantId)
         {
             ServiceStartTime = DateTime.UtcNow;
             Status = CustomerStatusEnum.InService;
+            EmployeeAttendantId = employeeAttendantId;
         }
 
         public void UpdateName(string name)

@@ -48,10 +48,10 @@ namespace WeApi.Controllers
         /// <summary>
         /// Inicia atendimento
         /// </summary> 
-        [HttpGet("start-service/{customerId}")]
-        public async Task<IActionResult> StartCustomerService([FromRoute] int customerId)
+        [HttpGet("start-service/{customerId}/{employeeAttendantId}")]
+        public async Task<IActionResult> StartCustomerService([FromRoute] int customerId, int employeeAttendantId)
         {
-            var customer = await _service.StartCustomerService(customerId);
+            var customer = await _service.StartCustomerService(customerId, employeeAttendantId);
 
             if (!customer.Valid)
                 return BadRequest(customer);
@@ -174,21 +174,6 @@ namespace WeApi.Controllers
         }
 
         /// <summary>
-        /// Recupera dados da fila para montagem de relatório
-        /// </summary>  
-        [HttpGet("{id}/report")]
-        //[Authorize]
-        public async Task<IActionResult> GetQueueReport([FromRoute] int id)
-        {
-            var report = await _service.GetQueueReport(id);
-
-            if (report == null)
-                BadRequest(report);
-
-            return Ok(report);
-        }
-
-        /// <summary>
         /// Recupera detalhes de uma fila que o cliente está
         /// </summary>  
         [HttpGet("{customerId}/{queueId}/card/details")]
@@ -203,6 +188,21 @@ namespace WeApi.Controllers
             return Ok(customers);
         }
 
+
+        /// <summary>
+        /// Recupera dados da fila para montagem de relatório
+        /// </summary>  
+        [HttpGet("{id}/report")]
+        //[Authorize]
+        public async Task<IActionResult> GetQueueReport([FromRoute] int id)
+        {
+            var report = await _service.GetQueueReport(id);
+
+            if (report == null)
+                BadRequest(report);
+
+            return Ok(report);
+        }        
 
         /// <summary>
         /// Recupera todas as filas de um estabelecimento

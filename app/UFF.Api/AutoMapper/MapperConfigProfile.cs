@@ -76,7 +76,7 @@ namespace WeApi.AutoMapper
             CreateMap<CustomerInQueueCardDetailsDto, Customer>();
             CreateMap<Customer, CustomerInQueueCardDetailsDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                  .ForMember(dest => dest.AttendantsName, opt => opt.MapFrom(src => src.Queue.Employee.Name))
+                  .ForMember(dest => dest.AttendantsName, opt => opt.MapFrom(src => src.EmployeeAttendant.Name))
                   .ForMember(dest => dest.QueueId, opt => opt.MapFrom(src => src.QueueId))
                   .ForMember(dest => dest.TimeCalledInQueue, opt => opt.MapFrom(src => src.TimeCalledInQueue.HasValue ? src.TimeCalledInQueue.Value.ToLocalTime().ToString("HH:mm") : null))
                   .ForMember(dest => dest.Payment, opt => opt.MapFrom(src => new PaymentDto(src.Payment.Name, src.Payment.Icon, src.Payment.Notes)))
@@ -117,6 +117,7 @@ namespace WeApi.AutoMapper
                  .ForMember(dest => dest.Name, opt => opt.MapFrom(src => string.Join(" ", src.User.Name, src.User.LastName)))
                  .ForMember(dest => dest.PaymentIcon, opt => opt.MapFrom(src => src.Payment.Icon))
                  .ForMember(dest => dest.PaymentMethodId, opt => opt.MapFrom(src => src.Payment.Id))
+                 .ForMember(dest => dest.EmployeeAttedandtId, opt => opt.MapFrom(src => src.EmployeeAttendantId))
                  .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.Payment.Name))
                  .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
                  .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority))
@@ -154,13 +155,14 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.ImageHash, opt => opt.MapFrom(src => src.ImageHash))
                   .ForMember(dest => dest.VariablePrice, opt => opt.MapFrom(src => src.VariablePrice))
                   .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon));
-
+            
             CreateMap<StoreDto, Store>();
             CreateMap<Store, StoreDto>()
                 .ForMember(dest => dest.StartServiceWithQRCode, opt => opt.MapFrom(src => src.StartServiceWithQRCode))
                 .ForMember(dest => dest.EndServiceWithQRCode, opt => opt.MapFrom(src => src.EndServiceWithQRCode))
                 .ForMember(dest => dest.ReleaseOrdersBeforeGetsQueued, opt => opt.MapFrom(src => src.ReleaseOrderBeforeGetsQueued))
                 .ForMember(dest => dest.ShareQueue, opt => opt.MapFrom(src => src.ShareQueue))
+                .ForMember(dest => dest.InCaseFailureAcceptFinishWithoutQRCode, opt => opt.MapFrom(src => src.InCaseFailureAcceptFinishWithoutQRCode))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Category.Icon))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.RegisteringDate))
