@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UFF.Infra.Context;
@@ -11,9 +12,11 @@ using UFF.Infra.Context;
 namespace UFF.Infra.Migrations
 {
     [DbContext(typeof(UffContext))]
-    partial class UffContextModelSnapshot : ModelSnapshot
+    [Migration("20250619221556_Adiciona_coluna_permite_encerrar_sem_qrcode")]
+    partial class Adiciona_coluna_permite_encerrar_sem_qrcode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,10 +80,6 @@ namespace UFF.Infra.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("EmployeeAttendantId")
-                        .HasColumnType("integer")
-                        .HasColumnName("employee_attendant_id");
 
                     b.Property<TimeSpan>("EstimatedWaitingTime")
                         .HasColumnType("interval")
@@ -186,8 +185,6 @@ namespace UFF.Infra.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_customers");
-
-                    b.HasIndex("EmployeeAttendantId");
 
                     b.HasIndex("PaymentId")
                         .HasDatabaseName("ix_customers_payment_id");
@@ -1170,12 +1167,6 @@ namespace UFF.Infra.Migrations
 
             modelBuilder.Entity("UFF.Domain.Entity.Customer", b =>
                 {
-                    b.HasOne("UFF.Domain.Entity.User", "EmployeeAttendant")
-                        .WithMany()
-                        .HasForeignKey("EmployeeAttendantId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_customers_attendat");
-
                     b.HasOne("UFF.Domain.Entity.Payment", "Payment")
                         .WithMany()
                         .HasForeignKey("PaymentId")
@@ -1201,8 +1192,6 @@ namespace UFF.Infra.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_customers_user");
-
-                    b.Navigation("EmployeeAttendant");
 
                     b.Navigation("Payment");
 

@@ -11,6 +11,8 @@ namespace UFF.Domain.Repository
         public Task<Customer> GetByIdAsync(int id);
         public Task<Customer> GetOnlyCustomerByIdAsync(int id);
         public Task<List<Customer>> GetCustomerHistoryAsync(int id, DateTime startDate, DateTime endDate);
+        public Task<List<Customer>> GetOrdersWatingApprovment(int storeId, int employeeId);
+        Task<List<Customer>> GetOrdersWatingApprovment(int storeId);
         public Task<int> GetPendingOrdersCount(int storeId);
     }
 }

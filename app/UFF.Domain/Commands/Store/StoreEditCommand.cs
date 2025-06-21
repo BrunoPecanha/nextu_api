@@ -20,6 +20,7 @@ public class StoreEditCommand
     public bool AnswerScheduledTime { get; set; }
     public int? TimeRemoval { get; set; }
     public bool ReleaseOrdersBeforeGetsQueued { get; set; }
+    public bool InCaseFailureAcceptFinishWithoutQRCode { get; set; }
     public bool StartServiceWithQRCode { get; set; }
     public bool ShareQueue { get; set; }
     public bool EndServiceWithQRCode { get; set; }

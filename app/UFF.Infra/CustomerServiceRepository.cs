@@ -21,6 +21,7 @@ namespace UFF.Infra
         public async Task<CustomerService[]> GetCustomersSelectedServices(int customerId)
         => await _dbContext.CustomerService
                        .Include(x => x.Queue)
+                       .Include(x => x.Service)
                        .Where(x => x.CustomerId == customerId)
                        .ToArrayAsync();
     }

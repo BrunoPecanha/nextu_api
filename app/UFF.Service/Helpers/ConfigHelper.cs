@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 
-namespace UFF.Service.Helpers {
-    public class ConfigHelper {
+namespace UFF.Service.Helpers
+{
+    public class ConfigHelper
+    {
         private static IConfigurationRoot configuracaoGeral;
-        public class Config {
+        public class Config
+        {
             public string Host { get; set; }
             public int Port { get; set; }
             public bool EnableSsl { get; set; }
@@ -13,8 +16,10 @@ namespace UFF.Service.Helpers {
             public string AddressTo { get; set; }
         }
 
-        private static IConfigurationRoot RecuperaConfiguracao() {
-            if (configuracaoGeral == null) {
+        private static IConfigurationRoot GetConfiguracao()
+        {
+            if (configuracaoGeral == null)
+            {
                 var builder = new ConfigurationBuilder()
                     .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -24,14 +29,16 @@ namespace UFF.Service.Helpers {
             return configuracaoGeral;
         }
 
-        public static Config GetEmailSendConfiguration() {
-            var config = new Config() {
-                Host = RecuperaConfiguracao()["Smtp:Server"],
-                Port = Convert.ToInt32(RecuperaConfiguracao()["Smtp:Port"]),
-                EnableSsl = Convert.ToBoolean(RecuperaConfiguracao()["Smtp:EnableSSL"]),
-                FromAddress = RecuperaConfiguracao()["Smtp:FromAddress"],
-                Password = RecuperaConfiguracao()["Smtp:Password"],
-                AddressTo = RecuperaConfiguracao()["Smtp:AddressTo"]
+        public static Config GetEmailSendConfiguration()
+        {
+            var config = new Config()
+            {
+                Host = GetConfiguracao()["Smtp:Server"],
+                Port = Convert.ToInt32(GetConfiguracao()["Smtp:Port"]),
+                EnableSsl = Convert.ToBoolean(GetConfiguracao()["Smtp:EnableSSL"]),
+                FromAddress = GetConfiguracao()["Smtp:FromAddress"],
+                Password = GetConfiguracao()["Smtp:Password"],
+                AddressTo = GetConfiguracao()["Smtp:AddressTo"]
             };
             return config;
         }

@@ -38,6 +38,7 @@ namespace UFF.Infra.dependecyInjection
 
             services.AddTransient<ICustomerService,  Service.CustomerService>();
             services.AddTransient<IFavoriteService, FavoriteService>();
+            services.AddTransient<IOrderService, OrderService>();
 
             services.AddTransient<IStoreRatingRepository, StoreRatingRepository>();
             services.AddTransient<IServiceService, ServiceService>();

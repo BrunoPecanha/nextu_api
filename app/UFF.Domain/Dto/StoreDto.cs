@@ -43,6 +43,7 @@ namespace UFF.Domain.Dto
         public bool ShareQueue { get; set; }
         public bool StartServiceWithQRCode { get; set; }
         public bool EndServiceWithQRCode { get; set; }
+        public bool InCaseFailureAcceptFinishWithoutQRCode { get; set;}
         public string PhoneNumber { get; set; }
         public virtual ICollection<OpeningHoursDto> OpeningHours { get; set; } = new List<OpeningHoursDto>();
         public virtual ICollection<HighLightDto> HighLights { get; set; } = new List<HighLightDto>();

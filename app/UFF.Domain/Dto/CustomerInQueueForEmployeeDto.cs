@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UFF.Domain.Enum;
 
 namespace UFF.Domain.Dto
 {
@@ -8,6 +8,7 @@ namespace UFF.Domain.Dto
         public int? Id { get; set; }
         public string Payment { get; set; }
         public string PaymentIcon { get; set; }
+        public CustomerStatusEnum Status { get; set; }
         public string Name { get; set; }
         public ICollection<CustomerServiceDto> Services { get; set; }
         public int QueueId { get; set; }

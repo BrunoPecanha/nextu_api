@@ -92,19 +92,21 @@ namespace UFF.Service
 
                     if (updatedService != null)
                     {
-                        service.OverridePrice(updatedService.Price);
-                        service.OverrideDuration(updatedService.Duration);
+                        if (service.Service.VariablePrice)
+                            service.OverridePrice(updatedService.Price);
+                        if (service.Service.VariableTime)
+                            service.OverrideDuration(updatedService.Duration);
 
                         _customerServiceRepository.Update(service);
                     }
                 }
 
                 await _customerServiceRepository.SaveChangesAsync();
-                await this.SendUpdateNotificationToGroup(customerServices.FirstOrDefault().Queue);
+               // await this.SendUpdateNotificationToGroup(customerServices.FirstOrDefault().Queue);
             }
             catch (Exception ex)
             {
-                // Logar o erro
+                throw new Exception(ex.Message);
             }
         }
 

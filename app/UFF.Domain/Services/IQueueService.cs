@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Customer;
 using UFF.Domain.Commands.Queue;
@@ -9,7 +8,7 @@ namespace UFF.Domain.Services
     public interface IQueueService
     {
         public Task<CommandResult> AddCustomerToQueueAsync(QueueAddCustomerCommand command);
-        public Task<CommandResult> StartCustomerService(int customerId);
+        public Task<CommandResult> StartCustomerService(int customerId, int employeeAttendantId);
         public Task<CommandResult> SetTimeCustomerWasCalledInTheQueue(int customerId);
         public Task<CommandResult> SetTimeCustomerServiceWasCompleted(int customerId);
         public Task<CommandResult> RemoveMissingCustomer(CustomerRemoveFromQueueCommand command);
@@ -28,5 +27,6 @@ namespace UFF.Domain.Services
         public Task<CommandResult> PauseQueueAsync(QueuePauseCommand command);
         public Task<CommandResult> Delete(int queueId);
         public Task<CommandResult> UpdateCustomerName(int customerId, string name);
+        public Task SendUpdateNotificationToGroup(Entity.Queue queue, int storeId = default);
     }
 }

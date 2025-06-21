@@ -63,6 +63,15 @@ namespace UFF.Infra.EntityConfig
             builder.Property(c => c.PaymentId)
                 .IsRequired();
 
+            builder.HasOne(c => c.EmployeeAttendant)
+              .WithMany()
+              .HasForeignKey(c => c.EmployeeAttendantId)
+              .HasConstraintName("fk_customers_attendat")
+              .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(c => c.EmployeeAttendantId)
+                .IsRequired(false);
+
             builder.HasMany(c => c.Items)
                 .WithOne(cs => cs.Customer)
                 .HasForeignKey(cs => cs.CustomerId)
