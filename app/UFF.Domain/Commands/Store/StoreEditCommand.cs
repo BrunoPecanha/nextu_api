@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using UFF.Domain.Commands.Store;
 
 public class StoreEditCommand
