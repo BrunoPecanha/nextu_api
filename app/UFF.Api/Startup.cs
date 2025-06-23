@@ -1,4 +1,4 @@
-using AutoMapper;
+ï»¿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,14 +28,13 @@ namespace WeApi
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
+        {    
             var dbConnectionString = Configuration.GetConnectionString("postgresConnection") + ";Timezone=America/Sao_Paulo";
             services.AddDbContext<UffContext>(options => options.UseNpgsql(dbConnectionString));
 
             services.RegisterServices(dbConnectionString);
 
-            services.AddControllers();
-
+      
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new MapperConfigProfile());
@@ -44,6 +43,7 @@ namespace WeApi
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
 
+           
             var allowedOrigins = Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 
             services.AddCors(options =>
@@ -58,48 +58,52 @@ namespace WeApi
                 });
             });
 
+
             services.AddSignalR()
                     .AddAzureSignalR(options =>
                     {
                         options.ConnectionString = Configuration.GetConnectionString("AzureSignalR");
                     });
 
-            var jwtKey = Configuration["Jwt:Key"] ?? throw new ArgumentNullException("Jwt:Key não configurado no appsettings.json ou variáveis de ambiente.");
+            var jwtKey = Configuration["Jwt:Key"] ?? throw new ArgumentNullException("Jwt:Key nÃ£o configurado.");
             var key = Encoding.ASCII.GetBytes(jwtKey);
 
-            services.AddAuthentication(x =>
+            services.AddAuthentication(options =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(x =>
+            .AddJwtBearer(options =>
             {
-                x.RequireHttpsMetadata = true;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+
                     ValidIssuer = Configuration["Jwt:Issuer"],
                     ValidAudience = Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ClockSkew = TimeSpan.Zero
                 };
 
-                x.Events = new JwtBearerEvents
+                options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Query["access_token"];
+                        var token = context.Request.Query["token"];
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/QueueHub"))
+                        if (!string.IsNullOrEmpty(token) && path.StartsWithSegments("/queueHub"))
                         {
-                            context.Token = accessToken;
+                            context.Token = token;
                         }
                         return System.Threading.Tasks.Task.CompletedTask;
                     }
                 };
             });
+
+            services.AddAuthorization();
 
             services.AddSwaggerGen(c =>
             {
@@ -107,12 +111,11 @@ namespace WeApi
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
+                    Description = "JWT Authorization header usando o esquema Bearer. Exemplo: 'Bearer {token}'",
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Insira o token JWT no formato: Bearer {token}"
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -126,7 +129,7 @@ namespace WeApi
                                 Id = "Bearer"
                             }
                         },
-                        new string[] {}
+                        Array.Empty<string>()
                     }
                 });
             });
@@ -143,7 +146,9 @@ namespace WeApi
             }
 
             app.UseHttpsRedirection();
+
             app.UseRouting();
+
             app.UseCors("CorsPolicy");
 
             var swaggerOptions = new SwaggerOptions();

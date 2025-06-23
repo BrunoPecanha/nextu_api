@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using UFF.Domain.Enum;
+﻿using UFF.Domain.Enum;
 
 namespace UFF.Domain.Dto
 {

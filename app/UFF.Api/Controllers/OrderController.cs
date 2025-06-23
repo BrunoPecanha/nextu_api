@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands.Order;
-using UFF.Domain.Commands.Service;
 using UFF.Domain.Services;
 
 namespace WeApi.Controllers
@@ -18,7 +18,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{storeId}/{employeeId}")]
-     //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetOrdersWatingApprovment(int storeId, int employeeId)
         {
             var pendingOrders = await _service.GetOrdersWatingApprovment(storeId, employeeId);
@@ -30,7 +30,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{storeId}")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetOrdersWatingApprovment([FromRoute] int storeId)
         {
             var pendingOrders = await _service.GetOrdersWatingApprovment(storeId);
@@ -42,7 +42,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPut("{id}")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> ProcessOrder(int id, [FromForm] OrderProcessCommand command)
         {
             var response = await _service.ProcessOrder(id, command);
