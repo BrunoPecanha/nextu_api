@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands;
 using UFF.Domain.Commands.Store;
@@ -30,7 +31,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{id}")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var store = await _service.GetByIdAsync(id);
@@ -42,7 +43,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("owner/{id}")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetByOwnerId([FromRoute] int id)
         {
             var stores = await _service.GetByOwnerIdAsync(id);
@@ -55,7 +56,7 @@ namespace WeApi.Controllers
 
 
         [HttpGet("employee")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetByEmployeeId([FromQuery] int id, ProfileEnum profile)
         {
             var stores = await _service.GetByEmployeeId(id, profile);
@@ -74,7 +75,7 @@ namespace WeApi.Controllers
             if (!stores.Valid)
                 return BadRequest(stores.Data);
 
-            return Ok(stores);        
+            return Ok(stores);
         }
 
         [HttpGet("{categoryId}/stores")]
@@ -90,7 +91,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("all")]
-        //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var stores = await _service.GetAllAsync();
@@ -102,7 +103,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{storeId}/queue/professionals")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetStoreWithEmployeesAsync([FromRoute] int storeId)
         {
             var store = await _service.GetStoreWithProfessionalsAndWaitInfoAsync(storeId);
@@ -114,7 +115,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{storeId}/professionals")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetProfessionalsOfStoreAsync([FromRoute] int storeId)
         {
             var professionals = await _service.GetProfessionalsOfStoreAsync(storeId);
@@ -126,7 +127,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{userId}/customer/stores")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllStoresUserIsInByUserId([FromRoute] int userId)
         {
             var stores = await _service.GetAllStoresUserIsInByUserId(userId);
@@ -136,9 +137,9 @@ namespace WeApi.Controllers
 
             return Ok(stores);
         }
-      
+
         [HttpPut("{storeId}")]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> UpdateAsync([FromForm] StoreEditCommand command, [FromRoute] int storeId)
         {
             var store = await _service.UpdateAsync(command, storeId);
@@ -150,7 +151,7 @@ namespace WeApi.Controllers
         }
 
         [HttpDelete]
-       // [Authorize]
+        [Authorize]
         public async Task<IActionResult> DeleteAsync(int id)
         {
             var result = await _service.DeleteAsync(id);

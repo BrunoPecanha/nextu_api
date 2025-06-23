@@ -18,9 +18,8 @@ namespace UFF.Infra.Context
         DbSet<Store> Store { get; }
         DbSet<StoreRating> StoreRating { get; }
         DbSet<User> User { get; }
-
+        DbSet<RefreshToken> RefreshToken { get; }
         DbSet<EmployeeStore> EmployeeStore { get; }
-
         int SaveChanges();
     }
 }

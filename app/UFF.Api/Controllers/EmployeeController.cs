@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands.Employee;
 using UFF.Domain.Services;
@@ -17,7 +18,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPost("send")]
-        //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> SendInviteToEmployee([FromBody] EmployeeStoreSendInviteCommand command)
         {
             var invite = await _service.SendInviteToEmployee(command);
@@ -29,7 +30,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPost("respond")]
-        //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> RespondInvite([FromBody] EmployeeStoreAswerInviteCommand command)
         {
             var invite = await _service.RespondInvite(command);
@@ -41,7 +42,8 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("employee-invites/{id}")]
-        //  [Authorize]
+        [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetPendingAndAcceptedInvitesByUser(int id)
         {
             var response = await _service.GetPendingAndAcceptedInvitesByUser(id);
@@ -53,7 +55,8 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("store-invites/{id}")]
-        //  [Authorize]
+        [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetPendingAndAcceptedInvitesByStore(int id)
         {
             var response = await _service.GetPendingAndAcceptedInvitesByStore(id);

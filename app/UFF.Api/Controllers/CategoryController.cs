@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Services;
 
@@ -16,7 +17,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("all")]
-     //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             var categories = await _service.GetAllAsync();
@@ -28,7 +29,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{id}")]
-      //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var store = await _service.GetByIdAsync(id);

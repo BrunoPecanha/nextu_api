@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Commands.Customer;
 using UFF.Domain.Commands.Queue;
@@ -18,7 +19,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("{id}")]
-        //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var customer = await _service.GetByIdAsync(id);
@@ -30,7 +31,7 @@ namespace WeApi.Controllers
         }
 
         [HttpGet("pending/{storeId}")]
-        //  [Authorize]
+        [Authorize]
         public async Task<IActionResult> GetPendingOrdersCount([FromRoute] int storeId)
         {
             var pendingCount = await _service.GetPendingOrdersCount(storeId);
@@ -42,6 +43,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> UpdateAsyncAsync([FromBody] CustomerEditServicesPaymentCommand command)
         {
             var response = await _service.UpdateAsync(command);
@@ -56,7 +58,7 @@ namespace WeApi.Controllers
         /// Recupera todas as filas de um estabelecimento
         /// </summary>  
         [HttpPost("{userId}/period")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetCustomerHistory([FromRoute] int userId, [FromBody] CustomerHistoryFilterCommand command)
         {
             var customerHistory = await _service.GetCustomerHistory(userId, command);

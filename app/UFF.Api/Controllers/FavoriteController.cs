@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UFF.Domain.Services;
 
@@ -16,7 +17,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPost("like/store/{storeId}/{userId}")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> LikeStore(int storeId, int userId)
         {
             var like = await _service.LikeStore(storeId, userId);
@@ -28,7 +29,7 @@ namespace WeApi.Controllers
         }
 
         [HttpDelete("dislike/store/{storeId}/{userId}")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> DislikeStore(int storeId, int userId)
         {
             var dislike = await _service.DislikeStore(storeId, userId);
@@ -40,7 +41,7 @@ namespace WeApi.Controllers
         }
 
         [HttpPost("like/professional/{storeId}/{userId}")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> LikeProfessional(int storeId, int userId)
         {
             var like = await _service.LikeProfessional(storeId, userId);
@@ -52,7 +53,7 @@ namespace WeApi.Controllers
         }
 
         [HttpDelete("dislike/professional/{storeId}/{userId}")]
-        //   [Authorize]
+        [Authorize]
         public async Task<IActionResult> DislikeProfessional(int storeId, int userId)
         {
             var like = await _service.DislikeProfessional(storeId, userId);

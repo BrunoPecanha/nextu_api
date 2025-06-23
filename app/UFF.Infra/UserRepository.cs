@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UFF.Domain.Repository;
 using UFF.Domain.Enum;
+using System;
 
 namespace UFF.Infra
 {
@@ -80,7 +81,7 @@ namespace UFF.Infra
             }
 
             return result;
-        }
+        }      
 
     }
 }
