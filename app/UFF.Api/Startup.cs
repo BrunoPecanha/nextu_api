@@ -169,6 +169,12 @@ namespace WeApi
                 endpoints.MapControllers();
                 endpoints.MapHub<QueueHub>("/queueHub");
             });
+
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<UffContext>();
+                db.Database.Migrate();
+            }
         }
     }
 }
