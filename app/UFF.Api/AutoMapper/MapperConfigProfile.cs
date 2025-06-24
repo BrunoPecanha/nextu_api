@@ -26,6 +26,10 @@ namespace WeApi.AutoMapper
                   .ForMember(dest => dest.Store, opt => opt.MapFrom(src => src.Store.Name))
                   .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score));
 
+            CreateMap<NotificationDto, Notification>();
+            CreateMap<Notification, NotificationDto>()
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString()));
+
             CreateMap<ServiceCategoryDto, ServiceCategory>();
             CreateMap<ServiceCategory, ServiceCategoryDto>()
                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

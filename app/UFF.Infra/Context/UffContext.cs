@@ -27,6 +27,7 @@ namespace UFF.Infra.Context
         public DbSet<CustomerService> CustomerService { get; set; }
         public DbSet<HighLight> HighLight { get; set; }
         public DbSet<OpeningHours> OpeningHour { get; set; }
+        public DbSet<Notification> Notification { get; set; }
         public DbSet<Queue> Queue { get; set; }
         public DbSet<ServiceCategory> ServiceCategory { get; set; }
         public DbSet<Domain.Entity.Service> Service { get; set; }
