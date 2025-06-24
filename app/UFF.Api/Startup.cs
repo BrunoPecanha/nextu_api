@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,9 +11,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using UFF.Infra.Context;
 using UFF.Infra.dependecyInjection;
 using UFF.Service.Hubs;
+using UFF.Service.Hubs.Providers;
 using WeApi.AutoMapper;
 using WeApi.Options;
 
@@ -28,22 +31,19 @@ namespace WeApi
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {    
+        {
             var dbConnectionString = Configuration.GetConnectionString("postgresConnection") + ";Timezone=America/Sao_Paulo";
             services.AddDbContext<UffContext>(options => options.UseNpgsql(dbConnectionString));
 
             services.RegisterServices(dbConnectionString);
 
-      
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new MapperConfigProfile());
             });
-
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
 
-           
             var allowedOrigins = Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 
             services.AddCors(options =>
@@ -57,13 +57,6 @@ namespace WeApi
                         .AllowCredentials();
                 });
             });
-
-
-            services.AddSignalR()
-                    .AddAzureSignalR(options =>
-                    {
-                        options.ConnectionString = Configuration.GetConnectionString("AzureSignalR");
-                    });
 
             var jwtKey = Configuration["Jwt:Key"] ?? throw new ArgumentNullException("Jwt:Key não configurado.");
             var key = Encoding.ASCII.GetBytes(jwtKey);
@@ -81,7 +74,6 @@ namespace WeApi
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-
                     ValidIssuer = Configuration["Jwt:Issuer"],
                     ValidAudience = Configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -92,18 +84,39 @@ namespace WeApi
                 {
                     OnMessageReceived = context =>
                     {
-                        var token = context.Request.Query["token"];
+                        var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(token) && path.StartsWithSegments("/queueHub"))
+
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/queueHub") || path.StartsWithSegments("/notificationHub")))
                         {
-                            context.Token = token;
+                            context.Token = accessToken;
                         }
-                        return System.Threading.Tasks.Task.CompletedTask;
+
+                        return Task.CompletedTask;
                     }
                 };
             });
 
             services.AddAuthorization();
+
+            services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+            // Configuração condicional do Azure SignalR
+            var azureSignalRConnection = Configuration.GetConnectionString("AzureSignalR");
+
+            if (!string.IsNullOrEmpty(azureSignalRConnection))
+            {
+                services.AddSignalR()
+                    .AddAzureSignalR(options =>
+                    {
+                        options.ConnectionString = azureSignalRConnection;
+                    });
+            }
+            else
+            {
+                services.AddSignalR();
+            }
 
             services.AddSwaggerGen(c =>
             {
@@ -119,19 +132,19 @@ namespace WeApi
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
                 {
+                    Reference = new OpenApiReference
                     {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
                     }
-                });
+                },
+                Array.Empty<string>()
+            }
+        });
             });
 
             services.AddControllers().AddNewtonsoftJson(options =>
@@ -167,7 +180,9 @@ namespace WeApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<QueueHub>("/queueHub");
+
+                endpoints.MapHub<QueueHub>("/queueHub").RequireAuthorization();
+                endpoints.MapHub<NotificationHub>("/notificationHub");
             });
 
             using (var scope = app.ApplicationServices.CreateScope())
