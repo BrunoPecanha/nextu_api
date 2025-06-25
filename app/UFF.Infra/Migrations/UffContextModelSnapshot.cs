@@ -502,7 +502,7 @@ namespace UFF.Infra.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("notification");
+                    b.ToTable("notification", (string)null);
                 });
 
             modelBuilder.Entity("UFF.Domain.Entity.OpeningHours", b =>
@@ -598,7 +598,7 @@ namespace UFF.Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("payment");
+                    b.ToTable("payment", (string)null);
                 });
 
             modelBuilder.Entity("UFF.Domain.Entity.Queue", b =>

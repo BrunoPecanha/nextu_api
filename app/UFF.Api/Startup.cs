@@ -102,7 +102,6 @@ namespace WeApi
 
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
-            // Configuração condicional do Azure SignalR
             var azureSignalRConnection = Configuration.GetConnectionString("AzureSignalR");
 
             if (!string.IsNullOrEmpty(azureSignalRConnection))
