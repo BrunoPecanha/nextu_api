@@ -560,8 +560,6 @@ namespace UFF.Service
         }
         public async Task SendUpdateNotificationToGroup(Queue queue, int storeId = 0)
         {
-            return;
-
             string groupName = string.Empty;
 
             if (queue != null)
