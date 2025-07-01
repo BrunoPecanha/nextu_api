@@ -190,7 +190,7 @@ namespace UFF.Service
 
                 var category = await _categoryRepository.GetByIdAsync(command.CategoryId);
                 if (category is null)
-                    return new CommandResult(false, Resources.NotFound);
+                    return new CommandResult(false, "Categoria não encontrada");
 
                 var store = new Store(command);
                 if (!store.IsValid())
