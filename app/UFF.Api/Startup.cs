@@ -104,18 +104,18 @@ namespace WeApi
 
             var azureSignalRConnection = Configuration.GetConnectionString("AzureSignalR");
 
-            if (!string.IsNullOrEmpty(azureSignalRConnection))
-            {
-                services.AddSignalR()
-                    .AddAzureSignalR(options =>
-                    {
-                        options.ConnectionString = azureSignalRConnection;
-                    });
-            }
-            else
-            {
+            //if (!string.IsNullOrEmpty(azureSignalRConnection))
+            //{
+            //    services.AddSignalR();
+            //        //.AddAzureSignalR(options =>
+            //        //{
+            //        //    options.ConnectionString = azureSignalRConnection;
+            //        //});
+            //}
+            //else
+            //{
                 services.AddSignalR();
-            }
+           // }
 
             services.AddSwaggerGen(c =>
             {
