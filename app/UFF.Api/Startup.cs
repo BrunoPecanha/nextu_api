@@ -102,7 +102,7 @@ namespace WeApi
 
             services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
-            var azureSignalRConnection = Configuration.GetConnectionString("AzureSignalR");
+            //  var azureSignalRConnection = Configuration.GetConnectionString("AzureSignalR");
 
             //if (!string.IsNullOrEmpty(azureSignalRConnection))
             //{
@@ -114,8 +114,8 @@ namespace WeApi
             //}
             //else
             //{
-                services.AddSignalR();
-           // }
+            services.AddSignalR();
+            // }
 
             services.AddSwaggerGen(c =>
             {
